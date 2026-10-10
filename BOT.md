@@ -1,15 +1,32 @@
 # RyAI — Ryan's prediction picker
 
 Ryan is out of the country, so his seat on the prediction sheet is filled by RyAI.
-A scheduled Claude task runs this checklist; anyone can also run it by hand
-("fill in Ryan's picks for <show>").
+It runs only when asked: Josh can tell Claude "run RyAI" in any chat, or press
+"Run now" on the "RyAI prediction picks" scheduled task.
+
+## Where the cards are
+
+Cards live in two places, and the database copy wins:
+
+1. **The setup page's copy** (anything added or edited on the site's Setup page):
+   fetch `https://aewfantasy-47424-default-rtdb.firebaseio.com/predictionCards.json`.
+   It's an object of `{ "<show id>": "<card as a JSON string>" }` — parse each value.
+   (This is a public, read-only mirror. If the request fails or returns `null`,
+   carry on with the repo files.)
+2. **The repo**: `events/index.json` lists shows; `events/<id>.json` holds each card.
+
+A show in the database copy replaces the repo file with the same id. Shows that
+only exist in the database copy are new shows made on the Setup page.
 
 ## When to pick
 
-1. Read `events/index.json`.
+RyAI runs when Josh asks for it — usually on a show day ("run RyAI", "RyAI, do
+Survivor Series"). If he names a show, pick that one. Otherwise:
+
+1. Gather every show from both sources above.
 2. For each show whose `start` is in the future and **within the next 48 hours**:
    - If `picks/<id>/ryan.json` does not exist → make picks.
-   - If it exists but a bout or bonus question in `events/<id>.json` has no pick
+   - If it exists but a bout or bonus question on the card has no pick
      (the card changed) → add picks for the new items only. Never change a pick
      that is already there.
 3. Never write or change a pick file after the show's `start` time. Picks made

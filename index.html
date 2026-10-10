@@ -220,6 +220,53 @@
   .ev.upcoming{ border-color:var(--accent); }
   .season{ margin:28px 0 0; }
 
+  /* ── Avatars + who's picking ── */
+  .av{ --s:44px; width:var(--s); height:var(--s); border-radius:50%; flex:none; display:inline-grid; place-items:center; overflow:hidden;
+       background:var(--surface2); border:2px solid var(--line); font-weight:700; font-size:calc(var(--s) * .38); color:var(--text); }
+  .av img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .pickers{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
+  .picker{ background:none; border:0; padding:0; display:flex; flex-direction:column; align-items:center; gap:5px; font-size:13px; color:var(--dim); width:64px; }
+  .picker .av{ --s:56px; transition:transform .12s; }
+  .picker[aria-checked="true"]{ color:var(--text); font-weight:700; }
+  .picker[aria-checked="true"] .av{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent); }
+  .picker .av.add{ border-style:dashed; color:var(--dim); font-size:26px; font-weight:400; }
+  .whobar.photos{ display:block; }
+  .whobar.photos .head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin:0 0 10px; color:var(--dim); font-size:14px; }
+  .whobar.photos .progress{ margin-top:12px; }
+  .row .who{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .row .who .av{ --s:32px; border-width:1px; }
+
+  /* ── Setup ── */
+  .setup h1{ font-family:var(--display); font-weight:900; font-size:clamp(48px,13vw,84px); line-height:.9; margin:24px 0 8px; }
+  .setup h2{ font-family:var(--display); font-weight:800; font-size:30px; margin:30px 0 10px; }
+  .setup .lede{ color:var(--dim); margin:0 0 18px; max-width:56ch; }
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px; margin:0 0 12px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:520px){ .grid2{ grid-template-columns:1fr; } }
+  .grid2{ margin:0 0 12px; } .grid2:last-child{ margin-bottom:0; } .grid2 > .fld{ margin:0; }
+  .lab{ display:block; font-size:13px; color:var(--dim); margin:0 0 5px; }
+  .fld{ margin:0 0 12px; }
+  .fld:last-child{ margin-bottom:0; }
+  select.field{ appearance:auto; }
+  .check{ display:inline-flex; align-items:center; gap:8px; font-size:14px; margin-right:16px; }
+  .check input{ width:18px; height:18px; accent-color:var(--accent); }
+  .ptn{ display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center; margin:0 0 8px; }
+  .iconbtn{ background:var(--surface2); border:1px solid var(--line); border-radius:8px; min-width:40px; height:40px; padding:0 10px; font-size:14px; }
+  .iconbtn:disabled{ opacity:.35; cursor:default; }
+  .mhead{ display:flex; align-items:center; gap:8px; margin:0 0 12px; }
+  .mhead .ttl{ flex:1; font-weight:700; }
+  .savebar{ position:sticky; bottom:0; z-index:20; display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;
+            padding:12px 0 calc(12px + env(safe-area-inset-bottom)); background:linear-gradient(to top, var(--bg) 70%, transparent); }
+  .savebar .msg{ flex:1; font-size:14px; color:var(--dim); min-width:160px; }
+  .players-edit{ display:flex; gap:16px; flex-wrap:wrap; }
+  .pedit{ display:flex; flex-direction:column; align-items:center; gap:6px; width:84px; font-size:14px; font-weight:600; }
+  .pedit .av{ --s:72px; }
+  .pedit label{ font-size:13px; font-weight:500; color:var(--accent); cursor:pointer; text-decoration:underline; }
+  .pedit input{ position:absolute; width:1px; height:1px; opacity:0; }
+  .pedit .linkbtn{ font-size:12px; padding:0; }
+  .err{ color:var(--bad); font-size:14px; margin:8px 0 0; }
+  .setup-link{ display:inline-block; margin:22px 0 0; color:var(--dim); font-size:14px; }
+
   /* ── Dialog ── */
   .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px; z-index:50; }
   .dialog{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; width:min(440px,100%); }
@@ -277,6 +324,10 @@ const FIREBASE_CONFIG = {
   appId: "1:972702463847:web:03ba6393078c25fd95e1c2"
 };
 const PRED_ROOT = "leagues/_predictions/events";
+const CARD_PATH = "leagues/_predictions/cards";      // cards made or edited on the setup page (JSON strings)
+const PUBLIC_CARD_PATH = "predictionCards";          // read-only mirror RyAI can fetch without signing in
+const PLAYER_PATH = "leagues/_predictions/players";  // player photos
+const THEMES = [["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
 // Wrought-iron French Quarter balcony railing, used under the New Orleans hero.
 const NOLA_BALCONY = (()=>{
   let bays = "";
@@ -340,6 +391,7 @@ function initDb(){
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.database();
     await withinMs(firebase.auth().signInAnonymously(), 15000);
+    bindPhotos();
     db.ref(".info/connected").on("value", s=>{
       const on = s.val()===true;
       const el = $("#live"); el.textContent = on ? "Live" : "Offline"; el.className = "live " + (on?"ok":"err");
@@ -350,20 +402,67 @@ function initDb(){
   return dbReady;
 }
 
-// ── Router ─────────────────────────────────────────────────────────────────
+// ── Player photos ──────────────────────────────────────────────────────────
+let PHOTOS = {};
+let photosBound = false;
+function bindPhotos(){
+  if(photosBound || !db) return; photosBound = true;
+  db.ref(PLAYER_PATH).on("value", snap=>{
+    const v = snap.val() || {}; PHOTOS = {};
+    Object.keys(v).forEach(k=>{ if(v[k] && v[k].photo) PHOTOS[k] = v[k].photo; });
+    if(view && view.repaint) view.repaint();
+  }, ()=>{ photosBound = false; });
+}
+function initials(n){ return String(n||"?").trim().split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(); }
+function avatar(key, name, cls){
+  const src = PHOTOS[key];
+  return `<span class="av ${cls||""}">${src ? `<img src="${esc(src)}" alt="">` : esc(initials(name))}</span>`;
+}
+
+// ── Cards: the repo's events/ files, overridden by anything saved on the setup page ──
+const CARD_CACHE = {};
+function parseDef(v){ try{ const d = typeof v==="string" ? JSON.parse(v) : v; return d && typeof d==="object" ? d : null; }catch(e){ return null; } }
+async function fbCards(ms){
+  await withinMs(initDb(), ms || 6000);
+  const v = (await withinMs(db.ref(CARD_PATH).once("value"), ms || 6000)).val() || {};
+  const out = {}; Object.keys(v).forEach(k=>{ const d = parseDef(v[k]); if(d) out[k] = d; });
+  return out;
+}
 let INDEX = null;
-let view = null;      // teardown hook of whatever is on screen
+let view = null;      // teardown/repaint hooks of whatever is on screen
 async function loadIndex(){
   if(!INDEX) INDEX = (await getJSON("events/index.json")).events || [];
   return INDEX;
 }
+// Every show: repo list merged with setup-page cards (which win), minus deleted ones.
+async function allEvents(){
+  const repo = await loadIndex();
+  let fb = {};
+  try{ fb = await fbCards(5000); }catch(e){}
+  const byId = {};
+  repo.forEach(e=>{ byId[e.id] = Object.assign({ fromRepo:true }, e); });
+  Object.keys(fb).forEach(id=>{
+    if(fb[id].deleted){ delete byId[id]; return; }
+    const d = fb[id];
+    byId[id] = Object.assign({}, byId[id] || {}, { id, name:d.name, subtitle:d.subtitle, promotion:d.promotion, start:d.start, date:(d.start||"").slice(0,10), theme:d.theme, legacy:!!d.legacySheet, edited:true });
+  });
+  return Object.values(byId).sort((a,b)=> new Date(b.start) - new Date(a.start));
+}
+async function loadCard(id){
+  const repoP = getJSON("events/"+id+".json").catch(()=>null);
+  let fb = null;
+  try{ const v = (await withinMs((async()=>{ await initDb(); return db.ref(CARD_PATH+"/"+id).once("value"); })(), 5000)).val(); fb = v ? parseDef(v) : null; }catch(e){}
+  if(fb && fb.deleted) return null;
+  return fb || await repoP;
+}
 function route(){
   if(view && view.teardown) view.teardown();
   view = null;
-  const m = location.hash.match(/^#\/?([a-z0-9-]+)/i);
+  const m = location.hash.match(/^#\/?([a-z0-9-]+)(?:\/([a-z0-9-]+))?/i);
   const id = m ? m[1] : "";
   window.scrollTo(0,0);
-  if(id) showEvent(id); else showHome();
+  if(id==="setup") showSetup(m[2] || "");
+  else if(id) showEvent(id); else showHome();
 }
 window.addEventListener("hashchange", route);
 
@@ -441,9 +540,10 @@ async function showHome(){
     <h1 class="home-title">Call the card</h1>
     <p class="home-sub">Pick every match before the bell. Whoever in the league calls the most on the night gets a swap token in AEW Fantasy.</p>
     <div id="evList"><div class="empty">Loading the shows…</div></div>
-    <section class="season" id="season"></section>`;
+    <section class="season" id="season"></section>
+    <a class="setup-link" href="#/setup">Set up shows, matches and player photos</a>`;
   let events;
-  try{ events = await loadIndex(); }
+  try{ events = await allEvents(); }
   catch(e){ $("#evList").innerHTML = `<div class="empty">Couldn't load the list of shows (${esc(e.message)}). Reload to try again.</div>`; return; }
 
   let finals = {};
@@ -470,13 +570,13 @@ async function showHome(){
     $("#season").innerHTML = shows ? `<h2 class="section-head">Swap tokens won</h2>` +
       LEAGUE.slice().sort((a,b)=>wins[b.key]-wins[a.key] || a.name.localeCompare(b.name)).map((p,i)=>
         `<div class="row ${i===0&&wins[p.key]>0?"top":""}"><span class="rank">${i+1}</span>
-          <span class="nm">${esc(p.name)}${p.bot?'<span class="bot">RyAI picks</span>':""}</span>
+          <span class="who">${avatar(p.key, p.name)}<span class="nm">${esc(p.name)}${p.bot?'<span class="bot">RyAI picks</span>':""}</span></span>
           <span class="sc">${wins[p.key]}</span></div>`).join("") : "";
   };
   paint();
   const tick = setInterval(paint, 30000);
   let ref = null;
-  view = { teardown(){ clearInterval(tick); if(ref) ref.off(); } };
+  view = { teardown(){ clearInterval(tick); if(ref) ref.off(); }, repaint: ()=>paint() };
   try{
     await initDb();
     if(!view) return;
@@ -502,13 +602,14 @@ function lockCountdown(start){
 // ════════════════════════════════════════════════════════════════════════════
 // Event page
 // ════════════════════════════════════════════════════════════════════════════
-async function showEvent(id){
+async function showEvent(id, carry){
   $("#homeLink").classList.remove("hidden");
   const app = $("#app");
-  app.innerHTML = `<div class="empty" style="margin-top:24px">Loading the card…</div>`;
-  let ev;
-  try{ ev = await getJSON("events/"+id+".json"); }
-  catch(e){ app.innerHTML = `<div class="empty" style="margin-top:24px">There's no show called “${esc(id)}”. <a href="#/">See all shows</a>.</div>`; return; }
+  if(!carry) app.innerHTML = `<div class="empty" style="margin-top:24px">Loading the card…</div>`;
+  let ev = CARD_CACHE[id] || await loadCard(id);
+  if(!ev){ app.innerHTML = `<div class="empty" style="margin-top:24px">There's no show called “${esc(id)}”. <a href="#/">See all shows</a>.</div>`; return; }
+  if(!ev.id) ev.id = id;
+  const evStr = JSON.stringify(ev);
 
   const S = {
     ev, start: new Date(ev.start).getTime(),
@@ -517,12 +618,12 @@ async function showEvent(id){
     results: {}, final: null,
     ryan: null, ryanErr: "",
     legacy: !!ev.legacySheet,
-    resultsMode: false, tab: "card",
+    resultsMode: !!(carry && carry.resultsMode), tab: (carry && carry.tab) || "card",
     saveTimer: null, resultsTimer: null, pendingMine: null, pendingResults: null,
     ref: null, tick: null, dead: false,
   };
   const base = PRED_ROOT + "/" + ev.id;
-  view = { teardown(){ S.dead = true; if(S.ref) S.ref.off(); clearInterval(S.tick); flushSaves(); } };
+  view = { teardown(){ S.dead = true; if(S.ref) S.ref.off(); if(S.cardRef) S.cardRef.off(); clearInterval(S.tick); flushSaves(); }, repaint: ()=>renderAll() };
 
   document.body.dataset.theme = ev.theme || "ringside";
   document.title = ev.name + (ev.subtitle? " "+ev.subtitle:"") + " — Prediction Sheet";
@@ -562,11 +663,12 @@ async function showEvent(id){
     </header>
     <div class="whobar" id="whobar"></div>
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="card" aria-selected="true">The card</button>
-      <button class="tab" role="tab" data-tab="table" aria-selected="false">League table</button>
+      <button class="tab" role="tab" data-tab="card" aria-selected="${S.tab==="card"}">The card</button>
+      <button class="tab" role="tab" data-tab="table" aria-selected="${S.tab==="table"}">League table</button>
     </div>
-    <section id="panel-card"></section>
-    <section id="panel-table" class="hidden"></section>`;
+    <section id="panel-card" class="${S.tab==="card"?"":"hidden"}"></section>
+    <section id="panel-table" class="${S.tab==="table"?"":"hidden"}"></section>
+    <a class="setup-link" href="#/setup/${esc(ev.id)}">Edit this show's card</a>`;
   app.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
     S.tab = t.dataset.tab;
     app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x===t)));
@@ -590,27 +692,28 @@ async function showEvent(id){
   function renderWho(){
     const el = $("#whobar"); if(!el) return;
     if(S.legacy){ el.innerHTML = `<span class="note" style="margin:0">Cards from the old sheet are shown as they were saved.</span>`; return; }
+    el.classList.add("photos");
     const guests = Object.keys(S.picks).filter(k=>LEAGUE_KEYS.indexOf(k)===-1);
-    const opts = LEAGUE.filter(p=>!p.bot).map(p=>`<option value="${p.key}" ${S.me===p.key?"selected":""}>${esc(p.name)}</option>`).join("")
-      + guests.map(k=>`<option value="${esc(k)}" ${S.me===k?"selected":""}>${esc(nameFor(k,S.picks[k]))}</option>`).join("")
-      + `<option value="__new">Someone else…</option>`;
+    const people = LEAGUE.filter(p=>!p.bot).map(p=>({ key:p.key, name:p.name })).concat(guests.map(k=>({ key:k, name:nameFor(k,S.picks[k]) })));
     const p = target(), done = answeredCount(ev, p), tot = totalQs(ev);
-    el.innerHTML = `<label for="meSel">Picking as</label>
-      <select id="meSel"><option value="" ${S.me?"":"selected"} disabled>Choose…</option>${opts}</select>
+    el.innerHTML = `<div class="head"><span>${S.me ? "Picking as" : "Who's picking? Tap your face."}</span></div>
+      <div class="pickers" role="radiogroup" aria-label="Who's picking">` +
+      people.map(x=>`<button class="picker" role="radio" aria-checked="${S.me===x.key}" data-me="${esc(x.key)}">${avatar(x.key, x.name)}<span>${esc(x.name)}</span></button>`).join("") +
+      `<button class="picker" data-me="__new" aria-label="Add a guest"><span class="av add">+</span><span>Guest</span></button></div>
       <span class="progress"><span class="track"><span class="fill" style="width:${tot?done/tot*100:0}%"></span></span>
       <span>${done} of ${tot} ${S.resultsMode?"results in":"called"}</span></span>`;
-    $("#meSel").addEventListener("change", e=>{
-      let v = e.target.value;
+    el.querySelectorAll("[data-me]").forEach(b=>b.addEventListener("click", ()=>{
+      let v = b.dataset.me;
       if(v==="__new"){
-        const n = (prompt("Your name?")||"").trim();
-        if(!n){ renderWho(); return; }
+        const n = (prompt("Guest's name?")||"").trim();
+        if(!n) return;
         const k = slug(n);
         if(LEAGUE_KEYS.indexOf(k)!==-1){ v = k; }
         else { v = "g_"+k; if(!S.picks[v]) S.picks[v] = { name:n, picks:{} }; }
       }
       flushSaves();
       S.me = v; lsSet("pred_me", v); renderAll();
-    });
+    }));
   }
 
   // ── render: the card ──
@@ -829,7 +932,7 @@ async function showEvent(id){
     table.forEach((r,i)=>{
       const isLeague = LEAGUE_KEYS.indexOf(r.key)!==-1;
       html += `<div class="row ${anyResults&&i===0&&r.correct>0?"top":""}"><span class="rank">${anyResults? i+1 : "·"}</span>
-        <span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':""}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}</span>
+        <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':""}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}</span></span>
         ${anyResults? `<span class="sc">${r.correct}<span class="note" style="font-size:14px"> / ${r.graded}</span></span>` : `<span class="meta">${r.answered} of ${totalQs(ev)}</span>`}</div>`;
     });
     if(anyResults && tb) html += `<p class="note">Level on points? “${esc(tb.title)}” breaks the tie — closest guess wins. Guests play for pride; the swap token only goes to a league member.</p>`;
@@ -1034,6 +1137,19 @@ async function showEvent(id){
   try{
     await initDb();
     if(S.dead) return;
+    // The card itself can change on the setup page mid-show: redraw with the new one.
+    S.cardRef = db.ref(CARD_PATH+"/"+ev.id);
+    S.cardRef.on("value", snap=>{
+      const d = parseDef(snap.val());
+      if(!d || d.deleted) return;
+      if(!d.id) d.id = ev.id;
+      if(JSON.stringify(d)===evStr) return;
+      CARD_CACHE[ev.id] = d;
+      const carryOn = { tab:S.tab, resultsMode:S.resultsMode };
+      if(view && view.teardown) view.teardown();
+      view = null;
+      showEvent(ev.id, carryOn);
+    });
     S.ref = db.ref(base);
     S.ref.on("value", snap=>{
       const v = snap.val() || {};
@@ -1049,6 +1165,346 @@ async function showEvent(id){
   }catch(e){
     toast("Can't reach the database — picks won't save until it's back. " + e.message);
   }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Setup — shows, matches, entrants, bonus questions and player photos.
+// Saves go to Firebase (CARD_PATH), so changes reach everyone instantly; a copy
+// goes to PUBLIC_CARD_PATH so RyAI can read the card without signing in.
+// ════════════════════════════════════════════════════════════════════════════
+function pad2(n){ return String(n).padStart(2,"0"); }
+function toLocalInput(iso){
+  const d = new Date(iso); if(isNaN(d)) return "";
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+function fromLocalInput(v){
+  const d = new Date(v); if(!v || isNaN(d)) return "";
+  const off = -d.getTimezoneOffset(), sg = off>=0 ? "+" : "-", a = Math.abs(off);
+  return `${v.length===16 ? v+":00" : v}${sg}${pad2(Math.floor(a/60))}:${pad2(a%60)}`;
+}
+function uniqueId(base, taken){ let id = base || "item", n = 2; while(taken.indexOf(id)!==-1) id = base + "-" + n++; return id; }
+function getPath(o, path){ return path.split(".").reduce((a,k)=>a==null?a:a[k], o); }
+function setPath(o, path, v){ const ks = path.split("."), last = ks.pop(); const t = ks.reduce((a,k)=>a[k], o); t[last] = v; }
+
+async function resizePhoto(file){
+  const url = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((res, rej)=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = ()=>rej(new Error("That file isn't an image the browser can read.")); i.src = url; });
+    const S = 256, c = document.createElement("canvas"); c.width = c.height = S;
+    const side = Math.min(img.naturalWidth, img.naturalHeight);
+    c.getContext("2d").drawImage(img, (img.naturalWidth-side)/2, (img.naturalHeight-side)/2, side, side, 0, 0, S, S);
+    return c.toDataURL("image/jpeg", 0.82);
+  } finally { URL.revokeObjectURL(url); }
+}
+
+async function showSetup(id){
+  document.body.dataset.theme = "ringside";
+  document.title = "Setup — Prediction Sheet";
+  $("#homeLink").classList.remove("hidden");
+  const app = $("#app");
+  if(!id){ return setupHome(app); }
+  return setupEditor(app, id);
+}
+
+async function setupHome(app){
+  app.innerHTML = `<div class="setup">
+    <h1>Setup</h1>
+    <p class="lede">Add a show, fix a card when it changes, or swap in new photos. Everything saves straight to the live site.</p>
+    <h2>Players</h2>
+    <div class="panel"><div class="players-edit" id="playersEdit"></div>
+      <p class="note" style="margin-bottom:0">Photos show up on the “who's picking” buttons and in the league table. Square-ish photos work best.</p></div>
+    <h2>Shows</h2>
+    <div id="setupShows"><div class="empty">Loading the shows…</div></div>
+    <p><a class="btn primary" href="#/setup/new" style="text-decoration:none;display:inline-block">Add a show</a></p>
+  </div>`;
+  const paintPlayers = ()=>{
+    const el = $("#playersEdit"); if(!el) return;
+    el.innerHTML = LEAGUE.map(p=>`<div class="pedit">${avatar(p.key, p.name)}<span>${esc(p.name)}</span>
+      <label for="ph_${p.key}">${PHOTOS[p.key] ? "Change photo" : "Add photo"}</label>
+      <input type="file" accept="image/*" id="ph_${p.key}" data-photo="${p.key}">
+      ${PHOTOS[p.key] ? `<button class="linkbtn" data-unphoto="${p.key}">Remove</button>` : ""}</div>`).join("");
+    el.querySelectorAll("[data-photo]").forEach(inp=>inp.addEventListener("change", async ()=>{
+      const f = inp.files && inp.files[0]; if(!f) return;
+      try{
+        const data = await resizePhoto(f);
+        await initDb();
+        await withinMs(db.ref(PLAYER_PATH+"/"+inp.dataset.photo).set({ photo:data, updatedAt:firebase.database.ServerValue.TIMESTAMP }), 15000);
+        PHOTOS[inp.dataset.photo] = data; paintPlayers(); toast("Photo saved.");
+      }catch(e){ toast("The photo didn't save: " + e.message); }
+    }));
+    el.querySelectorAll("[data-unphoto]").forEach(b=>b.addEventListener("click", async ()=>{
+      try{ await initDb(); await withinMs(db.ref(PLAYER_PATH+"/"+b.dataset.unphoto).remove(), 10000); delete PHOTOS[b.dataset.unphoto]; paintPlayers(); }
+      catch(e){ toast("Couldn't remove the photo: " + e.message); }
+    }));
+  };
+  view = { repaint: paintPlayers };
+  paintPlayers();
+  initDb().catch(()=>{});
+  const events = await allEvents().catch(()=>[]);
+  const el = $("#setupShows"); if(!el) return;
+  el.innerHTML = events.length ? events.map(e=>`<a class="ev" href="#/setup/${esc(e.id)}">
+      <span class="swatch" style="background:${THEME_SWATCH[e.theme]||"var(--accent)"}"></span>
+      <span><span class="t">${esc(e.name)}${e.subtitle?" "+esc(e.subtitle):""}</span>
+      <span class="m" style="display:block">${esc(e.promotion||"")} · ${esc(fmtDate(e.start,{weekday:"short",month:"short",day:"numeric"}))}${e.edited?" · edited here":""}</span></span>
+      <span class="s"><b>Edit</b></span></a>`).join("") : `<div class="empty">No shows yet. Add one below.</div>`;
+}
+
+function blankShow(){
+  const d = new Date(); d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7)); d.setHours(17,0,0,0);
+  return { id:"", name:"", subtitle:"", promotion:"WWE", start:fromLocalInput(toLocalInput(d.toISOString())), venue:"", theme:"ringside",
+    bouts:[{ id:"", title:"", stip:"", options:[{n:""},{n:""}] }], bonus:[], roster:[] };
+}
+
+async function setupEditor(app, id){
+  const isNew = id==="new";
+  app.innerHTML = `<div class="setup"><div class="empty" style="margin-top:24px">Loading…</div></div>`;
+  let original = null, inRepo = false, inFb = false;
+  if(!isNew){
+    const repoIdx = await loadIndex().catch(()=>[]);
+    inRepo = repoIdx.some(e=>e.id===id);
+    let fb = null;
+    try{ await initDb(); const v = (await withinMs(db.ref(CARD_PATH+"/"+id).once("value"), 8000)).val(); fb = v ? parseDef(v) : null; }catch(e){}
+    inFb = !!fb && !fb.deleted;
+    original = (inFb ? fb : null) || await getJSON("events/"+id+".json").catch(()=>null);
+    if(!original){ app.innerHTML = `<div class="empty" style="margin-top:24px">There's no show called “${esc(id)}”. <a href="#/setup">Back to setup</a>.</div>`; return; }
+  }
+  const D = JSON.parse(JSON.stringify(original || blankShow()));
+  if(!D.id) D.id = isNew ? "" : id;
+  D.bouts = D.bouts || []; D.bonus = D.bonus || [];
+  D.bouts.forEach(b=>b.options.forEach(o=>{ o._k = o.n; }));     // remember names, to carry picks over a rename
+  let dirty = false;
+
+  app.innerHTML = `<div class="setup"><h1 id="edTitle"></h1><p class="lede">Changes go live for everyone as soon as you save. Ryan's picks come from RyAI — ask Claude to run it once the card is set.</p><div id="ed"></div>
+    <div class="savebar"><span class="msg" id="saveMsg"></span>
+      <a class="btn" href="${isNew ? "#/setup" : "#/"+esc(id)}" style="text-decoration:none">${isNew?"Cancel":"View show"}</a>
+      <button class="btn primary" id="saveBtn">Save</button></div></div>`;
+  const ed = $("#ed");
+
+  const txt = (path, label, ph, type)=>`<div class="fld"><label class="lab" for="f_${path}">${label}</label>
+    <input class="field" id="f_${path}" data-path="${path}" ${type==="num"?'type="number" data-kind="num"':'type="text"'} value="${esc(getPath(D,path) ?? "")}" placeholder="${esc(ph||"")}"></div>`;
+  const chk = (path, label)=>`<label class="check"><input type="checkbox" data-path="${path}" data-kind="bool" ${getPath(D,path)?"checked":""}>${label}</label>`;
+
+  function paint(){
+    $("#edTitle").textContent = isNew ? "New show" : (D.name || "Untitled show");
+    let h = `<h2>The show</h2><div class="panel">
+      <div class="grid2">${txt("name","Show name","Survivor Series")}${txt("subtitle","Second line (optional)","Minneapolis")}</div>
+      <div class="grid2">${txt("promotion","Promotion","WWE")}
+        <div class="fld"><label class="lab" for="f_start">Bell time (picks lock)</label><input class="field" id="f_start" type="datetime-local" data-kind="start" value="${esc(toLocalInput(D.start))}"></div></div>
+      <div class="grid2">${txt("venue","Venue (optional)","")}
+        <div class="fld"><label class="lab" for="f_theme">Look</label><select class="field" id="f_theme" data-path="theme">${THEMES.map(([v,l])=>`<option value="${v}" ${D.theme===v?"selected":""}>${esc(l)}</option>`).join("")}</select></div></div>
+    </div>`;
+
+    h += `<h2>Matches</h2>`;
+    D.bouts.forEach((b,i)=>{
+      h += `<div class="panel"><div class="mhead"><span class="ttl">Match ${i+1}</span>
+        <button class="iconbtn" data-act="up" data-list="bouts" data-i="${i}" ${i===0?"disabled":""} aria-label="Move up">↑</button>
+        <button class="iconbtn" data-act="down" data-list="bouts" data-i="${i}" ${i===D.bouts.length-1?"disabled":""} aria-label="Move down">↓</button>
+        <button class="iconbtn" data-act="del" data-list="bouts" data-i="${i}">Remove</button></div>
+        ${txt(`bouts.${i}.title`,"Match title","Intercontinental Championship")}
+        ${txt(`bouts.${i}.stip`,"Stipulation or note (optional)","Ladder match")}
+        <div class="fld">${chk(`bouts.${i}.ladder`,"Show as a ladder")}${chk(`bouts.${i}.allowOther`,"Allow a surprise winner")}</div>
+        <span class="lab">Entrants · tick the champion</span>`;
+      b.options.forEach((o,j)=>{
+        h += `<div class="ptn"><input class="field" data-path="bouts.${i}.options.${j}.n" value="${esc(o.n||"")}" placeholder="Wrestler or team" aria-label="Entrant ${j+1}">
+          <label class="check" style="margin:0"><input type="checkbox" data-path="bouts.${i}.options.${j}.c" data-kind="bool" ${o.c?"checked":""} aria-label="Champion">🏆</label>
+          <button class="iconbtn" data-act="del" data-list="bouts.${i}.options" data-i="${j}" ${b.options.length<=2?"disabled":""} aria-label="Remove entrant">✕</button></div>`;
+      });
+      h += `<button class="iconbtn" data-act="add" data-list="bouts.${i}.options">Add entrant</button></div>`;
+    });
+    h += `<p><button class="btn" data-act="add" data-list="bouts">Add a match</button></p>`;
+
+    h += `<h2>Bonus questions</h2>`;
+    D.bonus.forEach((q,i)=>{
+      h += `<div class="panel"><div class="mhead"><span class="ttl">Question ${i+1}</span>
+        <button class="iconbtn" data-act="up" data-list="bonus" data-i="${i}" ${i===0?"disabled":""} aria-label="Move up">↑</button>
+        <button class="iconbtn" data-act="down" data-list="bonus" data-i="${i}" ${i===D.bonus.length-1?"disabled":""} aria-label="Move down">↓</button>
+        <button class="iconbtn" data-act="del" data-list="bonus" data-i="${i}">Remove</button></div>
+        ${txt(`bonus.${i}.title`,"Question","Does anyone cash in tonight?")}
+        ${txt(`bonus.${i}.stip`,"Note (optional)","")}
+        <div class="fld"><label class="lab" for="qt_${i}">Answer type</label>
+          <select class="field" id="qt_${i}" data-qtype="${i}">
+            <option value="choice" ${q.type==="choice"?"selected":""}>Pick one of a few answers</option>
+            <option value="number" ${q.type==="number"?"selected":""}>A number — closest guess wins</option>
+            <option value="text" ${q.type==="text"?"selected":""}>Type a name</option></select></div>`;
+      if(q.type==="choice"){
+        h += `<div class="fld"><label class="lab" for="qo_${i}">Answers, separated by commas</label>
+          <input class="field" id="qo_${i}" data-path="bonus.${i}.options" data-kind="csv" value="${esc((q.options||[]).join(", "))}" placeholder="Yes, No"></div>
+          <div class="fld">${`<label class="check"><input type="checkbox" data-follow="${i}" ${q.followUp?"checked":""}>Also ask for a name</label>`}</div>`;
+        if(q.followUp){
+          h += txt(`bonus.${i}.followUp.label`,"Name question","Who?");
+          h += `<div class="fld"><span class="lab">Ask for the name when the answer is</span>` + (q.options||[]).map(o=>
+            `<label class="check"><input type="checkbox" data-when="${i}" value="${esc(o)}" ${(q.followUp.when||[]).indexOf(o)!==-1?"checked":""}>${esc(o)}</label>`).join("") + `</div>`;
+        }
+      }
+      if(q.type==="number"){
+        h += `<div class="grid2">${txt(`bonus.${i}.min`,"Lowest","", "num")}${txt(`bonus.${i}.max`,"Highest","", "num")}</div>
+          <div class="grid2">${txt(`bonus.${i}.start`,"Starting number","", "num")}${txt(`bonus.${i}.unit`,"Unit (optional)","minutes")}</div>
+          <div class="fld">${chk(`bonus.${i}.tiebreak`,"Use as the tiebreaker")}</div>`;
+      }
+      if(q.type==="text") h += txt(`bonus.${i}.placeholder`,"Hint in the answer box (optional)","Name your pick");
+      h += `</div>`;
+    });
+    h += `<p><button class="btn" data-act="add" data-list="bonus">Add a bonus question</button></p>`;
+
+    if(!isNew){
+      h += `<h2>Remove</h2><div class="panel">`;
+      if(inFb && inRepo) h += `<p class="note" style="margin-top:0">This show was edited here. You can go back to the card it started with.</p><button class="btn" id="restoreBtn">Go back to the original card</button> `;
+      h += `<button class="btn" id="deleteBtn">Delete this show</button><p class="note" style="margin-bottom:0">Deleting hides the show and its picks from the site.</p></div>`;
+    }
+    ed.innerHTML = h;
+  }
+
+  function newBout(){ return { id:"", title:"", stip:"", options:[{n:""},{n:""}] }; }
+  function newBonus(){ return { id:"", type:"choice", title:"", options:["Yes","No"] }; }
+
+  ed.addEventListener("input", e=>{
+    const t = e.target; if(!t.dataset) return;
+    dirty = true; $("#saveMsg").textContent = "Unsaved changes";
+    if(t.dataset.kind==="start"){ D.start = fromLocalInput(t.value); return; }
+    if(!t.dataset.path || t.dataset.kind==="bool" || t.dataset.kind==="csv") return;
+    const v = t.dataset.kind==="num" ? (t.value==="" ? null : Number(t.value)) : t.value;
+    setPath(D, t.dataset.path, v);
+    if(t.dataset.path==="name") $("#edTitle").textContent = t.value || (isNew ? "New show" : "Untitled show");
+  });
+  ed.addEventListener("change", e=>{
+    const t = e.target; dirty = true; $("#saveMsg").textContent = "Unsaved changes";
+    if(t.dataset.qtype!==undefined){
+      const q = D.bonus[+t.dataset.qtype]; q.type = t.value;
+      if(q.type==="choice" && !(q.options||[]).length) q.options = ["Yes","No"];
+      if(q.type!=="choice") delete q.followUp;
+      if(q.type==="number"){ if(q.min==null) q.min = 0; if(q.max==null) q.max = 60; if(q.start==null) q.start = 20; }
+      return paint();
+    }
+    if(t.dataset.follow!==undefined){
+      const q = D.bonus[+t.dataset.follow];
+      if(t.checked) q.followUp = { when:[(q.options||[])[0]].filter(Boolean), key:"", label:"Who?" }; else delete q.followUp;
+      return paint();
+    }
+    if(t.dataset.when!==undefined){
+      const q = D.bonus[+t.dataset.when], w = new Set(q.followUp.when||[]);
+      t.checked ? w.add(t.value) : w.delete(t.value); q.followUp.when = Array.from(w); return;
+    }
+    if(t.dataset.kind==="bool"){
+      if(/\.ladder$/.test(t.dataset.path)){ setPath(D, t.dataset.path, t.checked || undefined); setPath(D, t.dataset.path.replace(/\.ladder$/,".display"), t.checked ? "ladder" : undefined); return; }
+      setPath(D, t.dataset.path, t.checked || undefined); return;
+    }
+    if(t.dataset.kind==="csv"){
+      const q = getPath(D, t.dataset.path.replace(/\.options$/,""));
+      q.options = t.value.split(",").map(x=>x.trim()).filter(Boolean);
+      if(q.followUp) q.followUp.when = (q.followUp.when||[]).filter(w=>q.options.indexOf(w)!==-1);
+      return paint();
+    }
+  });
+  ed.addEventListener("click", e=>{
+    const b = e.target.closest("[data-act]"); if(!b) return;
+    const list = getPath(D, b.dataset.list), i = +b.dataset.i;
+    dirty = true; $("#saveMsg").textContent = "Unsaved changes";
+    if(b.dataset.act==="add") list.push(b.dataset.list==="bouts" ? newBout() : b.dataset.list==="bonus" ? newBonus() : { n:"" });
+    if(b.dataset.act==="del"){
+      const what = b.dataset.list==="bouts" ? "this match" : b.dataset.list==="bonus" ? "this question" : null;
+      if(what && !confirm(`Remove ${what}? Any picks for it stop counting.`)) return;
+      list.splice(i,1);
+    }
+    if(b.dataset.act==="up" && i>0) list.splice(i-1, 0, list.splice(i,1)[0]);
+    if(b.dataset.act==="down" && i<list.length-1) list.splice(i+1, 0, list.splice(i,1)[0]);
+    paint();
+  });
+  // ladder checkbox reads from display
+  D.bouts.forEach(b=>{ b.ladder = b.display==="ladder" || undefined; });
+
+  function validate(){
+    const errs = [];
+    if(!String(D.name||"").trim()) errs.push("Give the show a name.");
+    if(!D.start) errs.push("Set the bell time.");
+    if(!D.bouts.length) errs.push("Add at least one match.");
+    D.bouts.forEach((b,i)=>{
+      const names = b.options.map(o=>String(o.n||"").trim());
+      if(!String(b.title||"").trim()) errs.push(`Match ${i+1} needs a title.`);
+      if(names.filter(Boolean).length<2) errs.push(`Match ${i+1} needs at least two entrants.`);
+      const seen = new Set(); names.filter(Boolean).forEach(n=>{ if(seen.has(norm(n))) errs.push(`Match ${i+1} lists ${n} twice.`); seen.add(norm(n)); });
+    });
+    D.bonus.forEach((q,i)=>{
+      if(!String(q.title||"").trim()) errs.push(`Bonus question ${i+1} needs a question.`);
+      if(q.type==="choice" && (q.options||[]).length<2) errs.push(`Bonus question ${i+1} needs at least two answers.`);
+      if(q.type==="number" && !(Number(q.min) < Number(q.max))) errs.push(`Bonus question ${i+1}: the lowest number must be below the highest.`);
+    });
+    return errs;
+  }
+
+  async function save(){
+    const errs = validate();
+    if(errs.length){ $("#saveMsg").innerHTML = `<span class="err">${esc(errs[0])}${errs.length>1?` (and ${errs.length-1} more)`:""}</span>`; return; }
+    const btn = $("#saveBtn"); btn.disabled = true; $("#saveMsg").textContent = "Saving…";
+    try{
+      await initDb();
+      // ids: keep existing ones (picks are stored under them), make new ones from titles
+      if(!D.id){
+        const existing = (await allEvents().catch(()=>[])).map(e=>e.id);
+        D.id = uniqueId(slug(D.name + " " + new Date(D.start).getFullYear()), existing);
+      }
+      const boutIds = D.bouts.map(b=>b.id).filter(Boolean);
+      D.bouts.forEach(b=>{ if(!b.id){ b.id = uniqueId(slug(b.title).slice(0,24), boutIds); boutIds.push(b.id); } });
+      const qIds = D.bonus.map(q=>q.id).filter(Boolean).concat(boutIds);
+      D.bonus.forEach(q=>{
+        if(!q.id){ q.id = uniqueId("q-" + slug(q.title).slice(0,20), qIds); qIds.push(q.id); }
+        if(q.followUp && !q.followUp.key) q.followUp.key = (q.key || q.id) + "_who";
+        if(q.type==="number"){ ["min","max","start"].forEach(k=>q[k] = Number(q[k])); if(!(q.start>=q.min && q.start<=q.max)) q.start = q.min; }
+      });
+      // renames → carry existing picks and results over to the new spelling
+      const renames = [];
+      D.bouts.forEach(b=>b.options.forEach(o=>{ o.n = String(o.n||"").trim(); if(o._k && o.n && o._k!==o.n) renames.push([b.id, o._k, o.n]); }));
+      const out = JSON.parse(JSON.stringify(D, (k,v)=> (k==="_k" || k==="ladder") ? undefined : v));
+      out.bouts.forEach(b=>{ b.options = b.options.filter(o=>o.n); b.options.forEach(o=>{ if(!o.c) delete o.c; }); });
+      out.roster = Array.from(new Set(out.bouts.flatMap(b=>b.options.map(o=>o.n))));
+      out.updatedAt = new Date().toISOString();
+      const str = JSON.stringify(out);
+      await withinMs(db.ref(CARD_PATH+"/"+out.id).set(str), 12000);
+      let mirrored = true;
+      try{ await withinMs(db.ref(PUBLIC_CARD_PATH+"/"+out.id).set(str), 8000); }catch(e){ mirrored = false; }
+      if(renames.length){
+        const snap = (await withinMs(db.ref(PRED_ROOT+"/"+out.id).once("value"), 10000)).val() || {};
+        const upd = {};
+        renames.forEach(([bid, from, to])=>{
+          Object.keys(snap.picks||{}).forEach(k=>{ const p = (snap.picks[k]||{}).picks||{}; if(p[bid]===from) upd[`picks/${k}/picks/${bid}`] = to; });
+          if((snap.results||{})[bid]===from) upd[`results/${bid}`] = to;
+        });
+        if(Object.keys(upd).length) await withinMs(db.ref(PRED_ROOT+"/"+out.id).update(upd), 10000);
+      }
+      CARD_CACHE[out.id] = out;
+      D.bouts.forEach(b=>b.options.forEach(o=>{ o._k = o.n; }));
+      dirty = false;
+      $("#saveMsg").innerHTML = `Saved. <a href="#/${esc(out.id)}">Open the show</a>${mirrored ? "" : " · RyAI can't see this change until the database rules are updated."}`;
+      if(isNew){ history.replaceState(null, "", "#/setup/"+out.id); }
+    }catch(e){
+      $("#saveMsg").innerHTML = `<span class="err">Didn't save: ${esc(e.message)}</span>`;
+    }finally{ btn.disabled = false; }
+  }
+  $("#saveBtn").addEventListener("click", save);
+
+  ed.addEventListener("click", async e=>{
+    if(e.target.id==="deleteBtn"){
+      const ok = await confirmDialog("Delete this show?", "It disappears from the site for everyone. Picks stay in the database, so restoring the card brings them back.", "Delete");
+      if(!ok) return;
+      try{
+        if(inRepo) await withinMs(db.ref(CARD_PATH+"/"+D.id).set(JSON.stringify({ id:D.id, deleted:true })), 10000);
+        else await withinMs(db.ref(CARD_PATH+"/"+D.id).remove(), 10000);
+        try{ await withinMs(db.ref(PUBLIC_CARD_PATH+"/"+D.id).remove(), 8000); }catch(_){}
+        delete CARD_CACHE[D.id]; location.hash = "#/setup";
+      }catch(err){ toast("Couldn't delete: " + err.message); }
+    }
+    if(e.target.id==="restoreBtn"){
+      const ok = await confirmDialog("Go back to the original card?", "Your edits to this show are thrown away.", "Go back");
+      if(!ok) return;
+      try{
+        await withinMs(db.ref(CARD_PATH+"/"+D.id).remove(), 10000);
+        try{ await withinMs(db.ref(PUBLIC_CARD_PATH+"/"+D.id).remove(), 8000); }catch(_){}
+        delete CARD_CACHE[D.id]; route();
+      }catch(err){ toast("Couldn't restore: " + err.message); }
+    }
+  });
+  window.onbeforeunload = ()=> dirty ? "You have unsaved changes." : undefined;
+  view = { teardown(){ window.onbeforeunload = null; } };
+  paint();
 }
 
 // ── tiny confirm dialog ──
