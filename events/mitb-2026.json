@@ -26,7 +26,7 @@
     { "id": "bloodline", "type": "choice", "title": "Does the Bloodline get involved in Reigns v Knight?",
       "options": ["Yes", "No"] },
     { "id": "main_len", "type": "number", "title": "How long does the main event go?",
-      "stip": "Bell to bell, in minutes · closest guess takes the point and breaks ties",
+      "stip": "Bell to bell, in minutes · closest guess takes the point",
       "min": 5, "max": 60, "start": 20, "unit": "minutes", "tiebreak": true }
   ],
   "roster": [ "CM Punk","Kevin Owens","Bron Breakker","Penta","Trick Williams","Je'Von Evans",

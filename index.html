@@ -503,7 +503,8 @@ function totalQs(ev){ return ev.bouts.length + (ev.bonus||[]).length; }
 
 // Score one card. `everyone` is every card on the show, for closest-guess questions.
 function scoreCard(ev, p, results, everyone){
-  let correct = 0, graded = 0, tiebreak = Infinity;
+  // bonus = points from bonus questions alone; it breaks ties on the total.
+  let correct = 0, graded = 0, bonus = 0;
   ev.bouts.forEach(b=>{
     if(blank(results[b.id])) return;
     graded++;
@@ -519,21 +520,20 @@ function scoreCard(ev, p, results, everyone){
       if(fits(q, p[k]) && guesses.length){
         const best = Math.min.apply(null, guesses.map(g=>Math.abs(g-a)));
         const mine = Math.abs(Number(p[k])-a);
-        if(mine===best) correct++;
-        if(q.tiebreak) tiebreak = mine;
+        if(mine===best){ correct++; bonus++; }
       }
       return;
     }
     if(!blank(actual)){
       graded++;
-      if(fits(q, p[k]) && norm(p[k])===norm(actual)) correct++;
+      if(fits(q, p[k]) && norm(p[k])===norm(actual)){ correct++; bonus++; }
     }
     if(q.followUp && !blank(results[q.followUp.key])){
       graded++;
-      if(norm(p[q.followUp.key])===norm(results[q.followUp.key])) correct++;
+      if(norm(p[q.followUp.key])===norm(results[q.followUp.key])){ correct++; bonus++; }
     }
   });
-  return { correct, graded, tiebreak };
+  return { correct, graded, bonus };
 }
 
 // players: [{key, name, picks, bot}] → sorted standings
@@ -542,15 +542,15 @@ function standings(ev, players, results){
   return players.map(p=>{
     const s = scoreCard(ev, p.picks||{}, results, everyone);
     return Object.assign({}, p, s, { answered: answeredCount(ev, p.picks||{}) });
-  }).sort((a,b)=> b.correct-a.correct || a.tiebreak-b.tiebreak || a.name.localeCompare(b.name));
+  }).sort((a,b)=> b.correct-a.correct || b.bonus-a.bonus || a.name.localeCompare(b.name));
 }
 
-// Only one swap token per show: best league member, tiebreak question, then a shared token if still level.
+// Only one swap token per show: best league member, then most bonus points, then a shared token if still level.
 function tokenWinners(table){
   const league = table.filter(r=>LEAGUE_KEYS.indexOf(r.key)!==-1 && r.answered>0);
   if(!league.length) return [];
   const top = league[0];
-  return league.filter(r=>r.correct===top.correct && r.tiebreak===top.tiebreak).map(r=>r.key);
+  return league.filter(r=>r.correct===top.correct && r.bonus===top.bonus).map(r=>r.key);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -980,18 +980,18 @@ async function showEvent(id, carry){
       const w = S.final.winners.map(k=>nameFor(k)).join(" & ");
       html += `<div class="winner"><h3>${esc(w)} ${S.final.winners.length>1?"share":"takes"} the swap token</h3>
         <p>${S.final.granted ? `Added to ${S.final.winners.length>1?"their teams":"the team"} in AEW Fantasy (${esc(S.final.league||"")}).` : "Couldn't reach the fantasy season — tap retry below."}</p>
-        ${S.final.winners.length>1?`<p style="margin-top:6px">Level on picks and the tiebreaker, so each gets one.</p>`:""}
+        ${S.final.winners.length>1?`<p style="margin-top:6px">Level on points and on bonus points, so each gets one.</p>`:""}
         ${S.final.granted? `<button class="linkbtn" id="undoFinal">Results were wrong? Reopen and take the token back</button>` : `<button class="linkbtn" id="retryGrant">Retry sending the token</button>`}</div>`;
     }
-    const tb = (ev.bonus||[]).find(q=>q.tiebreak);
+    const tb = (ev.bonus||[]).length > 0;
     html += `<h2 class="section-head" style="margin-top:0">${anyResults? "League table" : "Who's filled in a card"}</h2>`;
     table.forEach((r,i)=>{
       const isLeague = LEAGUE_KEYS.indexOf(r.key)!==-1;
       html += `<div class="row ${anyResults&&i===0&&r.correct>0?"top":""}"><span class="rank">${anyResults? i+1 : "·"}</span>
         <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':(r.mixed?'<span class="bot">🤖 + Ryan</span>':"")}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}</span></span>
-        ${anyResults? `<span class="sc">${r.correct}<span class="note" style="font-size:14px"> / ${r.graded}</span></span>` : `<span class="meta">${r.answered} of ${totalQs(ev)}</span>`}</div>`;
+        ${anyResults? `<span class="sc">${r.correct}<span class="note" style="font-size:14px"> / ${r.graded}${tb?` · ${r.bonus} bonus`:""}</span></span>` : `<span class="meta">${r.answered} of ${totalQs(ev)}</span>`}</div>`;
     });
-    if(anyResults && tb) html += `<p class="note">Level on points? “${esc(tb.title)}” breaks the tie — closest guess wins. Guests play for pride; the swap token only goes to a league member.</p>`;
+    if(anyResults && tb) html += `<p class="note">Level on points? Whoever got more bonus questions right wins the tie — on number questions, the closest guess counts as right. Still level, and each gets a token. Guests play for pride; the swap token only goes to a league member.</p>`;
 
     // finalise
     if(!S.legacy && !S.final && anyResults){
@@ -1408,8 +1408,7 @@ async function setupEditor(app, id){
       }
       if(q.type==="number"){
         h += `<div class="grid2">${txt(`bonus.${i}.min`,"Lowest","", "num")}${txt(`bonus.${i}.max`,"Highest","", "num")}</div>
-          <div class="grid2">${txt(`bonus.${i}.start`,"Starting number","", "num")}${txt(`bonus.${i}.unit`,"Unit (optional)","minutes")}</div>
-          <div class="fld">${chk(`bonus.${i}.tiebreak`,"Use as the tiebreaker")}</div>`;
+          <div class="grid2">${txt(`bonus.${i}.start`,"Starting number","", "num")}${txt(`bonus.${i}.unit`,"Unit (optional)","minutes")}</div>`;
       }
       if(q.type==="text") h += txt(`bonus.${i}.placeholder`,"Hint in the answer box (optional)","Name your pick");
       h += `</div>`;
