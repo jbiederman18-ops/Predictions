@@ -1,7 +1,7 @@
 {
   "eventId": "mitb-2026",
   "player": "ryan",
-  "generatedAt": "2026-10-10T05:58:00-07:00",
+  "generatedAt": "2026-10-10T06:58:00-07:00",
   "generatedBy": "RyAI (Claude, persona run)",
   "persona": "Picked by RyAI as Ryan: catches WWE every few weeks, skims the headlines, picks on gut and star power.",
   "picks": {
@@ -10,9 +10,9 @@
     "wwc": "Becky Lynch",
     "femi_reed": "Oba Femi",
     "whc": "Roman Reigns",
-    "cashin": "No",
-    "bloodline": "Yes",
-    "main_len": 24
+    "cashin": 9,
+    "bloodline": 6,
+    "main_len": "Yes"
   },
   "notes": {
     "mitb_m": "Punk's the obvious one, but every clip I see online is Bron spearing someone through something. Feels like his year.",
@@ -20,8 +20,8 @@
     "wwc": "I didn't know Vaquer was champ until this week. Becky was the ref when the belt changed hands, so you just know she's getting it back.",
     "femi_reed": "Everyone calls Oba a monster. Monsters win the opener.",
     "whc": "It's Roman. LA Knight's great on the mic but Roman doesn't lose first time out.",
-    "cashin": "New briefcase winners never cash in the same night. Probably.",
-    "bloodline": "When has a Roman match ever stayed one-on-one?",
-    "main_len": "Main events go long. Twenty-something feels right."
+    "cashin": "Six dudes, one briefcase, and Penta's in there. Somebody's getting their fingertips on it like nine times.",
+    "bloodline": "Fewer than the guys, they're quicker about it. Six feels right.",
+    "main_len": "Roman's been the bad guy for years and LA Knight is the people's guy. New Orleans is booing, easy."
   }
 }

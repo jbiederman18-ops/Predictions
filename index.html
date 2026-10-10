@@ -488,7 +488,14 @@ window.addEventListener("hashchange", route);
 // Scoring — shared by the event page and the home page's season table.
 // ════════════════════════════════════════════════════════════════════════════
 function bonusKey(q){ return q.key || q.id; }
-function bonusAnswered(q, p){ return !blank(p[bonusKey(q)]); }
+// A saved answer only counts if it still fits the question (questions can be edited after people pick).
+function fits(q, v){
+  if(blank(v)) return false;
+  if(q.type==="number") return v!==true && v!==false && String(v).trim()!=="" && isFinite(Number(v));
+  if(q.type==="choice") return (q.options||[]).some(o=>norm(o)===norm(v));
+  return true;
+}
+function bonusAnswered(q, p){ return fits(q, p[bonusKey(q)]); }
 function answeredCount(ev, p){
   return ev.bouts.filter(b=>!blank(p[b.id])).length + (ev.bonus||[]).filter(q=>bonusAnswered(q,p)).length;
 }
@@ -508,8 +515,8 @@ function scoreCard(ev, p, results, everyone){
       if(blank(actual)) return;
       graded++;
       const a = Number(actual);
-      const guesses = everyone.map(x=>x[k]).filter(v=>!blank(v)).map(Number);
-      if(!blank(p[k]) && guesses.length){
+      const guesses = everyone.map(x=>x[k]).filter(v=>fits(q,v)).map(Number);
+      if(fits(q, p[k]) && guesses.length){
         const best = Math.min.apply(null, guesses.map(g=>Math.abs(g-a)));
         const mine = Math.abs(Number(p[k])-a);
         if(mine===best) correct++;
@@ -519,7 +526,7 @@ function scoreCard(ev, p, results, everyone){
     }
     if(!blank(actual)){
       graded++;
-      if(norm(p[k])===norm(actual)) correct++;
+      if(fits(q, p[k]) && norm(p[k])===norm(actual)) correct++;
     }
     if(q.followUp && !blank(results[q.followUp.key])){
       graded++;
@@ -873,14 +880,18 @@ async function showEvent(id, carry){
   }
 
   function whoPicked(list, key){
+    const q = (ev.bonus||[]).find(x=>bonusKey(x)===key);
     const groups = {};
-    list.forEach(p=>{ const v = p.picks[key]; if(blank(v)) return; const k = norm(v); (groups[k] = groups[k] || { label:v, who:[] }).who.push(p.name + (p.bot?" 🤖":"")); });
+    list.forEach(p=>{ const v = p.picks[key]; if(blank(v) || (q && !fits(q, v))) return; const k = norm(v); (groups[k] = groups[k] || { label:v, who:[] }).who.push(p.name + (p.bot?" 🤖":"")); });
     const keys = Object.keys(groups); if(!keys.length) return "";
     return `<div class="whopicked">` + keys.map(k=>`<span><b>${esc(groups[k].label)}</b> ${esc(groups[k].who.join(", "))}</span>`).join("") + `</div>`;
   }
 
   function bonusHTML(q, t, mine, edit, showResults, others){
-    const k = bonusKey(q), actual = S.results[k], my = mine[k];
+    const k = bonusKey(q), actual = S.results[k];
+    // Drop an answer given to an older version of this question (e.g. Yes/No on what is now a number)
+    if(q.type!=="text" && !blank(t[k]) && !fits(q, t[k])) delete t[k];
+    const my = fits(q, mine[k]) ? mine[k] : null;
     let cls = "bout", body = "";
     if(q.type==="text"){
       body += `<input class="field" style="margin-top:14px" data-bonus="${esc(k)}" list="rosterList" placeholder="${esc(q.placeholder||"Your answer")}" value="${esc(t[k]||"")}" ${edit?"":"disabled"}>`;
@@ -934,8 +945,8 @@ async function showEvent(id, carry){
     });
     el.querySelectorAll(".stepbtn").forEach(btn=>btn.addEventListener("click", ()=>{
       const q = ev.bonus.find(x=>x.id===btn.dataset.q), k = bonusKey(q), t = target();
-      const cur = blank(t[k]) ? q.start : Number(t[k]);
-      t[k] = blank(t[k]) ? q.start : Math.min(q.max, Math.max(q.min, cur + Number(btn.dataset.step)));
+      const ok = fits(q, t[k]);
+      t[k] = ok ? Math.min(q.max, Math.max(q.min, Number(t[k]) + Number(btn.dataset.step))) : q.start;
       changed();
     }));
     el.querySelectorAll(".chip[data-choice]").forEach(btn=>btn.addEventListener("click", ()=>{
