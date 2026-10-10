@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#16181d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Orbitron:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ── Themes ─────────────────────────────────────────────────────────────
      Each show names a theme in its event file. The home page uses "ringside". */
@@ -26,7 +26,8 @@
   body[data-theme="nola"]{
     --bg:#1b0f2e; --surface:#26163d; --surface2:#31204c; --line:#4a3468;
     --text:#f6eedb; --dim:#bfaed6; --accent:#f2c14e; --accent-ink:#241602;
-    --good:#4cc38a; --bad:#f07a63; --nola-green:#4cc38a; --nola-purple:#8b5cc4; --iron:#0d0618;
+    --good:#4cc38a; --bad:#f07a63; --nola-green:#46d36b; --nola-purple:#7b55d6; --iron:#0d0618;
+    --display:'Orbitron','Big Shoulders Display',sans-serif; --display-weight:900; --display-track:0.01em;
   }
   body[data-theme="matchday"]{
     --bg:#070d1f; --surface:#0e1936; --surface2:#152242; --line:#243358;
@@ -70,8 +71,25 @@
   body[data-theme="nola"]{ background:
       radial-gradient(120% 60% at 85% -10%, rgba(242,193,78,.16), transparent 60%),
       radial-gradient(90% 50% at -10% 0%, rgba(139,92,196,.28), transparent 60%), no-repeat var(--bg); }
-  body[data-theme="nola"] .show-name{ color:var(--accent); text-shadow:0 0 28px rgba(242,193,78,.25); }
-  body[data-theme="nola"] .show-sub{ color:var(--nola-green); font-style:italic; }
+  /* Show-poster type: heavy, wide, leaning forward; violet letters with a green edge */
+  body[data-theme="nola"] .show-name{
+    font-size:clamp(46px, 18vw, 124px); line-height:.98; text-transform:uppercase; letter-spacing:.005em;
+    color:var(--nola-purple); -webkit-text-stroke:clamp(1.5px, .55vw, 3.5px) var(--nola-green); paint-order:stroke fill;
+    transform:skewX(-7deg); transform-origin:left bottom;
+    text-shadow:0 5px 0 #0f0820, 0 0 34px rgba(70,211,107,.22);
+  }
+  body[data-theme="nola"] .show-name .joiner{
+    display:block; font-size:.3em; font-weight:800; letter-spacing:.12em; color:var(--nola-green);
+    -webkit-text-stroke:0; text-shadow:none; margin:.15em 0 .1em .2em;
+  }
+  body[data-theme="nola"] .show-sub{
+    font-family:var(--display); font-weight:900; font-style:normal; text-transform:uppercase; letter-spacing:.04em;
+    font-size:clamp(20px, 6vw, 34px); color:var(--nola-green); transform:skewX(-7deg); transform-origin:left bottom; margin-top:10px;
+  }
+  body[data-theme="nola"] .bout h3{ font-weight:800; font-size:19px; line-height:1.25; letter-spacing:.01em; }
+  body[data-theme="nola"] .section-head{ font-weight:900; font-size:24px; text-transform:uppercase; color:var(--nola-green); transform:skewX(-7deg); transform-origin:left; }
+  body[data-theme="nola"] .lockline .count{ font-weight:900; font-size:26px; color:var(--accent); }
+  body[data-theme="nola"] .winner h3{ font-size:24px; }
   body[data-theme="nola"] .bout{ border-left-color:var(--nola-purple); }
   body[data-theme="nola"] .bout:nth-of-type(3n+2){ border-left-color:var(--nola-green); }
   body[data-theme="nola"] .bout:nth-of-type(3n){ border-left-color:var(--accent); }
@@ -655,7 +673,7 @@ async function showEvent(id, carry){
   app.innerHTML = `
     <header class="hero">
       <p class="promo">${esc(ev.promotion)}</p>
-      <h1 class="show-name">${esc(ev.name)}</h1>
+      <h1 class="show-name">${ev.theme==="nola" ? esc(ev.name).replace(/^(\S+)\s+(in the|of the|at the|in|of|at)\s+(.+)$/i, '$1<span class="joiner">$2</span>$3') : esc(ev.name)}</h1>
       ${ev.subtitle? `<p class="show-sub">${esc(ev.subtitle)}</p>`:""}
       <p class="show-meta">${esc(fmtDate(ev.start,{weekday:"long",month:"long",day:"numeric"}))}${ev.legacy||ev.legacySheet?"":" · "+esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}${ev.venue? " · "+esc(ev.venue):""}</p>
       <div class="lockline" id="lockline"></div>
