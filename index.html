@@ -656,8 +656,18 @@ async function showEvent(id, carry){
     if(!S.picks[S.me].picks) S.picks[S.me].picks = {};
     return S.picks[S.me].picks;
   };
-  const target = ()=> S.resultsMode ? S.results : myPicks();
-  const canEdit = ()=> !S.legacy && (S.resultsMode ? !S.final : (!!S.me && S.me!=="ryan" && !locked()));
+  // Ryan's card is RyAI's picks with anything Ryan picked himself on top.
+  const botPicks = ()=> (S.ryan && S.ryan.picks) || {};
+  const ryanOwn = ()=> (S.picks.ryan && S.picks.ryan.picks) || {};
+  const ryanChanged = ()=>{ const b = botPicks(), o = ryanOwn(); return Object.keys(o).filter(k=>!blank(o[k]) && norm(o[k])!==norm(b[k])); };
+  const target = ()=>{
+    if(S.resultsMode) return S.results;
+    const t = myPicks();
+    // When Ryan opens his card, start from RyAI's picks so he only changes what he disagrees with.
+    if(S.me==="ryan" && !S.legacy){ const b = botPicks(); Object.keys(b).forEach(k=>{ if(blank(t[k])) t[k] = b[k]; }); }
+    return t;
+  };
+  const canEdit = ()=> !S.legacy && (S.resultsMode ? !S.final : (!!S.me && !locked()));
   function players(){
     const list = [];
     Object.keys(S.picks).forEach(k=>{
@@ -665,8 +675,19 @@ async function showEvent(id, carry){
       const e = S.picks[k]; if(!e || !e.picks || !Object.keys(e.picks).length) return;
       list.push({ key:k, name:nameFor(k,e), picks:e.picks });
     });
-    if(S.ryan && S.ryan.picks) list.push({ key:"ryan", name:"Ryan", picks:S.ryan.picks, bot:true });
+    if(!S.legacy){
+      const merged = Object.assign({}, botPicks());
+      const own = ryanOwn(); Object.keys(own).forEach(k=>{ if(!blank(own[k])) merged[k] = own[k]; });
+      if(Object.keys(merged).length) list.push({ key:"ryan", name:"Ryan", picks:merged, bot: ryanChanged().length===0, mixed: ryanChanged().length>0 && !!S.ryan });
+    }
     return list;
+  }
+  // Tag on a question when Ryan is looking at a pick RyAI made for him
+  function botTag(k){
+    if(S.me!=="ryan" || S.resultsMode || !S.ryan) return "";
+    const b = botPicks()[k], t = myPicks()[k];
+    if(blank(b)) return "";
+    return norm(b)===norm(t) ? `<p class="stip">🤖 RyAI picked this — change it if you like</p>` : `<p class="stip">You changed this from RyAI's pick (${esc(b)})</p>`;
   }
 
   // ── shell ──
@@ -712,7 +733,7 @@ async function showEvent(id, carry){
     if(S.legacy){ el.innerHTML = `<span class="note" style="margin:0">Cards from the old sheet are shown as they were saved.</span>`; return; }
     el.classList.add("photos");
     const guests = Object.keys(S.picks).filter(k=>LEAGUE_KEYS.indexOf(k)===-1);
-    const people = LEAGUE.filter(p=>!p.bot).map(p=>({ key:p.key, name:p.name })).concat(guests.map(k=>({ key:k, name:nameFor(k,S.picks[k]) })));
+    const people = LEAGUE.map(p=>({ key:p.key, name:p.name })).concat(guests.map(k=>({ key:k, name:nameFor(k,S.picks[k]) })));
     const p = target(), done = answeredCount(ev, p), tot = totalQs(ev);
     el.innerHTML = `<div class="head"><span>${S.me ? "Picking as" : "Who's picking? Tap your face."}</span></div>
       <div class="pickers" role="radiogroup" aria-label="Who's picking">` +
@@ -754,9 +775,9 @@ async function showEvent(id, carry){
       if(showResults && !blank(actual) && !blank(my)) cls += norm(actual)===norm(my) ? " correct" : " wrong";
       const n = b.options.length;
       if(b.display==="ladder"){
-        html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}` + ladderHTML(b, chosen, actual, edit, showResults);
+        html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}${botTag(b.id)}` + ladderHTML(b, chosen, actual, edit, showResults);
       } else
-      html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}
+      html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}${botTag(b.id)}
         <div class="opts ${n===3?"n3":""}">` +
         b.options.map(o=>{
           const picked = !blank(chosen) && norm(chosen)===norm(o.n);
@@ -780,7 +801,8 @@ async function showEvent(id, carry){
       html += `<h2 class="section-head">Bonus questions</h2>`;
       ev.bonus.forEach(q=>{ html += bonusHTML(q, t, mine, edit, showResults, others); });
     }
-    if(edit && !S.resultsMode) html += `<div class="clear-row"><button class="linkbtn" id="clearBtn">Clear my card</button></div>`;
+    if(edit && !S.resultsMode && S.me==="ryan" && S.ryan) html += `<div class="clear-row"><button class="linkbtn" id="botBtn">Go back to RyAI's picks</button></div>`;
+    else if(edit && !S.resultsMode) html += `<div class="clear-row"><button class="linkbtn" id="clearBtn">Clear my card</button></div>`;
     el.innerHTML = html;
     wireCard(el);
   }
@@ -895,7 +917,7 @@ async function showEvent(id, carry){
       }
     }
     if(others.length) body += whoPicked(others, k);
-    return `<article class="${cls}"><h3>${esc(q.title)}</h3>${q.stip?`<p class="stip">${esc(q.stip)}</p>`:""}${body}</article>`;
+    return `<article class="${cls}"><h3>${esc(q.title)}</h3>${q.stip?`<p class="stip">${esc(q.stip)}</p>`:""}${botTag(k)}${body}</article>`;
   }
 
   function wireCard(el){
@@ -922,6 +944,11 @@ async function showEvent(id, carry){
       if(q.followUp && q.followUp.when.indexOf(t[k])===-1) t[q.followUp.key] = null;
       changed();
     }));
+    const bb = $("#botBtn", el);
+    if(bb) bb.addEventListener("click", ()=>{
+      if(!confirm("Throw away your own picks and use RyAI's card again?")) return;
+      const t = myPicks(); Object.keys(t).forEach(k=>delete t[k]); changed();
+    });
     const clr = $("#clearBtn", el);
     if(clr) clr.addEventListener("click", ()=>{
       if(!confirm("Clear every pick on your card?")) return;
@@ -950,7 +977,7 @@ async function showEvent(id, carry){
     table.forEach((r,i)=>{
       const isLeague = LEAGUE_KEYS.indexOf(r.key)!==-1;
       html += `<div class="row ${anyResults&&i===0&&r.correct>0?"top":""}"><span class="rank">${anyResults? i+1 : "·"}</span>
-        <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':""}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}</span></span>
+        <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':(r.mixed?'<span class="bot">🤖 + Ryan</span>':"")}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}</span></span>
         ${anyResults? `<span class="sc">${r.correct}<span class="note" style="font-size:14px"> / ${r.graded}</span></span>` : `<span class="meta">${r.answered} of ${totalQs(ev)}</span>`}</div>`;
     });
     if(anyResults && tb) html += `<p class="note">Level on points? “${esc(tb.title)}” breaks the tie — closest guess wins. Guests play for pride; the swap token only goes to a league member.</p>`;
@@ -1002,13 +1029,24 @@ async function showEvent(id, carry){
     }
     const r = S.ryan, notes = r.notes || {}, p = r.picks || {};
     const late = r.generatedAt && new Date(r.generatedAt).getTime() > S.start;
+    const own = ryanOwn(), changedKeys = ryanChanged();
+    const ownLine = k => changedKeys.indexOf(k)!==-1 ? `<div class="why" style="font-style:normal">Ryan changed it to <b>${esc(own[k])}</b></div>` : "";
+    // Questions RyAI hasn't answered, or answered with something no longer on the card
+    const owed = [];
+    ev.bouts.forEach(b=>{ const v = p[b.id]; if(blank(v) || (!b.allowOther && !b.options.some(o=>norm(o.n)===norm(v)))) owed.push(b.title); });
+    (ev.bonus||[]).forEach(q=>{
+      const k = bonusKey(q), v = p[k];
+      const bad = blank(v) || (q.type==="choice" && (q.options||[]).indexOf(v)===-1) || (q.type==="number" && (Number(v)<q.min || Number(v)>q.max));
+      if(bad) owed.push(q.title);
+    });
     let html = `<div class="reasons"><h2 class="section-head">Ryan's picks <span class="bot">🤖 RyAI</span></h2>
       <p class="note">${esc(r.persona || "Picked by RyAI as a casual WWE watcher who skims the headlines.")} Sealed ${esc(fmtDate(r.generatedAt,{weekday:"short",hour:"numeric",minute:"2-digit"}))}${late?" — after the bell, so it shouldn't count":""}.</p>`;
-    ev.bouts.forEach(b=>{ html += `<div class="reason"><div class="q">${esc(b.title)}</div><div class="a">${esc(p[b.id]||"—")}</div>${notes[b.id]?`<div class="why">“${esc(notes[b.id])}”</div>`:""}</div>`; });
+    if(owed.length && !locked()) html += `<p class="resultsmode-note">RyAI hasn't answered ${owed.length===1?"one question":owed.length+" questions"} on the current card (${esc(owed.join("; "))}). Ask Claude to run RyAI to fill ${owed.length===1?"it":"them"} in.</p>`;
+    ev.bouts.forEach(b=>{ html += `<div class="reason"><div class="q">${esc(b.title)}</div><div class="a">${esc(p[b.id]||"—")}</div>${notes[b.id]?`<div class="why">“${esc(notes[b.id])}”</div>`:""}${ownLine(b.id)}</div>`; });
     (ev.bonus||[]).forEach(q=>{
       const k = bonusKey(q); let a = blank(p[k]) ? "—" : p[k] + (q.unit && q.type==="number" ? " "+q.unit : "");
       if(q.followUp && !blank(p[q.followUp.key])) a += " — " + p[q.followUp.key];
-      html += `<div class="reason"><div class="q">${esc(q.title)}</div><div class="a">${esc(a)}</div>${notes[k]?`<div class="why">“${esc(notes[k])}”</div>`:""}</div>`;
+      html += `<div class="reason"><div class="q">${esc(q.title)}</div><div class="a">${esc(a)}</div>${notes[k]?`<div class="why">“${esc(notes[k])}”</div>`:""}${ownLine(k)}</div>`;
     });
     return html + `</div>`;
   }
@@ -1033,8 +1071,11 @@ async function showEvent(id, carry){
     if(!who || !db) return;
     if(locked()){ toast("Picks are locked — the bell has rung."); return; }
     const e = S.picks[who];
+    let out = clean(e.picks);
+    // Ryan's saved card holds only where he differs from RyAI, so RyAI can still fill in new questions.
+    if(who==="ryan"){ const b = botPicks(); Object.keys(out).forEach(k=>{ if(norm(out[k])===norm(b[k])) delete out[k]; }); }
     try{
-      await withinMs(db.ref(base+"/picks/"+who).set({ name:e.name || nameFor(who), picks:clean(e.picks), updatedAt:firebase.database.ServerValue.TIMESTAMP }), 10000);
+      await withinMs(db.ref(base+"/picks/"+who).set({ name:e.name || nameFor(who), picks:out, updatedAt:firebase.database.ServerValue.TIMESTAMP }), 10000);
     }catch(err){ toast("Your picks didn't save: " + err.message); }
   }
   async function saveResults(){

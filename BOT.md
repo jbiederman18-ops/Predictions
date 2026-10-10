@@ -26,9 +26,13 @@ Survivor Series"). If he names a show, pick that one. Otherwise:
 1. Gather every show from both sources above.
 2. For each show whose `start` is in the future and **within the next 48 hours**:
    - If `picks/<id>/ryan.json` does not exist → make picks.
-   - If it exists but a bout or bonus question on the card has no pick
-     (the card changed) → add picks for the new items only. Never change a pick
-     that is already there.
+   - If it exists, compare it with the current card. Pick again **only** for
+     items that changed under it: a new match or bonus question, an entrant who
+     is no longer on the card, an answer that's no longer one of the options, a
+     number outside the new min/max, or a question whose type changed. Keep every
+     other pick exactly as it is, and update `generatedAt`.
+   - Ryan can also make his own picks on the site. Those live in the database,
+     not in this file, and always win over RyAI's — don't try to match or undo them.
 3. Never write or change a pick file after the show's `start` time. Picks made
    after the bell don't count and the site flags them.
 
