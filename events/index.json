@@ -1,7 +1,7 @@
 {
   "_comment": "Every show the site knows about. Add a show by dropping events/<id>.json next to this file and listing it here. Newest first.",
   "events": [
-    { "id": "mitb-2026", "name": "Money in the Bank", "subtitle": "New Orleans", "promotion": "WWE", "date": "2026-10-10", "start": "2026-10-10T15:00:00-07:00", "theme": "briefcase" },
+    { "id": "mitb-2026", "name": "Money in the Bank", "subtitle": "New Orleans", "promotion": "WWE", "date": "2026-10-10", "start": "2026-10-10T15:00:00-07:00", "theme": "nola" },
     { "id": "all-in-london-2026", "name": "All In", "subtitle": "London", "promotion": "AEW", "date": "2026-08-29", "start": "2026-08-29T10:00:00-07:00", "theme": "matchday", "legacy": true }
   ]
 }

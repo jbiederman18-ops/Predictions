@@ -22,6 +22,12 @@
     --text:#efe7d2; --dim:#a8bfb3; --accent:#d9a93a; --accent-ink:#1d1504;
     --good:#7fd6a6; --bad:#e4705a;
   }
+  /* New Orleans: Mardi Gras purple, green and gold under a gaslit night */
+  body[data-theme="nola"]{
+    --bg:#1b0f2e; --surface:#26163d; --surface2:#31204c; --line:#4a3468;
+    --text:#f6eedb; --dim:#bfaed6; --accent:#f2c14e; --accent-ink:#241602;
+    --good:#4cc38a; --bad:#f07a63; --nola-green:#4cc38a; --nola-purple:#8b5cc4; --iron:#0d0618;
+  }
   body[data-theme="matchday"]{
     --bg:#070d1f; --surface:#0e1936; --surface2:#152242; --line:#243358;
     --text:#f3f1ea; --dim:#8f9cbd; --accent:#c8102e; --accent-ink:#fff;
@@ -61,6 +67,48 @@
     font-size:clamp(56px, 17vw, 132px); line-height:0.86; margin:0; text-wrap:balance;
   }
   body[data-theme="briefcase"] .show-name{ color:var(--accent); }
+  body[data-theme="nola"]{ background:
+      radial-gradient(120% 60% at 85% -10%, rgba(242,193,78,.16), transparent 60%),
+      radial-gradient(90% 50% at -10% 0%, rgba(139,92,196,.28), transparent 60%), no-repeat var(--bg); }
+  body[data-theme="nola"] .show-name{ color:var(--accent); text-shadow:0 0 28px rgba(242,193,78,.25); }
+  body[data-theme="nola"] .show-sub{ color:var(--nola-green); font-style:italic; }
+  body[data-theme="nola"] .bout{ border-left-color:var(--nola-purple); }
+  body[data-theme="nola"] .bout:nth-of-type(3n+2){ border-left-color:var(--nola-green); }
+  body[data-theme="nola"] .bout:nth-of-type(3n){ border-left-color:var(--accent); }
+  body[data-theme="nola"] .bout.correct{ border-left-color:var(--good); }
+  body[data-theme="nola"] .bout.wrong{ border-left-color:var(--bad); }
+  .balcony{ display:block; width:calc(100% + 32px); margin:22px -16px 0; height:58px; color:var(--iron); }
+  .balcony .rail{ fill:var(--accent); opacity:.85; }
+
+  /* ── Ladder match: drag the winner up the ladder ── */
+  .ladder-wrap{ margin:14px 0 0; display:grid; grid-template-columns:1fr; justify-items:center; user-select:none; -webkit-user-select:none; }
+  .ladder-top{ width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; padding:12px; border:2px dashed var(--line);
+               border-radius:12px; transition:border-color .15s, background .15s; min-height:118px; justify-content:center; }
+  .ladder-top.has{ border-style:solid; border-color:var(--accent); }
+  .ladder-top.over{ border-color:var(--accent); background:rgba(242,193,78,.10); }
+  .case{ width:58px; height:44px; }
+  .case .body{ fill:var(--accent); } .case .trim{ fill:var(--accent-ink); opacity:.55; } .case .hook{ stroke:var(--dim); }
+  .ladder-hint{ font-size:14px; color:var(--dim); text-align:center; }
+  .ladder{ position:relative; width:120px; height:150px; margin:-2px 0; }
+  .ladder::before, .ladder::after{ content:""; position:absolute; top:0; bottom:0; width:8px; border-radius:3px; background:var(--dim); opacity:.6; }
+  .ladder::before{ left:14px; transform:rotate(-2deg); } .ladder::after{ right:14px; transform:rotate(2deg); }
+  .ladder .rungs{ position:absolute; left:20px; right:20px; top:10px; bottom:0;
+                  background:repeating-linear-gradient(to bottom, transparent 0 22px, var(--dim) 22px 28px); opacity:.45; }
+  .ladder-floor{ width:100%; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 8px 4px;
+                 border-top:3px solid var(--line); border-radius:2px; min-height:60px; }
+  .lchip{ background:var(--surface2); border:1px solid var(--line); border-radius:999px; padding:10px 16px; font-weight:600; line-height:1.15;
+          touch-action:none; cursor:grab; }
+  .lchip:disabled{ cursor:default; touch-action:auto; }
+  .lchip.picked{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-size:18px; padding:12px 20px; }
+  .lchip.won{ box-shadow:0 0 0 2px var(--good); }
+  .lchip.lifting{ opacity:.3; }
+  .lghost{ position:fixed; z-index:70; pointer-events:none; transform:translate(-50%,-50%) rotate(-3deg) scale(1.06);
+           background:var(--accent); color:var(--accent-ink); border-radius:999px; padding:10px 16px; font-weight:700;
+           box-shadow:0 10px 30px rgba(0,0,0,.45); white-space:nowrap; }
+  @media (prefers-reduced-motion: no-preference){
+    .lchip.climbed{ animation:climb .45s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes climb{ from{ transform:translateY(180px); opacity:.2; } to{ transform:none; opacity:1; } }
+  }
   body[data-theme="matchday"] .show-name{ font-size:clamp(48px, 13vw, 96px); line-height:0.95; }
   .show-sub{ font-family:var(--display); font-weight:600; font-size:clamp(26px,7vw,40px); line-height:1.1; margin:6px 0 0; color:var(--text); }
   body[data-theme="matchday"] .show-sub{ font-style:italic; font-weight:700; }
@@ -229,6 +277,28 @@ const FIREBASE_CONFIG = {
   appId: "1:972702463847:web:03ba6393078c25fd95e1c2"
 };
 const PRED_ROOT = "leagues/_predictions/events";
+// Wrought-iron French Quarter balcony railing, used under the New Orleans hero.
+const NOLA_BALCONY = (()=>{
+  let bays = "";
+  for(let i=0;i<10;i++){
+    const x = i*40;
+    bays += `<path d="M${x+20} 12 C${x+8} 22 ${x+8} 34 ${x+20} 40 C${x+32} 34 ${x+32} 22 ${x+20} 12 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <circle cx="${x+20}" cy="27" r="3.2" fill="currentColor"/>
+      <path d="M${x+20} 40 L${x+20} 52 M${x+6} 52 C${x+6} 46 ${x+14} 44 ${x+20} 46 C${x+26} 44 ${x+34} 46 ${x+34} 52" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="${x-1.5}" y="6" width="3" height="52" fill="currentColor"/>`;
+  }
+  return `<svg class="balcony" viewBox="0 0 400 58" preserveAspectRatio="none" aria-hidden="true">
+    <rect class="rail" x="0" y="2" width="400" height="5" rx="2"/>${bays}
+    <rect x="398.5" y="6" width="3" height="52" fill="currentColor"/>
+    <rect x="0" y="54" width="400" height="4" fill="currentColor"/></svg>`;
+})();
+const BRIEFCASE_SVG = `<svg class="case" viewBox="0 0 58 44" aria-hidden="true">
+  <path class="hook" d="M29 0 V7" stroke-width="2"/>
+  <path d="M21 13 v-4 a3 3 0 0 1 3-3 h10 a3 3 0 0 1 3 3 v4" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--accent)"/>
+  <rect class="body" x="3" y="12" width="52" height="30" rx="5"/>
+  <rect class="trim" x="3" y="22" width="52" height="3"/>
+  <rect class="trim" x="25" y="19" width="8" height="9" rx="1.5"/></svg>`;
+
 const LEAGUE = [
   { key:"josh",  name:"Josh"  },
   { key:"maria", name:"Maria" },
@@ -236,7 +306,7 @@ const LEAGUE = [
   { key:"ryan",  name:"Ryan", bot:true },
 ];
 const LEAGUE_KEYS = LEAGUE.map(p=>p.key);
-const THEME_SWATCH = { briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
+const THEME_SWATCH = { nola:"#8b5cc4", briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
 
 // ── small helpers ──────────────────────────────────────────────────────────
 const $ = (s, r=document)=>r.querySelector(s);
@@ -488,6 +558,7 @@ async function showEvent(id){
       ${ev.subtitle? `<p class="show-sub">${esc(ev.subtitle)}</p>`:""}
       <p class="show-meta">${esc(fmtDate(ev.start,{weekday:"long",month:"long",day:"numeric"}))}${ev.legacy||ev.legacySheet?"":" · "+esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}${ev.venue? " · "+esc(ev.venue):""}</p>
       <div class="lockline" id="lockline"></div>
+      ${ev.theme==="nola" ? NOLA_BALCONY : ""}
     </header>
     <div class="whobar" id="whobar"></div>
     <div class="tabs" role="tablist">
@@ -546,7 +617,7 @@ async function showEvent(id){
   function renderCard(){
     const el = $("#panel-card"); if(!el) return;
     if(S.tab!=="card") return;
-    if(el.contains(document.activeElement) && document.activeElement.tagName==="INPUT") { S.deferred = true; return; }
+    if(S.dragging || (el.contains(document.activeElement) && document.activeElement.tagName==="INPUT")) { S.deferred = true; return; }
     const t = target(), mine = myPicks(), edit = canEdit(), showResults = !S.resultsMode;
     const others = locked() || S.legacy ? players() : [];
     let html = "";
@@ -561,6 +632,9 @@ async function showEvent(id){
       let cls = "bout";
       if(showResults && !blank(actual) && !blank(my)) cls += norm(actual)===norm(my) ? " correct" : " wrong";
       const n = b.options.length;
+      if(b.display==="ladder"){
+        html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}` + ladderHTML(b, chosen, actual, edit, showResults);
+      } else
       html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}
         <div class="opts ${n===3?"n3":""}">` +
         b.options.map(o=>{
@@ -588,6 +662,71 @@ async function showEvent(id){
     if(edit && !S.resultsMode) html += `<div class="clear-row"><button class="linkbtn" id="clearBtn">Clear my card</button></div>`;
     el.innerHTML = html;
     wireCard(el);
+  }
+
+  function ladderHTML(b, chosen, actual, edit, showResults){
+    const top = b.options.find(o=>!blank(chosen) && norm(o.n)===norm(chosen));
+    const chip = (o, isTop)=>{
+      const won = showResults && !blank(actual) && norm(actual)===norm(o.n);
+      const climbed = isTop && S.justClimbed===b.id;
+      return `<button class="lchip ${isTop?"picked":""} ${won?"won":""} ${climbed?"climbed":""}" data-lbout="${esc(b.id)}" data-name="${esc(o.n)}"
+        ${edit?"":"disabled"} aria-pressed="${isTop}" aria-label="${esc(o.n)}${isTop?" — your winner. Drag down or tap to clear":" — drag to the top or tap to pick"}">${esc(o.n)}</button>`;
+    };
+    const who = S.resultsMode ? "the winner" : "your winner";
+    return `<div class="ladder-wrap" data-ladder="${esc(b.id)}">
+      <div class="ladder-top ${top?"has":""}" data-drop="${esc(b.id)}">${BRIEFCASE_SVG}
+        ${top ? chip(top, true) : `<span class="ladder-hint">${edit? `Drag ${who} up here` : "No pick"}</span>`}</div>
+      <div class="ladder" aria-hidden="true"><div class="rungs"></div></div>
+      <div class="ladder-floor">${b.options.filter(o=>o!==top).map(o=>chip(o,false)).join("")}</div>
+    </div>`;
+  }
+
+  // Drag a ladder chip to the briefcase (or back down). A tap or Enter does the same.
+  function wireLadders(el){
+    let drag = null, suppressClick = false;
+    const setPick = (bid, name)=>{ const t = target(); const was = t[bid]; t[bid] = name; S.justClimbed = name && norm(was)!==norm(name) ? bid : null; changed(); S.justClimbed = null; };
+    el.querySelectorAll(".lchip:not([disabled])").forEach(chip=>{
+      const bid = chip.dataset.lbout, name = chip.dataset.name;
+      const isTop = chip.classList.contains("picked");
+      chip.addEventListener("click", ()=>{
+        if(suppressClick){ suppressClick = false; return; }
+        setPick(bid, isTop ? null : name);
+      });
+      chip.addEventListener("pointerdown", e=>{
+        if(e.button!==0) return;
+        S.dragging = true;
+        drag = { chip, bid, name, isTop, x:e.clientX, y:e.clientY, moving:false, ghost:null, zone: el.querySelector(`[data-drop="${CSS.escape(bid)}"]`) };
+        try{ chip.setPointerCapture(e.pointerId); }catch(_){}
+      });
+      chip.addEventListener("pointermove", e=>{
+        if(!drag || drag.chip!==chip) return;
+        if(!drag.moving){
+          if(Math.hypot(e.clientX-drag.x, e.clientY-drag.y) < 6) return;
+          drag.moving = true;
+          drag.ghost = document.createElement("div"); drag.ghost.className = "lghost"; drag.ghost.textContent = name;
+          document.body.appendChild(drag.ghost); chip.classList.add("lifting");
+        }
+        e.preventDefault();
+        drag.ghost.style.left = e.clientX+"px"; drag.ghost.style.top = e.clientY+"px";
+        const r = drag.zone.getBoundingClientRect();
+        drag.over = e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top-10 && e.clientY<=r.bottom;
+        drag.zone.classList.toggle("over", drag.over);
+      });
+      const end = (cancel)=>{
+        if(!drag || drag.chip!==chip) return;
+        const d = drag; drag = null;
+        S.dragging = false;
+        const flush = ()=>{ if(S.deferred){ S.deferred = false; renderAll(); } };
+        if(!d.moving){ setTimeout(flush, 0); return; }   // a plain tap: the click handler takes it
+        suppressClick = true; setTimeout(()=>{ suppressClick = false; }, 400);
+        d.ghost.remove(); chip.classList.remove("lifting"); d.zone.classList.remove("over");
+        if(!cancel && d.over && !d.isTop) setPick(d.bid, d.name);
+        else if(!cancel && !d.over && d.isTop) setPick(d.bid, null);
+        flush();
+      };
+      chip.addEventListener("pointerup", ()=>end(false));
+      chip.addEventListener("pointercancel", ()=>end(true));
+    });
   }
 
   function whoPicked(list, key){
@@ -639,6 +778,7 @@ async function showEvent(id){
   }
 
   function wireCard(el){
+    wireLadders(el);
     const tog = $("#resToggle", el);
     if(tog) tog.addEventListener("click", ()=>{ flushSaves(); S.resultsMode = !S.resultsMode; renderAll(); });
     el.querySelectorAll(".opt").forEach(btn=>btn.addEventListener("click", ()=>{
