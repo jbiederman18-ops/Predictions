@@ -1,0 +1,30 @@
+{
+  "id": "all-in-london-2026",
+  "name": "All In",
+  "subtitle": "London",
+  "promotion": "AEW",
+  "date": "2026-08-29",
+  "start": "2026-08-29T10:00:00-07:00",
+  "venue": "Wembley Stadium, London",
+  "theme": "matchday",
+  "legacySheet": "https://script.google.com/macros/s/AKfycbw5UKiNVytLMNWZxhfIfSc2wL9syM7bFsWGORSpNHJT758rtIoIa3IWOM0aY78A5TA/exec",
+  "legacyPage": "legacy/all-in-london.html",
+  "bouts": [
+    { "id":"world", "title":"AEW World Championship", "options":[{"n":"Kenny Omega","c":true},{"n":"Will Ospreay"}] },
+    { "id":"womens", "title":"AEW Women's World Championship", "options":[{"n":"Willow Nightingale","c":true},{"n":"Mercedes Moné"}] },
+    { "id":"intl", "title":"AEW International Championship", "stip":"Three-way", "options":[{"n":"Konosuke Takeshita"},{"n":"Kyle Fletcher","c":true},{"n":"Kazuchika Okada"}] },
+    { "id":"tnt", "title":"TNT Championship", "stip":"Falls Count Anywhere", "options":[{"n":"Kevin Knight","c":true},{"n":"Darby Allin"}] },
+    { "id":"tag", "title":"AEW World Tag Team Championship", "options":[{"n":"Cage & Cope","c":true},{"n":"Young Bucks"}] },
+    { "id":"womenstag", "title":"AEW Women's World Tag Team Championship", "options":[{"n":"Divine Dominion","c":true},{"n":"The Brawling Birds"}] },
+    { "id":"continental", "title":"Continental Cup Final", "options":[{"n":"Jon Moxley"},{"n":"Nigel McGuinness"}] },
+    { "id":"gauntlet", "title":"Men's Casino Gauntlet Match", "stip":"Winner takes a title shot", "options":[{"n":"Andrade"},{"n":"MJF"}], "allowOther":true }
+  ],
+  "bonus": [
+    { "id":"entrance", "type":"text", "title":"Who gets the biggest special entrance?", "stip":"Pyro, live band, the lot", "placeholder":"Name your pick" },
+    { "id":"gauntlet_count", "type":"number", "title":"How many enter the Casino Gauntlet?", "stip":"Closest guess takes the point", "min":2, "max":40, "start":15, "unit":"entrants", "tiebreak":true },
+    { "id":"turn", "key":"turn_type", "type":"choice", "title":"Heel or face turn on the night?", "stip":"Call the direction, then name the culprit",
+      "options":["Heel turn","Face turn","No turn"], "followUp": { "when":["Heel turn","Face turn"], "key":"turn_who", "label":"Who turns?" } }
+  ],
+  "roster": ["Kenny Omega","Will Ospreay","Willow Nightingale","Mercedes Moné","Konosuke Takeshita","Kyle Fletcher","Kazuchika Okada","Kevin Knight",
+    "Darby Allin","Christian Cage","Cope","Matt Jackson","Nick Jackson","Jon Moxley","Nigel McGuinness","Andrade","MJF"]
+}

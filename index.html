@@ -1,889 +1,933 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>All In London — Prediction Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Prediction Sheet</title>
+<meta name="theme-color" content="#16181d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#070d1f;
-    --surface:#0e1936;
-    --surface2:#152242;
-    --line:#243358;
-    --text:#f3f1ea;
-    --text-dim:#8f9cbd;
-    --cream:#f0e6d2;
-    --crimson:#c8102e;
-    --crimson-dim:#3a0e1a;
-    --navy:#0a1633;
-    --green:#3f9e6b;
-    --gold:#c9a227;
-    --gold-dim:#332a10;
+  /* ── Themes ─────────────────────────────────────────────────────────────
+     Each show names a theme in its event file. The home page uses "ringside". */
+  :root, body[data-theme="ringside"]{
+    --bg:#16181d; --surface:#1e2128; --surface2:#262a33; --line:#343946;
+    --text:#ecebe6; --dim:#9a9ca6; --accent:#e9c46a; --accent-ink:#1a1608;
+    --good:#5fbf8f; --bad:#e0644f; --display:'Big Shoulders Display',sans-serif;
+    --display-weight:900; --display-track:0.01em; --display-case:none;
   }
-  *{box-sizing:border-box;}
+  body[data-theme="briefcase"]{
+    --bg:#0c2a22; --surface:#12362c; --surface2:#184236; --line:#2a5a4b;
+    --text:#efe7d2; --dim:#a8bfb3; --accent:#d9a93a; --accent-ink:#1d1504;
+    --good:#7fd6a6; --bad:#e4705a;
+  }
+  body[data-theme="matchday"]{
+    --bg:#070d1f; --surface:#0e1936; --surface2:#152242; --line:#243358;
+    --text:#f3f1ea; --dim:#8f9cbd; --accent:#c8102e; --accent-ink:#fff;
+    --good:#3f9e6b; --bad:#c8102e; --display:'Playfair Display',serif;
+    --display-weight:900; --display-track:0;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
   body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Inter',sans-serif;
-    -webkit-font-smoothing:antialiased;
+    margin:0; background:var(--bg); color:var(--text);
+    font:400 16px/1.5 'Public Sans',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:calc(48px + env(safe-area-inset-bottom));
   }
-  .serif{ font-family:'Playfair Display',Georgia,serif; }
+  button, input, select{ font:inherit; color:inherit; }
+  button{ cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  a{ color:var(--accent); }
+  .wrap{ max-width:720px; margin:0 auto; padding:0 16px; }
+  .hidden{ display:none !important; }
 
-  /* ---- Hero with Union Jack sunburst ---- */
-  .hero{
-    position:relative;
-    overflow:hidden;
-    padding:2.5rem 1.5rem 1.75rem;
-    text-align:center;
-    background:var(--navy);
-  }
-  .hero::before{
-    content:"";
-    position:absolute; inset:-40%;
-    background:repeating-conic-gradient(from 0deg at 50% 50%,
-      rgba(255,255,255,0.045) 0deg 11deg, transparent 11deg 22deg);
-    pointer-events:none;
-  }
-  .hero::after{
-    content:"";
-    position:absolute; inset:0;
-    background:
-      linear-gradient(90deg, transparent 45%, rgba(200,16,46,0.22) 45%, rgba(200,16,46,0.22) 55%, transparent 55%),
-      linear-gradient(0deg,  transparent 45%, rgba(200,16,46,0.14) 45%, rgba(200,16,46,0.14) 55%, transparent 55%);
-    pointer-events:none;
-  }
-  .hero > *{ position:relative; z-index:1; }
-  .kicker{
-    font-size:0.68rem;
-    letter-spacing:0.34em;
-    text-transform:uppercase;
-    color:var(--cream);
-    opacity:0.7;
-    margin-bottom:0.6rem;
-  }
-  .hero h1{
-    font-family:'Playfair Display',Georgia,serif;
-    font-weight:900;
-    font-size:clamp(2.4rem, 9vw, 4.2rem);
-    margin:0;
-    line-height:0.92;
-    color:var(--cream);
-    text-shadow:0 2px 0 rgba(0,0,0,0.35);
-  }
-  .hero h1 em{
-    font-style:italic;
-    font-weight:700;
-    display:block;
-    font-size:0.42em;
-    letter-spacing:0.06em;
-    color:#fff;
-    opacity:0.85;
-    margin-top:0.25rem;
-  }
-  .venue{
-    color:var(--cream);
-    opacity:0.75;
-    font-size:0.8rem;
-    margin-top:0.7rem;
-    letter-spacing:0.09em;
-    text-transform:uppercase;
-  }
-  .times{
-    font-size:0.72rem;
-    color:var(--cream);
-    opacity:0.55;
-    margin-top:0.25rem;
-    letter-spacing:0.06em;
-  }
-  .flagbar{ display:flex; height:5px; }
-  .flagbar i{ flex:1; display:block; }
-  .flagbar i:nth-child(1){ background:var(--navy); }
-  .flagbar i:nth-child(2){ background:var(--cream); }
-  .flagbar i:nth-child(3){ background:var(--crimson); }
-  .flagbar i:nth-child(4){ background:var(--cream); }
-  .flagbar i:nth-child(5){ background:var(--navy); }
+  /* ── Top bar ── */
+  .topbar{ display:flex; align-items:center; gap:12px; padding:14px 0 0; font-size:14px; color:var(--dim); }
+  .topbar a{ color:var(--dim); text-decoration:none; }
+  .topbar a:hover{ color:var(--text); }
+  .topbar .grow{ flex:1; }
+  .live{ display:inline-flex; align-items:center; gap:6px; font-size:13px; }
+  .live::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--dim); }
+  .live.ok::before{ background:var(--good); }
+  .live.err::before{ background:var(--bad); }
 
-  .progress-wrap{ max-width:440px; margin:1.3rem auto 0; display:flex; align-items:center; gap:0.75rem; }
-  .progress-track{ flex:1; height:5px; background:rgba(255,255,255,0.14); border-radius:3px; overflow:hidden; }
-  .progress-fill{ height:100%; background:var(--cream); width:0%; transition:width 0.25s ease; }
-  .progress-label{ font-size:0.74rem; color:var(--cream); opacity:0.75; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  /* ── Hero ── */
+  .hero{ padding:28px 0 20px; }
+  .promo{ font-size:14px; color:var(--dim); margin:0 0 6px; }
+  .show-name{
+    font-family:var(--display); font-weight:var(--display-weight); letter-spacing:var(--display-track);
+    font-size:clamp(56px, 17vw, 132px); line-height:0.86; margin:0; text-wrap:balance;
+  }
+  body[data-theme="briefcase"] .show-name{ color:var(--accent); }
+  body[data-theme="matchday"] .show-name{ font-size:clamp(48px, 13vw, 96px); line-height:0.95; }
+  .show-sub{ font-family:var(--display); font-weight:600; font-size:clamp(26px,7vw,40px); line-height:1.1; margin:6px 0 0; color:var(--text); }
+  body[data-theme="matchday"] .show-sub{ font-style:italic; font-weight:700; }
+  .show-meta{ margin:14px 0 0; color:var(--dim); font-size:15px; }
+  .lockline{ margin:16px 0 0; display:flex; flex-wrap:wrap; gap:8px 16px; align-items:baseline; }
+  .lockline .count{ font-family:var(--display); font-weight:800; font-size:30px; line-height:1; color:var(--text); font-variant-numeric:tabular-nums; }
+  .lockline .why{ color:var(--dim); font-size:14px; }
 
-  .sync-bar{ max-width:460px; margin:1rem auto 0; display:flex; align-items:center; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
-  .sync-bar input{
-    background:rgba(255,255,255,0.08);
-    border:1px solid rgba(240,230,210,0.3);
-    color:var(--cream);
-    padding:0.5rem 0.7rem;
-    border-radius:6px;
-    font-size:0.85rem;
-    width:170px;
-  }
-  .sync-bar input::placeholder{ color:rgba(240,230,210,0.5); }
-  .sync-status{ font-size:0.72rem; color:var(--cream); opacity:0.6; min-width:80px; }
-  .sync-status.ok{ opacity:1; color:var(--cream); }
-  .sync-status.err{ opacity:1; color:#ff8f9c; }
-  .sync-banner{
-    max-width:540px; margin:0.8rem auto 0;
-    font-size:0.74rem; color:var(--cream); opacity:0.7;
-    text-align:center; padding:0.5rem 0.75rem;
-    border:1px solid rgba(240,230,210,0.25); border-radius:6px;
-  }
+  /* ── Who's picking ── */
+  .whobar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:10px; }
+  .whobar label{ color:var(--dim); font-size:14px; }
+  .whobar select{ background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-weight:600; }
+  .progress{ flex:1; min-width:140px; display:flex; align-items:center; gap:10px; font-size:13px; color:var(--dim); }
+  .progress .track{ display:block; flex:1; height:6px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+  .progress .fill{ display:block; height:100%; width:0; background:var(--accent); transition:width .25s; }
 
-  .tabs{ display:flex; justify-content:center; gap:0.5rem; padding:1.25rem 1rem 0; flex-wrap:wrap; }
-  .tab-btn{
-    background:var(--surface);
-    border:1px solid var(--line);
-    color:var(--text-dim);
-    padding:0.55rem 1.15rem;
-    border-radius:4px;
-    font-weight:600;
-    font-size:0.74rem;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    cursor:pointer;
-  }
-  .tab-btn.active{ background:var(--cream); border-color:var(--cream); color:var(--navy); }
+  /* ── Tabs ── */
+  .tabs{ display:flex; gap:4px; margin:22px 0 14px; border-bottom:1px solid var(--line); }
+  .tab{ background:none; border:0; border-bottom:3px solid transparent; padding:10px 12px; color:var(--dim); font-weight:600; margin-bottom:-1px; }
+  .tab[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--accent); }
 
-  .panel{ display:none; max-width:760px; margin:0 auto; padding:1.5rem 1rem 3rem; }
-  .panel.active{ display:block; }
+  /* ── Results / finalise strip ── */
+  .official{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:0 0 14px; font-size:14px; color:var(--dim); }
+  .toggle{ background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-weight:600; font-size:14px; }
+  .toggle[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .resultsmode-note{ background:var(--surface2); border:1px dashed var(--accent); border-radius:10px; padding:10px 14px; margin:0 0 14px; font-size:14px; }
 
-  .official-row{
-    display:flex; align-items:center; justify-content:center; gap:0.6rem;
-    margin-bottom:1.6rem; font-size:0.78rem; color:var(--text-dim);
-  }
-  .toggle-btn{
-    background:transparent; border:1px solid var(--line); color:var(--text-dim);
-    padding:0.45rem 0.95rem; border-radius:4px;
-    font-size:0.72rem; font-weight:600; cursor:pointer;
-    letter-spacing:0.1em; text-transform:uppercase;
-  }
-  .toggle-btn.on{ background:var(--crimson-dim); border-color:var(--crimson); color:#ff8f9c; }
-
-  .bout{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-left:3px solid var(--line);
-    border-radius:6px;
-    padding:1rem 1.1rem;
-    margin-bottom:0.85rem;
-  }
-  .bout.correct{ border-left-color:var(--green); }
-  .bout.wrong{ border-left-color:var(--crimson); }
-  .bout-num{
-    font-size:0.62rem; letter-spacing:0.22em; text-transform:uppercase;
-    color:var(--text-dim); opacity:0.7; margin-bottom:0.3rem;
-  }
-  .bout-title{
-    font-family:'Playfair Display',Georgia,serif;
-    font-weight:700; font-size:1.08rem; line-height:1.25;
-    color:var(--cream);
-  }
-  .bout-stip{
-    font-family:'Playfair Display',Georgia,serif;
-    font-style:italic; font-size:0.82rem;
-    color:var(--text-dim); margin-top:0.15rem;
-  }
-  .options{ display:grid; gap:0.45rem; margin-top:0.85rem; }
-  .options.two{ grid-template-columns:1fr auto 1fr; align-items:center; }
-  .options.three{ grid-template-columns:1fr 1fr 1fr; }
-  .options.many{ grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); }
+  /* ── Bout cards ── */
+  .bout{ background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:10px; padding:16px; margin:0 0 12px; }
+  .bout.correct{ border-left-color:var(--good); }
+  .bout.wrong{ border-left-color:var(--bad); }
+  .bout h3{ font-family:var(--display); font-weight:800; font-size:26px; line-height:1.05; margin:0; }
+  body[data-theme="matchday"] .bout h3{ font-size:22px; font-weight:700; }
+  .stip{ color:var(--dim); font-size:14px; margin:4px 0 0; }
+  .opts{ display:grid; gap:8px; margin:14px 0 0; grid-template-columns:repeat(2, minmax(0,1fr)); }
+  .opts.n3{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+  @media (max-width:460px){ .opts.n3{ grid-template-columns:1fr; } }
   .opt{
-    background:var(--surface2);
-    border:1px solid var(--line);
-    color:var(--text);
-    padding:0.7rem 0.5rem;
-    border-radius:4px;
-    font-size:0.85rem; font-weight:600;
-    cursor:pointer; text-align:center; line-height:1.25;
-    transition:background 0.12s ease, color 0.12s ease;
+    position:relative; text-align:left; background:var(--surface2); border:1px solid var(--line); border-radius:8px;
+    padding:12px; font-weight:600; line-height:1.2; min-height:48px;
   }
-  .opt:hover{ border-color:var(--cream); }
-  .opt.picked{ background:var(--cream); border-color:var(--cream); color:var(--navy); }
-  .opt.loser{ opacity:0.3; }
-  .opt .champ{
-    display:block; font-size:0.6rem; letter-spacing:0.14em;
-    color:var(--text-dim); margin-top:0.2rem; text-transform:uppercase;
-  }
-  .opt.picked .champ{ color:var(--navy); opacity:0.65; }
-  .vs{
-    font-family:'Playfair Display',Georgia,serif; font-style:italic;
-    color:var(--text-dim); font-size:0.9rem; text-align:center; padding:0 0.2rem;
-  }
-  .result-tag{ font-size:0.74rem; margin-top:0.7rem; color:var(--text-dim); }
-  .result-tag .win{ color:var(--green); font-weight:600; }
-  .result-tag .miss{ color:#ff8f9c; font-weight:600; }
+  .opt:disabled{ cursor:default; }
+  .opt .holder{ display:block; font-weight:500; font-size:12px; color:var(--dim); margin-top:3px; }
+  .opt.picked{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .opt.picked .holder{ color:inherit; opacity:.75; }
+  .opt.faded{ opacity:.5; }
+  .opt.won{ box-shadow:inset 0 0 0 2px var(--good); }
+  .other{ margin:10px 0 0; display:flex; gap:8px; align-items:center; font-size:14px; color:var(--dim); }
+  .field{ width:100%; background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:11px 12px; }
+  .field:disabled{ opacity:.7; }
+  .outcome{ margin:12px 0 0; font-size:14px; color:var(--dim); }
+  .outcome strong{ color:var(--text); }
+  .outcome .hit{ color:var(--good); font-weight:600; }
+  .outcome .miss{ color:var(--bad); font-weight:600; }
+  .whopicked{ margin:12px 0 0; display:flex; flex-wrap:wrap; gap:6px; font-size:13px; }
+  .whopicked span{ background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:3px 10px; color:var(--dim); }
+  .whopicked span b{ color:var(--text); font-weight:600; }
+  .section-head{ font-family:var(--display); font-weight:800; font-size:30px; margin:28px 0 12px; }
+  .stepper{ display:flex; align-items:center; gap:10px; margin:14px 0 0; }
+  .stepbtn{ width:44px; height:44px; border-radius:8px; background:var(--surface2); border:1px solid var(--line); font-size:20px; }
+  .stepval{ font-family:var(--display); font-weight:800; font-size:34px; min-width:56px; text-align:center; font-variant-numeric:tabular-nums; }
+  .stepval.unset{ color:var(--dim); }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
+  .chip{ background:var(--surface2); border:1px solid var(--line); border-radius:999px; padding:9px 16px; font-weight:600; }
+  .chip.picked{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .followlabel{ margin:12px 0 6px; font-size:14px; color:var(--dim); }
+  .clear-row{ text-align:center; margin:22px 0 0; }
+  .linkbtn{ background:none; border:0; color:var(--dim); text-decoration:underline; font-size:14px; }
 
-  .other-wrap{ margin-top:0.5rem; display:flex; gap:0.6rem; align-items:center; }
-  .other-wrap input{
-    flex:1; background:var(--surface2); border:1px solid var(--line);
-    color:var(--text); padding:0.55rem 0.7rem; border-radius:4px; font-size:0.83rem;
-  }
-  .other-wrap label{
-    font-family:'Playfair Display',Georgia,serif; font-style:italic;
-    font-size:0.8rem; color:var(--text-dim); white-space:nowrap;
-  }
+  /* ── Table tab ── */
+  .winner{ background:var(--accent); color:var(--accent-ink); border-radius:12px; padding:16px 18px; margin:0 0 16px; }
+  .winner h3{ font-family:var(--display); font-weight:900; font-size:32px; line-height:1; margin:0 0 6px; }
+  .winner p{ margin:0; font-size:15px; }
+  .winner .linkbtn{ color:inherit; opacity:.8; padding:0; margin-top:8px; }
+  .row{ display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:10px; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:10px; margin:0 0 8px; }
+  .row.top{ border-color:var(--accent); }
+  .row .rank{ font-family:var(--display); font-weight:800; font-size:22px; color:var(--dim); text-align:center; }
+  .row .nm{ font-weight:600; }
+  .row .nm small{ font-weight:500; color:var(--dim); margin-left:6px; }
+  .row .sc{ font-family:var(--display); font-weight:800; font-size:24px; font-variant-numeric:tabular-nums; }
+  .row .meta{ color:var(--dim); font-size:14px; }
+  .bot{ display:inline-block; font-size:12px; font-weight:600; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--dim); margin-left:6px; vertical-align:2px; }
+  .note{ color:var(--dim); font-size:14px; margin:10px 0; }
+  .empty{ background:var(--surface); border:1px dashed var(--line); border-radius:10px; padding:18px; color:var(--dim); text-align:center; }
+  .compare{ margin:24px 0 0; }
+  .compare-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .compare-head select{ background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-weight:600; }
+  .diff{ display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:center; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; }
+  .diff .mine{ font-weight:600; }
+  .diff .lbl{ color:var(--dim); font-size:12px; text-align:center; max-width:150px; }
+  .diff .theirs{ font-weight:600; text-align:right; }
+  .reasons{ margin:24px 0 0; }
+  .reason{ padding:12px 0; border-bottom:1px solid var(--line); }
+  .reason .q{ color:var(--dim); font-size:13px; }
+  .reason .a{ font-weight:600; }
+  .reason .why{ font-style:italic; color:var(--text); opacity:.85; font-size:15px; margin-top:2px; }
 
-  h2.sec{
-    font-family:'Playfair Display',Georgia,serif;
-    font-weight:700; font-size:1.3rem; margin:0 0 0.9rem;
-    color:var(--cream);
-  }
+  /* ── Home ── */
+  .home-title{ font-family:var(--display); font-weight:900; font-size:clamp(56px,16vw,112px); line-height:.86; margin:28px 0 8px; }
+  .home-sub{ color:var(--dim); margin:0 0 24px; max-width:52ch; }
+  .ev{ display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; text-decoration:none; color:var(--text);
+       padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--surface); margin:0 0 10px; }
+  .ev:hover{ border-color:var(--dim); }
+  .ev .swatch{ width:10px; align-self:stretch; border-radius:5px; }
+  .ev .t{ font-family:var(--display); font-weight:800; font-size:28px; line-height:1; }
+  .ev .m{ color:var(--dim); font-size:14px; margin-top:4px; }
+  .ev .s{ font-size:14px; color:var(--dim); text-align:right; }
+  .ev .s b{ color:var(--text); display:block; }
+  .ev.upcoming{ border-color:var(--accent); }
+  .season{ margin:28px 0 0; }
 
-  /* ---- Bonus questions ---- */
-  .bonus-head{
-    display:flex; align-items:center; gap:0.9rem;
-    margin:2.25rem 0 1rem;
+  /* ── Dialog ── */
+  .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px; z-index:50; }
+  .dialog{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; width:min(440px,100%); }
+  .dialog h3{ font-family:var(--display); font-weight:800; font-size:28px; margin:0 0 8px; line-height:1.05; }
+  .dialog p{ margin:0 0 12px; color:var(--dim); }
+  .dialog .btns{ display:flex; gap:8px; justify-content:flex-end; margin-top:16px; flex-wrap:wrap; }
+  .btn{ border-radius:8px; padding:10px 16px; font-weight:700; border:1px solid var(--line); background:var(--surface2); }
+  .btn.primary{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .btn:disabled{ opacity:.5; cursor:default; }
+  .players{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+  .toast{ position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translateX(-50%); background:var(--text); color:var(--bg);
+          padding:10px 16px; border-radius:999px; font-weight:600; font-size:14px; z-index:60; max-width:calc(100vw - 32px); }
+  @media (prefers-reduced-motion: no-preference){
+    .show-name{ animation:rise .5s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
   }
-  .bonus-head .rule{ flex:1; height:1px; background:var(--line); }
-  .bonus-head h2{
-    font-family:'Playfair Display',Georgia,serif;
-    font-weight:700; font-style:italic; font-size:1.15rem;
-    margin:0; color:var(--cream); white-space:nowrap;
-  }
-  .bout.bonus{ border-left-color:var(--gold); }
-  .bout.bonus.correct{ border-left-color:var(--green); }
-  .bout.bonus.wrong{ border-left-color:var(--crimson); }
-  .chips{ display:flex; gap:0.45rem; flex-wrap:wrap; margin-top:0.85rem; }
-  .chip{
-    background:var(--surface2); border:1px solid var(--line); color:var(--text);
-    padding:0.55rem 1rem; border-radius:4px;
-    font-size:0.83rem; font-weight:600; cursor:pointer;
-  }
-  .chip:hover{ border-color:var(--cream); }
-  .chip.picked{ background:var(--cream); border-color:var(--cream); color:var(--navy); }
-  .answer-input{
-    width:100%; margin-top:0.85rem;
-    background:var(--surface2); border:1px solid var(--line); color:var(--text);
-    padding:0.65rem 0.75rem; border-radius:4px; font-size:0.88rem;
-    font-family:'Inter',sans-serif;
-  }
-  .answer-input:focus{ outline:none; border-color:var(--cream); }
-  .stepper{ display:flex; align-items:center; gap:0.75rem; margin-top:0.9rem; }
-  .step-btn{
-    background:var(--surface2); border:1px solid var(--line); color:var(--cream);
-    width:2.4rem; height:2.4rem; border-radius:4px;
-    font-size:1.2rem; line-height:1; cursor:pointer;
-  }
-  .step-btn:hover{ border-color:var(--cream); }
-  .step-val{
-    font-family:'Playfair Display',Georgia,serif; font-weight:900;
-    font-size:2rem; min-width:3.2rem; text-align:center;
-    color:var(--cream); font-variant-numeric:tabular-nums;
-  }
-  .step-val.unset{ color:var(--text-dim); opacity:0.5; }
-  .step-hint{ font-size:0.74rem; color:var(--text-dim); }
-  .followup-label{
-    font-family:'Playfair Display',Georgia,serif; font-style:italic;
-    font-size:0.85rem; color:var(--text-dim); margin-top:0.9rem;
-  }
-  .lb-row{
-    display:flex; align-items:center; justify-content:space-between;
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:5px; padding:0.7rem 0.9rem; margin-bottom:0.45rem; font-size:0.88rem;
-  }
-  .lb-row.leader{ border-color:var(--gold); background:var(--gold-dim); }
-  .lb-rank{ color:var(--text-dim); width:1.7rem; display:inline-block; font-variant-numeric:tabular-nums; }
-  .lb-score{ font-variant-numeric:tabular-nums; font-weight:700; }
-  .lb-row .p-meta{ color:var(--text-dim); font-size:0.75rem; font-weight:400; }
-  .leaderboard{ margin-bottom:2rem; }
-
-  .compare-row{ display:flex; gap:0.75rem; align-items:center; justify-content:center; margin:1.25rem 0; flex-wrap:wrap; }
-  select.compare-select{
-    background:var(--surface); border:1px solid var(--line); color:var(--text);
-    padding:0.5rem 0.7rem; border-radius:4px; font-size:0.85rem;
-  }
-  .diff-row{
-    display:grid; grid-template-columns:1fr auto 1fr; gap:0.5rem; align-items:center;
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:5px; padding:0.55rem 0.7rem; margin-bottom:0.4rem; font-size:0.82rem;
-  }
-  .diff-row .mine{ text-align:right; color:var(--cream); font-weight:600; }
-  .diff-row .theirs{ text-align:left; color:#8fb8e8; font-weight:600; }
-  .diff-row .match-label{
-    font-family:'Playfair Display',Georgia,serif; font-style:italic;
-    color:var(--text-dim); font-size:0.72rem; text-align:center; max-width:130px;
-  }
-  .empty-note{
-    font-family:'Playfair Display',Georgia,serif; font-style:italic;
-    color:var(--text-dim); font-size:0.9rem; text-align:center; padding:1.25rem 0;
-  }
-
-  .reset-row{ text-align:center; margin-top:1.75rem; }
-  .reset-btn{
-    background:transparent; border:1px solid var(--line); color:var(--text-dim);
-    padding:0.5rem 1.1rem; border-radius:4px;
-    font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
-  }
-  .reset-btn:hover{ border-color:var(--crimson); color:#ff8f9c; }
 </style>
 </head>
-<body>
-
-<div class="hero">
-  <div class="kicker">All Elite Wrestling presents</div>
-  <h1 class="serif">ALL IN<em>London</em></h1>
-  <div class="venue">Wembley Stadium · Sunday 30 August</div>
-  <div class="times">6pm BST · 1pm ET · 10am PT</div>
-  <div class="progress-wrap">
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel">0 of 8 called</div>
+<body data-theme="ringside">
+<div class="wrap">
+  <div class="topbar">
+    <a href="#/" id="homeLink">All shows</a>
+    <span class="grow"></span>
+    <span class="live" id="live">Connecting</span>
   </div>
-  <div class="sync-bar">
-    <input type="text" id="nameInput" placeholder="Your name" />
-    <span class="sync-status" id="syncStatus">not connected</span>
-  </div>
-  <div class="sync-banner" id="setupBanner" style="display:none;">
-    Backend not connected — set SHEET_API_URL in the script to sync picks. Everything still works locally until then.
-  </div>
+  <main id="app"></main>
 </div>
-<div class="flagbar"><i></i><i></i><i></i><i></i><i></i></div>
-
-<div class="tabs">
-  <button class="tab-btn active" data-tab="card">Tonight's Bill</button>
-  <button class="tab-btn" data-tab="group">League Table</button>
-</div>
-
-<div class="panel active" id="panel-card">
-  <div class="official-row">
-    <span>Keeping score as it happens?</span>
-    <button class="toggle-btn" id="resultsToggle">Full-time results: off</button>
-  </div>
-  <div id="cardContainer"></div>
-  <div class="bonus-head"><span class="rule"></span><h2>Bonus Questions</h2><span class="rule"></span></div>
-  <div id="bonusContainer"></div>
-  <div class="reset-row">
-    <button class="reset-btn" id="resetBtn">Clear my card</button>
-  </div>
-</div>
-
-<div class="panel" id="panel-group">
-  <div class="leaderboard" id="leaderboard"></div>
-  <div class="compare-row" id="compareRow" style="display:none;">
-    <span style="font-size:0.85rem;color:var(--text-dim);">Compare cards with</span>
-    <select class="compare-select" id="compareSelect"></select>
-  </div>
-  <div id="compareResults"></div>
-</div>
-
+<div id="dialogs"></div>
 <datalist id="rosterList"></datalist>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const BOUTS = [
-  { id:"world", title:"AEW World Championship",
-    options:[{n:"Kenny Omega", c:true},{n:"Will Ospreay"}] },
+// ════════════════════════════════════════════════════════════════════════════
+// Prediction sheet — one page for every show.
+//
+// Shows are data: events/index.json lists them, events/<id>.json holds a card.
+// Picks, results and the final call live in the AEW Fantasy Firebase project
+// under leagues/_predictions/events/<id>/ — inside the existing `leagues/$league`
+// rule, so no rule change was needed. Finalising a show grants the top league
+// predictor a swap token in the live fantasy season (leagues/<current>/data/aew_swaps).
+//
+// Ryan's seat is filled by RyAI: picks/<id>/ryan.json, written by a scheduled
+// Claude task in the persona of an occasional WWE watcher (see BOT.md).
+// ════════════════════════════════════════════════════════════════════════════
 
-  { id:"womens", title:"AEW Women's World Championship",
-    options:[{n:"Willow Nightingale", c:true},{n:"Mercedes Moné"}] },
-
-  { id:"intl", title:"AEW International Championship", stip:"Three-way",
-    options:[{n:"Konosuke Takeshita"},{n:"Kyle Fletcher", c:true},{n:"Kazuchika Okada"}] },
-
-  { id:"tnt", title:"TNT Championship", stip:"Falls Count Anywhere",
-    options:[{n:"Kevin Knight", c:true},{n:"Darby Allin"}] },
-
-  { id:"tag", title:"AEW World Tag Team Championship",
-    options:[{n:"Cage & Cope", c:true},{n:"Young Bucks"}] },
-
-  { id:"womenstag", title:"AEW Women's World Tag Team Championship",
-    options:[{n:"Divine Dominion", c:true},{n:"The Brawling Birds"}] },
-
-  { id:"continental", title:"Continental Cup Final",
-    options:[{n:"Jon Moxley"},{n:"Nigel McGuinness"}] },
-
-  { id:"gauntlet", title:"Men's Casino Gauntlet Match", stip:"Winner takes a title shot",
-    options:[{n:"Andrade"},{n:"MJF"}], allowOther:true },
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAvz4xg5sFkcAbmVAJ4JYAlC0HG-Sq5F_8",
+  authDomain: "aewfantasy-47424.firebaseapp.com",
+  databaseURL: "https://aewfantasy-47424-default-rtdb.firebaseio.com",
+  projectId: "aewfantasy-47424",
+  storageBucket: "aewfantasy-47424.firebasestorage.app",
+  messagingSenderId: "972702463847",
+  appId: "1:972702463847:web:03ba6393078c25fd95e1c2"
+};
+const PRED_ROOT = "leagues/_predictions/events";
+const LEAGUE = [
+  { key:"josh",  name:"Josh"  },
+  { key:"maria", name:"Maria" },
+  { key:"erik",  name:"Erik"  },
+  { key:"ryan",  name:"Ryan", bot:true },
 ];
+const LEAGUE_KEYS = LEAGUE.map(p=>p.key);
+const THEME_SWATCH = { briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
 
-// Everyone advertised on the bill, for the entrance autocomplete
-const ROSTER = [
-  "Kenny Omega","Will Ospreay","Willow Nightingale","Mercedes Moné",
-  "Konosuke Takeshita","Kyle Fletcher","Kazuchika Okada","Kevin Knight",
-  "Darby Allin","Christian Cage","Cope","Matt Jackson","Nick Jackson",
-  "Jon Moxley","Nigel McGuinness","Andrade","MJF"
-];
-
-const BONUS = [
-  { id:"entrance", type:"text",
-    title:"Who gets the biggest special entrance?",
-    stip:"Pyro, live band, the lot",
-    placeholder:"Name your pick", list:true },
-
-  { id:"gauntlet_count", type:"number",
-    title:"How many enter the Casino Gauntlet?",
-    stip:"Closest guess takes the point",
-    min:2, max:40, start:15 },
-
-  { id:"turn", type:"turn",
-    title:"Heel or face turn on the night?",
-    stip:"Call the direction, then name the culprit",
-    options:["Heel turn","Face turn","No turn"] },
-];
-
-const picks = {};
-let results = {};
-
-// ---- Google Sheet backend ----
-// The same web app deployment used for the G1 sheet works here.
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbw5UKiNVytLMNWZxhfIfSc2wL9syM7bFsWGORSpNHJT758rtIoIa3IWOM0aY78A5TA/exec";
-const SYNC_ENABLED = SHEET_API_URL.indexOf("http") === 0;
-const RESULTS_KEY = "__RESULTS__";
-
-let currentUser = "";
-let allParticipants = [];
-let saveTimer = null;
-let resultsMode = false;
-
-function activePicks(){ return resultsMode ? results : picks; }
-
-function renderCard(){
-  const container = document.getElementById("cardContainer");
-  const target = activePicks();
-  container.innerHTML = "";
-
-  BOUTS.forEach((b, idx)=>{
-    const chosen = target[b.id];
-    const actual = results[b.id];
-    const myPick = picks[b.id];
-
-    const card = document.createElement("div");
-    card.className = "bout";
-    if(!resultsMode && actual && myPick){
-      card.classList.add(actual===myPick ? "correct" : "wrong");
-    }
-
-    let html = '<div class="bout-num">Bout '+(idx+1)+' of '+BOUTS.length+'</div>'+
-      '<div class="bout-title">'+b.title+'</div>'+
-      (b.stip ? '<div class="bout-stip">'+b.stip+'</div>' : '');
-
-    const cls = b.options.length===2 && !b.allowOther ? "two" :
-                b.options.length===3 ? "three" : "many";
-    html += '<div class="options '+cls+'">';
-    b.options.forEach((o,i)=>{
-      const isPicked = chosen===o.n;
-      const isLoser = chosen && chosen!==o.n;
-      html += '<button class="opt'+(isPicked?' picked':(isLoser?' loser':''))+'" data-bid="'+b.id+'" data-name="'+o.n+'">'+
-        o.n + (o.c ? '<span class="champ">Holder</span>' : '') + '</button>';
-      if(cls==="two" && i===0) html += '<span class="vs">v</span>';
-    });
-    html += '</div>';
-
-    if(b.allowOther){
-      const isOther = chosen && !b.options.some(o=>o.n===chosen);
-      html += '<div class="other-wrap"><label>Or a surprise entrant</label>'+
-        '<input type="text" data-other="'+b.id+'" placeholder="Name someone else" value="'+(isOther?chosen:"")+'" /></div>';
-    }
-
-    if(!resultsMode && actual){
-      const hit = myPick && myPick===actual;
-      html += '<div class="result-tag">Full time: <strong>'+actual+'</strong>'+
-        (myPick ? ' — <span class="'+(hit?'win':'miss')+'">'+(hit?'you called it':'missed')+'</span>' : '')+'</div>';
-    }
-
-    card.innerHTML = html;
-    container.appendChild(card);
-  });
-
-  container.querySelectorAll(".opt").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const t = activePicks();
-      const bid = btn.dataset.bid, name = btn.dataset.name;
-      t[bid] = t[bid]===name ? null : name;
-      renderAll();
-      scheduleSave();
-    });
-  });
-  container.querySelectorAll("input[data-other]").forEach(inp=>{
-    inp.addEventListener("change", ()=>{
-      const t = activePicks();
-      const v = inp.value.trim();
-      t[inp.dataset.other] = v || null;
-      renderAll();
-      scheduleSave();
-    });
-  });
+// ── small helpers ──────────────────────────────────────────────────────────
+const $ = (s, r=document)=>r.querySelector(s);
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function norm(v){ return (v==null?"":String(v)).trim().toLowerCase().replace(/\s+/g," "); }
+function arrayOf(v){ return Array.isArray(v) ? v : (v && typeof v==="object" ? Object.values(v) : []); }
+function blank(v){ return v===undefined || v===null || v===""; }
+function slug(s){ return norm(s).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "guest"; }
+function nameFor(key, entry){ const l = LEAGUE.find(p=>p.key===key); return l ? l.name : ((entry && entry.name) || key); }
+function fmtDate(iso, opts){ try{ return new Date(iso).toLocaleString(undefined, opts); }catch(e){ return iso; } }
+function shortDate(iso){ return fmtDate(iso, { month:"short", day:"numeric" }); }
+function toast(msg){
+  const el = document.createElement("div"); el.className = "toast"; el.setAttribute("role","status"); el.textContent = msg;
+  document.body.appendChild(el); setTimeout(()=>el.remove(), 2600);
+}
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function withinMs(p, ms){ return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error("No answer from the database in "+(ms/1000)+"s")), ms))]); }
+async function getJSON(url){
+  const r = await fetch(url + (url.indexOf("?")<0?"?":"&") + "t=" + Date.now(), { cache:"no-store" });
+  if(!r.ok) throw new Error(r.status===404 ? "not found" : "HTTP "+r.status);
+  return r.json();
 }
 
-function norm(v){ return (v==null?"":String(v)).trim().toLowerCase(); }
+// ── Firebase ───────────────────────────────────────────────────────────────
+let db = null, dbReady = null;
+function initDb(){
+  if(dbReady) return dbReady;
+  dbReady = (async ()=>{
+    if(!window.firebase) throw new Error("The Firebase scripts did not load — check the connection and reload.");
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    await withinMs(firebase.auth().signInAnonymously(), 15000);
+    db.ref(".info/connected").on("value", s=>{
+      const on = s.val()===true;
+      const el = $("#live"); el.textContent = on ? "Live" : "Offline"; el.className = "live " + (on?"ok":"err");
+    });
+    return db;
+  })();
+  dbReady.catch(e=>{ const el=$("#live"); el.textContent="Offline"; el.className="live err"; console.error(e); });
+  return dbReady;
+}
 
-function renderBonus(){
-  const container = document.getElementById("bonusContainer");
-  const target = activePicks();
-  container.innerHTML = "";
+// ── Router ─────────────────────────────────────────────────────────────────
+let INDEX = null;
+let view = null;      // teardown hook of whatever is on screen
+async function loadIndex(){
+  if(!INDEX) INDEX = (await getJSON("events/index.json")).events || [];
+  return INDEX;
+}
+function route(){
+  if(view && view.teardown) view.teardown();
+  view = null;
+  const m = location.hash.match(/^#\/?([a-z0-9-]+)/i);
+  const id = m ? m[1] : "";
+  window.scrollTo(0,0);
+  if(id) showEvent(id); else showHome();
+}
+window.addEventListener("hashchange", route);
 
-  BONUS.forEach(q=>{
-    const card = document.createElement("div");
-    card.className = "bout bonus";
+// ════════════════════════════════════════════════════════════════════════════
+// Scoring — shared by the event page and the home page's season table.
+// ════════════════════════════════════════════════════════════════════════════
+function bonusKey(q){ return q.key || q.id; }
+function bonusAnswered(q, p){ return !blank(p[bonusKey(q)]); }
+function answeredCount(ev, p){
+  return ev.bouts.filter(b=>!blank(p[b.id])).length + (ev.bonus||[]).filter(q=>bonusAnswered(q,p)).length;
+}
+function totalQs(ev){ return ev.bouts.length + (ev.bonus||[]).length; }
 
-    let html = '<div class="bout-title">'+q.title+'</div>'+
-      (q.stip ? '<div class="bout-stip">'+q.stip+'</div>' : '');
-
-    if(q.type==="text"){
-      const val = target[q.id] || "";
-      html += '<input class="answer-input" type="text" data-bonus="'+q.id+'" '+
-        'placeholder="'+q.placeholder+'" value="'+val.replace(/"/g,"&quot;")+'"'+
-        (q.list ? ' list="rosterList"' : '')+' />';
-      const actual = results[q.id], mine = picks[q.id];
-      if(!resultsMode && actual){
-        const hit = mine && norm(mine)===norm(actual);
-        card.classList.add(hit ? "correct" : (mine ? "wrong" : ""));
-        html += '<div class="result-tag">Answer: <strong>'+actual+'</strong>'+
-          (mine ? ' — <span class="'+(hit?'win':'miss')+'">'+(hit?'you called it':'missed')+'</span>' : '')+'</div>';
-      }
-    }
-
+// Score one card. `everyone` is every card on the show, for closest-guess questions.
+function scoreCard(ev, p, results, everyone){
+  let correct = 0, graded = 0, tiebreak = Infinity;
+  ev.bouts.forEach(b=>{
+    if(blank(results[b.id])) return;
+    graded++;
+    if(!blank(p[b.id]) && norm(p[b.id])===norm(results[b.id])) correct++;
+  });
+  (ev.bonus||[]).forEach(q=>{
+    const k = bonusKey(q), actual = results[k];
     if(q.type==="number"){
-      const raw = target[q.id];
-      const has = raw!==undefined && raw!==null && raw!=="";
-      const shown = has ? raw : q.start;
-      html += '<div class="stepper">'+
-        '<button class="step-btn" data-step="-1" data-bonus="'+q.id+'">&minus;</button>'+
-        '<span class="step-val'+(has?"":" unset")+'">'+shown+'</span>'+
-        '<button class="step-btn" data-step="1" data-bonus="'+q.id+'">+</button>'+
-        '<span class="step-hint">'+(has?"entrants":"tap to lock in a number")+'</span>'+
-        '</div>';
-      const actual = results[q.id], mine = picks[q.id];
-      if(!resultsMode && actual!==undefined && actual!==null && actual!==""){
-        const off = has ? Math.abs(Number(mine)-Number(actual)) : null;
-        html += '<div class="result-tag">Actual: <strong>'+actual+'</strong>'+
-          (off!==null ? ' — you were '+(off===0?'spot on':off+' out') : '')+'</div>';
+      if(blank(actual)) return;
+      graded++;
+      const a = Number(actual);
+      const guesses = everyone.map(x=>x[k]).filter(v=>!blank(v)).map(Number);
+      if(!blank(p[k]) && guesses.length){
+        const best = Math.min.apply(null, guesses.map(g=>Math.abs(g-a)));
+        const mine = Math.abs(Number(p[k])-a);
+        if(mine===best) correct++;
+        if(q.tiebreak) tiebreak = mine;
       }
+      return;
     }
-
-    if(q.type==="turn"){
-      const chosen = target[q.id+"_type"];
-      html += '<div class="chips">';
-      q.options.forEach(o=>{
-        html += '<button class="chip'+(chosen===o?' picked':'')+'" data-turn="'+q.id+'" data-name="'+o+'">'+o+'</button>';
-      });
-      html += '</div>';
-      if(chosen && chosen!=="No turn"){
-        const who = target[q.id+"_who"] || "";
-        html += '<div class="followup-label">Who turns?</div>'+
-          '<input class="answer-input" type="text" data-bonus="'+q.id+'_who" list="rosterList" '+
-          'placeholder="Name them" value="'+who.replace(/"/g,"&quot;")+'" />';
-      }
-      const aType = results[q.id+"_type"], aWho = results[q.id+"_who"];
-      const mType = picks[q.id+"_type"], mWho = picks[q.id+"_who"];
-      if(!resultsMode && aType){
-        const hitType = mType===aType;
-        const hitWho = aWho && mWho && norm(mWho)===norm(aWho);
-        card.classList.add(hitType ? "correct" : (mType ? "wrong" : ""));
-        html += '<div class="result-tag">Answer: <strong>'+aType+(aWho?" — "+aWho:"")+'</strong>'+
-          (mType ? ' — <span class="'+(hitType?'win':'miss')+'">'+
-            (hitType ? (aWho ? (hitWho?'both right':'right call, wrong name') : 'you called it') : 'missed')+
-            '</span>' : '')+'</div>';
-      }
+    if(!blank(actual)){
+      graded++;
+      if(norm(p[k])===norm(actual)) correct++;
     }
-
-    card.innerHTML = html;
-    container.appendChild(card);
+    if(q.followUp && !blank(results[q.followUp.key])){
+      graded++;
+      if(norm(p[q.followUp.key])===norm(results[q.followUp.key])) correct++;
+    }
   });
-
-  container.querySelectorAll("input[data-bonus]").forEach(inp=>{
-    inp.addEventListener("change", ()=>{
-      const t = activePicks();
-      const v = inp.value.trim();
-      t[inp.dataset.bonus] = v || null;
-      renderAll();
-      scheduleSave();
-    });
-  });
-  container.querySelectorAll(".step-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const t = activePicks();
-      const q = BONUS.find(x=>x.id===btn.dataset.bonus);
-      const cur = (t[q.id]===undefined || t[q.id]===null || t[q.id]==="") ? q.start : Number(t[q.id]);
-      const next = Math.min(q.max, Math.max(q.min, cur + Number(btn.dataset.step)));
-      t[q.id] = next;
-      renderAll();
-      scheduleSave();
-    });
-  });
-  container.querySelectorAll(".chip[data-turn]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const t = activePicks();
-      const key = btn.dataset.turn + "_type";
-      const name = btn.dataset.name;
-      t[key] = t[key]===name ? null : name;
-      if(t[key]==="No turn" || !t[key]) t[btn.dataset.turn+"_who"] = null;
-      renderAll();
-      scheduleSave();
-    });
-  });
+  return { correct, graded, tiebreak };
 }
 
-function bonusAnswered(q, p){
-  if(q.type==="turn") return !!p[q.id+"_type"];
-  const v = p[q.id];
-  return v!==undefined && v!==null && v!=="";
+// players: [{key, name, picks, bot}] → sorted standings
+function standings(ev, players, results){
+  const everyone = players.map(p=>p.picks||{});
+  return players.map(p=>{
+    const s = scoreCard(ev, p.picks||{}, results, everyone);
+    return Object.assign({}, p, s, { answered: answeredCount(ev, p.picks||{}) });
+  }).sort((a,b)=> b.correct-a.correct || a.tiebreak-b.tiebreak || a.name.localeCompare(b.name));
 }
 
-function renderProgress(){
-  const total = BOUTS.length + BONUS.length;
-  const p = activePicks();
-  const done = BOUTS.filter(b=>p[b.id]).length + BONUS.filter(q=>bonusAnswered(q,p)).length;
-  document.getElementById("progressFill").style.width = (done/total*100)+"%";
-  document.getElementById("progressLabel").textContent =
-    done+" of "+total+(resultsMode ? " results in" : " called");
+// Only one swap token per show: best league member, tiebreak question, then a shared token if still level.
+function tokenWinners(table){
+  const league = table.filter(r=>LEAGUE_KEYS.indexOf(r.key)!==-1 && r.answered>0);
+  if(!league.length) return [];
+  const top = league[0];
+  return league.filter(r=>r.correct===top.correct && r.tiebreak===top.tiebreak).map(r=>r.key);
 }
 
-function scoreFor(p, allPicks){
-  let correct = 0, graded = 0;
-  BOUTS.forEach(b=>{
-    if(!results[b.id]) return;
-    graded++;
-    if(p[b.id] && p[b.id]===results[b.id]) correct++;
-  });
+// ════════════════════════════════════════════════════════════════════════════
+// Home
+// ════════════════════════════════════════════════════════════════════════════
+async function showHome(){
+  document.body.dataset.theme = "ringside";
+  document.title = "Prediction Sheet";
+  $("#homeLink").classList.add("hidden");
+  const app = $("#app");
+  app.innerHTML = `
+    <h1 class="home-title">Call the card</h1>
+    <p class="home-sub">Pick every match before the bell. Whoever in the league calls the most on the night gets a swap token in AEW Fantasy.</p>
+    <div id="evList"><div class="empty">Loading the shows…</div></div>
+    <section class="season" id="season"></section>`;
+  let events;
+  try{ events = await loadIndex(); }
+  catch(e){ $("#evList").innerHTML = `<div class="empty">Couldn't load the list of shows (${esc(e.message)}). Reload to try again.</div>`; return; }
 
-  // Biggest entrance — exact name match
-  if(results.entrance){
-    graded++;
-    if(norm(p.entrance)===norm(results.entrance)) correct++;
-  }
-
-  // Gauntlet count — closest guess among everyone takes the point
-  const gc = results.gauntlet_count;
-  if(gc!==undefined && gc!==null && gc!==""){
-    graded++;
-    const guesses = (allPicks||[])
-      .map(x=>x.gauntlet_count)
-      .filter(v=>v!==undefined && v!==null && v!=="")
-      .map(Number);
-    const mine = p.gauntlet_count;
-    if(guesses.length && mine!==undefined && mine!==null && mine!==""){
-      const best = Math.min.apply(null, guesses.map(g=>Math.abs(g-Number(gc))));
-      if(Math.abs(Number(mine)-Number(gc))===best) correct++;
-    }
-  }
-
-  // Turn — direction is one point, naming the right person is another
-  if(results.turn_type){
-    graded++;
-    if(p.turn_type===results.turn_type) correct++;
-  }
-  if(results.turn_who){
-    graded++;
-    if(norm(p.turn_who)===norm(results.turn_who)) correct++;
-  }
-
-  return {correct, graded};
-}
-
-function renderGroup(){
-  const lbEl = document.getElementById("leaderboard");
-  const compareRow = document.getElementById("compareRow");
-  const selectEl = document.getElementById("compareSelect");
-  const resultsEl = document.getElementById("compareResults");
-
-  if(!SYNC_ENABLED){
-    lbEl.innerHTML = '<div class="empty-note">Connect the Google Sheet to see the rest of the crowd here.</div>';
-    compareRow.style.display = "none";
-    resultsEl.innerHTML = "";
-    return;
-  }
-
-  const players = allParticipants.filter(p=>p.name!==RESULTS_KEY);
-  if(players.length===0){
-    lbEl.innerHTML = '<div class="empty-note">Nobody has filled a card in yet — pop your name in up top.</div>';
-    compareRow.style.display = "none";
-    resultsEl.innerHTML = "";
-    return;
-  }
-
-  const anyResults = Object.values(results).some(v=>v!==undefined && v!==null && v!=="");
-  const allPicks = players.map(p=>p.picks||{});
-  const totalQs = BOUTS.length + BONUS.length;
-  const scored = players.map(p=>{
-    const pk = p.picks||{};
-    const s = scoreFor(pk, allPicks);
-    const answered = BOUTS.filter(b=>pk[b.id]).length + BONUS.filter(q=>bonusAnswered(q,pk)).length;
-    return {name:p.name, picks:pk, correct:s.correct, graded:s.graded, count:answered};
-  });
-  if(anyResults) scored.sort((a,b)=> b.correct-a.correct || a.name.localeCompare(b.name));
-
-  lbEl.innerHTML = '<h2 class="sec">'+(anyResults?'League Table':'Who\'s filled a card')+'</h2>';
-  scored.forEach((p,i)=>{
-    const row = document.createElement("div");
-    row.className = "lb-row" + (anyResults && i===0 && p.correct>0 ? " leader" : "");
-    const right = anyResults
-      ? '<span class="lb-score">'+p.correct+' / '+p.graded+'</span>'
-      : '<span class="p-meta">'+p.count+' of '+totalQs+' called</span>';
-    row.innerHTML = '<span><span class="lb-rank">'+(anyResults?(i+1):"·")+'</span>'+
-      p.name+(p.name===currentUser?' (you)':'')+'</span>'+right;
-    lbEl.appendChild(row);
-  });
-
-  const others = scored.filter(p=>p.name!==currentUser);
-  if(others.length===0){
-    compareRow.style.display = "none";
-    resultsEl.innerHTML = '<div class="empty-note">No one else has saved a card yet.</div>';
-    return;
-  }
-  compareRow.style.display = "flex";
-  selectEl.innerHTML = others.map(p=>'<option value="'+p.name+'">'+p.name+'</option>').join("");
-  const renderCompare = ()=>{
-    const other = others.find(p=>p.name===selectEl.value) || others[0];
-    resultsEl.innerHTML = '<h2 class="sec">Points of contention</h2>';
-    let differ = 0;
-    BOUTS.forEach(b=>{
-      const mine = picks[b.id], theirs = other.picks[b.id];
-      if(!mine || !theirs || mine===theirs) return;
-      differ++;
-      const row = document.createElement("div");
-      row.className = "diff-row";
-      row.innerHTML = '<span class="mine">'+mine+'</span>'+
-        '<span class="match-label">'+b.title.replace("AEW ","").replace(" Championship","")+'</span>'+
-        '<span class="theirs">'+theirs+'</span>';
-      resultsEl.appendChild(row);
-    });
-
-    const bonusPairs = [
-      {key:"entrance", label:"Biggest entrance"},
-      {key:"gauntlet_count", label:"Gauntlet entrants"},
-      {key:"turn_type", label:"Turn?"},
-      {key:"turn_who", label:"Who turns"}
-    ];
-    bonusPairs.forEach(bp=>{
-      const mine = picks[bp.key], theirs = other.picks[bp.key];
-      const blank = v => v===undefined || v===null || v==="";
-      if(blank(mine) || blank(theirs) || norm(mine)===norm(theirs)) return;
-      differ++;
-      const row = document.createElement("div");
-      row.className = "diff-row";
-      row.innerHTML = '<span class="mine">'+mine+'</span>'+
-        '<span class="match-label">'+bp.label+'</span>'+
-        '<span class="theirs">'+theirs+'</span>';
-      resultsEl.appendChild(row);
-    });
-    if(differ===0){
-      const note = document.createElement("div");
-      note.className = "empty-note";
-      note.textContent = "You two agree on everything you've both called.";
-      resultsEl.appendChild(note);
-    }
+  let finals = {};
+  const paint = ()=>{
+    const now = Date.now();
+    $("#evList").innerHTML = events.map(e=>{
+      const start = new Date(e.start).getTime();
+      const upcoming = start > now;
+      const fin = finals[e.id];
+      let status;
+      if(fin && fin.winners && fin.winners.length) status = `<b>${esc(fin.winners.map(k=>nameFor(k)).join(" & "))}</b>won it`;
+      else if(upcoming) status = `<b>${esc(lockCountdown(start))}</b>until picks lock`;
+      else if(e.legacy) status = `<b>Archived</b>sheet-era show`;
+      else status = `<b>Picks locked</b>results pending`;
+      return `<a class="ev ${upcoming?"upcoming":""}" href="#/${esc(e.id)}">
+        <span class="swatch" style="background:${THEME_SWATCH[e.theme]||"var(--accent)"}"></span>
+        <span><span class="t">${esc(e.name)}${e.subtitle? " "+esc(e.subtitle):""}</span>
+        <span class="m" style="display:block">${esc(e.promotion)} · ${esc(fmtDate(e.start,{weekday:"short",month:"short",day:"numeric"}))}</span></span>
+        <span class="s">${status}</span></a>`;
+    }).join("");
+    const wins = {}; LEAGUE.forEach(p=>wins[p.key]=0);
+    let shows = 0;
+    Object.keys(finals).forEach(id=>{ const w = finals[id] && finals[id].winners; if(w && w.length){ shows++; w.forEach(k=>{ if(k in wins) wins[k]++; }); } });
+    $("#season").innerHTML = shows ? `<h2 class="section-head">Swap tokens won</h2>` +
+      LEAGUE.slice().sort((a,b)=>wins[b.key]-wins[a.key] || a.name.localeCompare(b.name)).map((p,i)=>
+        `<div class="row ${i===0&&wins[p.key]>0?"top":""}"><span class="rank">${i+1}</span>
+          <span class="nm">${esc(p.name)}${p.bot?'<span class="bot">RyAI picks</span>':""}</span>
+          <span class="sc">${wins[p.key]}</span></div>`).join("") : "";
   };
-  selectEl.onchange = renderCompare;
-  renderCompare();
-}
-
-function renderAll(){
-  renderCard();
-  renderBonus();
-  renderProgress();
-  renderGroup();
-}
-
-// ---- Sync ----
-function setSyncStatus(text, cls){
-  const el = document.getElementById("syncStatus");
-  el.textContent = text;
-  el.className = "sync-status" + (cls ? " "+cls : "");
-}
-
-function scheduleSave(){
-  if(!SYNC_ENABLED) return;
-  const who = resultsMode ? RESULTS_KEY : currentUser;
-  if(!who) return;
-  setSyncStatus("saving…");
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveNow, 700);
-}
-
-async function saveNow(){
-  const who = resultsMode ? RESULTS_KEY : currentUser;
+  paint();
+  const tick = setInterval(paint, 30000);
+  let ref = null;
+  view = { teardown(){ clearInterval(tick); if(ref) ref.off(); } };
   try{
-    await fetch(SHEET_API_URL, {
-      method:"POST",
-      headers:{ "Content-Type":"text/plain;charset=utf-8" },
-      body: JSON.stringify({ name: who, picks: resultsMode ? results : picks })
+    await initDb();
+    if(!view) return;
+    ref = db.ref(PRED_ROOT);
+    ref.on("value", snap=>{
+      const all = snap.val() || {};
+      finals = {}; Object.keys(all).forEach(id=>{ if(all[id] && all[id].final){ finals[id] = all[id].final; finals[id].winners = arrayOf(finals[id].winners); } });
+      paint();
+    }, err=>console.error(err));
+  }catch(e){ /* the list still works without the database */ }
+}
+
+function lockCountdown(start){
+  let mins = Math.ceil(Math.max(0, start - Date.now())/60000);
+  const d = Math.floor(mins/1440); mins -= d*1440;
+  const h = Math.floor(mins/60);
+  const m = mins - h*60;
+  if(d) return d+"d "+h+"h";
+  if(h) return h+"h "+m+"m";
+  return m+"m";
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Event page
+// ════════════════════════════════════════════════════════════════════════════
+async function showEvent(id){
+  $("#homeLink").classList.remove("hidden");
+  const app = $("#app");
+  app.innerHTML = `<div class="empty" style="margin-top:24px">Loading the card…</div>`;
+  let ev;
+  try{ ev = await getJSON("events/"+id+".json"); }
+  catch(e){ app.innerHTML = `<div class="empty" style="margin-top:24px">There's no show called “${esc(id)}”. <a href="#/">See all shows</a>.</div>`; return; }
+
+  const S = {
+    ev, start: new Date(ev.start).getTime(),
+    me: lsGet("pred_me") || "",
+    picks: {},            // key → { name, picks, updatedAt }
+    results: {}, final: null,
+    ryan: null, ryanErr: "",
+    legacy: !!ev.legacySheet,
+    resultsMode: false, tab: "card",
+    saveTimer: null, resultsTimer: null, pendingMine: null, pendingResults: null,
+    ref: null, tick: null, dead: false,
+  };
+  const base = PRED_ROOT + "/" + ev.id;
+  view = { teardown(){ S.dead = true; if(S.ref) S.ref.off(); clearInterval(S.tick); flushSaves(); } };
+
+  document.body.dataset.theme = ev.theme || "ringside";
+  document.title = ev.name + (ev.subtitle? " "+ev.subtitle:"") + " — Prediction Sheet";
+  $("#rosterList").innerHTML = (ev.roster||[]).map(n=>`<option value="${esc(n)}"></option>`).join("");
+
+  // ── derived ──
+  const locked = ()=> Date.now() >= S.start;
+  const myKey = ()=> S.me;
+  const myPicks = ()=>{
+    if(!S.me) return {};
+    if(!S.picks[S.me]) S.picks[S.me] = { name: nameFor(S.me), picks:{} };
+    if(!S.picks[S.me].picks) S.picks[S.me].picks = {};
+    return S.picks[S.me].picks;
+  };
+  const target = ()=> S.resultsMode ? S.results : myPicks();
+  const canEdit = ()=> !S.legacy && (S.resultsMode ? !S.final : (!!S.me && S.me!=="ryan" && !locked()));
+  function players(){
+    const list = [];
+    Object.keys(S.picks).forEach(k=>{
+      if(k==="ryan" && !S.legacy) return;
+      const e = S.picks[k]; if(!e || !e.picks || !Object.keys(e.picks).length) return;
+      list.push({ key:k, name:nameFor(k,e), picks:e.picks });
     });
-    setSyncStatus("saved", "ok");
-    loadAll();
-  }catch(err){
-    setSyncStatus("save failed", "err");
+    if(S.ryan && S.ryan.picks) list.push({ key:"ryan", name:"Ryan", picks:S.ryan.picks, bot:true });
+    return list;
   }
-}
 
-async function loadAll(){
-  if(!SYNC_ENABLED) return;
-  try{
-    const res = await fetch(SHEET_API_URL + "?t=" + Date.now());
-    const data = await res.json();
-    allParticipants = data.participants||[];
-    const resultRow = allParticipants.find(p=>p.name===RESULTS_KEY);
-    results = resultRow ? (resultRow.picks||{}) : {};
-    if(currentUser){
-      const mine = allParticipants.find(p=>p.name===currentUser);
-      if(mine){
-        Object.keys(picks).forEach(k=>delete picks[k]);
-        Object.assign(picks, mine.picks||{});
+  // ── shell ──
+  app.innerHTML = `
+    <header class="hero">
+      <p class="promo">${esc(ev.promotion)}</p>
+      <h1 class="show-name">${esc(ev.name)}</h1>
+      ${ev.subtitle? `<p class="show-sub">${esc(ev.subtitle)}</p>`:""}
+      <p class="show-meta">${esc(fmtDate(ev.start,{weekday:"long",month:"long",day:"numeric"}))}${ev.legacy||ev.legacySheet?"":" · "+esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}${ev.venue? " · "+esc(ev.venue):""}</p>
+      <div class="lockline" id="lockline"></div>
+    </header>
+    <div class="whobar" id="whobar"></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="card" aria-selected="true">The card</button>
+      <button class="tab" role="tab" data-tab="table" aria-selected="false">League table</button>
+    </div>
+    <section id="panel-card"></section>
+    <section id="panel-table" class="hidden"></section>`;
+  app.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
+    S.tab = t.dataset.tab;
+    app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x===t)));
+    $("#panel-card").classList.toggle("hidden", S.tab!=="card");
+    $("#panel-table").classList.toggle("hidden", S.tab!=="table");
+    renderAll();
+  }));
+
+  // ── render: lock line ──
+  function renderLock(){
+    const el = $("#lockline"); if(!el) return;
+    if(S.legacy){ el.innerHTML = `<span class="why">From the old sheet — read-only.${ev.legacyPage? ` <a href="${esc(ev.legacyPage)}">Open the original page</a>.`:""}</span>`; return; }
+    if(S.final && S.final.winners && S.final.winners.length){
+      el.innerHTML = `<span class="count">Final</span><span class="why">${esc(S.final.winners.map(k=>nameFor(k)).join(" & "))} took the swap token</span>`; return;
+    }
+    if(locked()){ el.innerHTML = `<span class="count">Bell's rung</span><span class="why">Picks are locked. Results go in as they happen.</span>`; return; }
+    el.innerHTML = `<span class="count">${esc(lockCountdown(S.start))}</span><span class="why">until picks lock at ${esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}</span>`;
+  }
+
+  // ── render: who's picking ──
+  function renderWho(){
+    const el = $("#whobar"); if(!el) return;
+    if(S.legacy){ el.innerHTML = `<span class="note" style="margin:0">Cards from the old sheet are shown as they were saved.</span>`; return; }
+    const guests = Object.keys(S.picks).filter(k=>LEAGUE_KEYS.indexOf(k)===-1);
+    const opts = LEAGUE.filter(p=>!p.bot).map(p=>`<option value="${p.key}" ${S.me===p.key?"selected":""}>${esc(p.name)}</option>`).join("")
+      + guests.map(k=>`<option value="${esc(k)}" ${S.me===k?"selected":""}>${esc(nameFor(k,S.picks[k]))}</option>`).join("")
+      + `<option value="__new">Someone else…</option>`;
+    const p = target(), done = answeredCount(ev, p), tot = totalQs(ev);
+    el.innerHTML = `<label for="meSel">Picking as</label>
+      <select id="meSel"><option value="" ${S.me?"":"selected"} disabled>Choose…</option>${opts}</select>
+      <span class="progress"><span class="track"><span class="fill" style="width:${tot?done/tot*100:0}%"></span></span>
+      <span>${done} of ${tot} ${S.resultsMode?"results in":"called"}</span></span>`;
+    $("#meSel").addEventListener("change", e=>{
+      let v = e.target.value;
+      if(v==="__new"){
+        const n = (prompt("Your name?")||"").trim();
+        if(!n){ renderWho(); return; }
+        const k = slug(n);
+        if(LEAGUE_KEYS.indexOf(k)!==-1){ v = k; }
+        else { v = "g_"+k; if(!S.picks[v]) S.picks[v] = { name:n, picks:{} }; }
       }
+      flushSaves();
+      S.me = v; lsSet("pred_me", v); renderAll();
+    });
+  }
+
+  // ── render: the card ──
+  function renderCard(){
+    const el = $("#panel-card"); if(!el) return;
+    if(S.tab!=="card") return;
+    if(el.contains(document.activeElement) && document.activeElement.tagName==="INPUT") { S.deferred = true; return; }
+    const t = target(), mine = myPicks(), edit = canEdit(), showResults = !S.resultsMode;
+    const others = locked() || S.legacy ? players() : [];
+    let html = "";
+    if(!S.legacy && !S.final){
+      html += `<div class="official"><span>${S.final? "Results are final." : "Watching live? Put the results in as they happen."}</span>
+        <button class="toggle" id="resToggle" aria-pressed="${S.resultsMode}">${S.resultsMode?"Done entering results":"Enter results"}</button></div>`;
+      if(S.resultsMode) html += `<div class="resultsmode-note">You're entering the official results — everyone sees these. Tap a winner again to clear it.</div>`;
+      else if(!S.me) html += `<div class="resultsmode-note">Choose who's picking above, then call the card.</div>`;
+    }
+    ev.bouts.forEach(b=>{
+      const chosen = t[b.id], actual = S.results[b.id], my = mine[b.id];
+      let cls = "bout";
+      if(showResults && !blank(actual) && !blank(my)) cls += norm(actual)===norm(my) ? " correct" : " wrong";
+      const n = b.options.length;
+      html += `<article class="${cls}"><h3>${esc(b.title)}</h3>${b.stip?`<p class="stip">${esc(b.stip)}</p>`:""}
+        <div class="opts ${n===3?"n3":""}">` +
+        b.options.map(o=>{
+          const picked = !blank(chosen) && norm(chosen)===norm(o.n);
+          const faded = !blank(chosen) && !picked;
+          const won = showResults && !blank(actual) && norm(actual)===norm(o.n);
+          return `<button class="opt ${picked?"picked":""} ${faded?"faded":""} ${won?"won":""}" data-bout="${esc(b.id)}" data-name="${esc(o.n)}" ${edit?"":"disabled"} aria-pressed="${picked}">
+            ${esc(o.n)}${o.c?`<span class="holder">Champion</span>`:""}</button>`;
+        }).join("") + `</div>`;
+      if(b.allowOther){
+        const isOther = !blank(chosen) && !b.options.some(o=>norm(o.n)===norm(chosen));
+        html += `<div class="other"><input class="field" data-other="${esc(b.id)}" list="rosterList" placeholder="Or name a surprise winner" value="${isOther?esc(chosen):""}" ${edit?"":"disabled"}></div>`;
+      }
+      if(showResults && !blank(actual)){
+        const hit = !blank(my) && norm(my)===norm(actual);
+        html += `<p class="outcome">Winner: <strong>${esc(actual)}</strong>${blank(my)?"":` — <span class="${hit?"hit":"miss"}">${hit?"you called it":"missed"}</span>`}</p>`;
+      }
+      if(others.length) html += whoPicked(others, b.id);
+      html += `</article>`;
+    });
+    if((ev.bonus||[]).length){
+      html += `<h2 class="section-head">Bonus questions</h2>`;
+      ev.bonus.forEach(q=>{ html += bonusHTML(q, t, mine, edit, showResults, others); });
+    }
+    if(edit && !S.resultsMode) html += `<div class="clear-row"><button class="linkbtn" id="clearBtn">Clear my card</button></div>`;
+    el.innerHTML = html;
+    wireCard(el);
+  }
+
+  function whoPicked(list, key){
+    const groups = {};
+    list.forEach(p=>{ const v = p.picks[key]; if(blank(v)) return; const k = norm(v); (groups[k] = groups[k] || { label:v, who:[] }).who.push(p.name + (p.bot?" 🤖":"")); });
+    const keys = Object.keys(groups); if(!keys.length) return "";
+    return `<div class="whopicked">` + keys.map(k=>`<span><b>${esc(groups[k].label)}</b> ${esc(groups[k].who.join(", "))}</span>`).join("") + `</div>`;
+  }
+
+  function bonusHTML(q, t, mine, edit, showResults, others){
+    const k = bonusKey(q), actual = S.results[k], my = mine[k];
+    let cls = "bout", body = "";
+    if(q.type==="text"){
+      body += `<input class="field" style="margin-top:14px" data-bonus="${esc(k)}" list="rosterList" placeholder="${esc(q.placeholder||"Your answer")}" value="${esc(t[k]||"")}" ${edit?"":"disabled"}>`;
+      if(showResults && !blank(actual)){
+        const hit = !blank(my) && norm(my)===norm(actual);
+        if(!blank(my)) cls += hit?" correct":" wrong";
+        body += `<p class="outcome">Answer: <strong>${esc(actual)}</strong>${blank(my)?"":` — <span class="${hit?"hit":"miss"}">${hit?"you called it":"missed"}</span>`}</p>`;
+      }
+    }
+    if(q.type==="number"){
+      const has = !blank(t[k]);
+      body += `<div class="stepper">
+        <button class="stepbtn" data-step="-1" data-q="${esc(q.id)}" ${edit?"":"disabled"} aria-label="Less">−</button>
+        <span class="stepval ${has?"":"unset"}">${has? esc(t[k]) : esc(q.start)}</span>
+        <button class="stepbtn" data-step="1" data-q="${esc(q.id)}" ${edit?"":"disabled"} aria-label="More">+</button>
+        <span class="note" style="margin:0">${has? esc(q.unit||"") : (edit?"tap − or + to lock in a number":"no guess")}</span></div>`;
+      if(showResults && !blank(actual) && !blank(my)){
+        const off = Math.abs(Number(my)-Number(actual));
+        body += `<p class="outcome">Actual: <strong>${esc(actual)}</strong> — you were ${off===0?"spot on":off+" out"}</p>`;
+      } else if(showResults && !blank(actual)) body += `<p class="outcome">Actual: <strong>${esc(actual)}</strong></p>`;
+    }
+    if(q.type==="choice"){
+      body += `<div class="chips">` + q.options.map(o=>`<button class="chip ${norm(t[k])===norm(o)?"picked":""}" data-choice="${esc(q.id)}" data-name="${esc(o)}" ${edit?"":"disabled"} aria-pressed="${norm(t[k])===norm(o)}">${esc(o)}</button>`).join("") + `</div>`;
+      const fu = q.followUp;
+      if(fu && fu.when.indexOf(t[k])!==-1){
+        body += `<div class="followlabel">${esc(fu.label)}</div><input class="field" data-bonus="${esc(fu.key)}" list="rosterList" placeholder="Name them" value="${esc(t[fu.key]||"")}" ${edit?"":"disabled"}>`;
+      }
+      if(showResults && !blank(actual)){
+        const hit = !blank(my) && norm(my)===norm(actual);
+        if(!blank(my)) cls += hit?" correct":" wrong";
+        const aWho = fu ? S.results[fu.key] : null;
+        const whoHit = fu && !blank(aWho) && norm(mine[fu.key])===norm(aWho);
+        body += `<p class="outcome">Answer: <strong>${esc(actual)}${blank(aWho)?"":" — "+esc(aWho)}</strong>${blank(my)?"":` — <span class="${hit?"hit":"miss"}">${hit ? (blank(aWho)?"you called it":(whoHit?"both right":"right call, wrong name")) : "missed"}</span>`}</p>`;
+      }
+    }
+    if(others.length) body += whoPicked(others, k);
+    return `<article class="${cls}"><h3>${esc(q.title)}</h3>${q.stip?`<p class="stip">${esc(q.stip)}</p>`:""}${body}</article>`;
+  }
+
+  function wireCard(el){
+    const tog = $("#resToggle", el);
+    if(tog) tog.addEventListener("click", ()=>{ flushSaves(); S.resultsMode = !S.resultsMode; renderAll(); });
+    el.querySelectorAll(".opt").forEach(btn=>btn.addEventListener("click", ()=>{
+      const t = target(), id = btn.dataset.bout, n = btn.dataset.name;
+      t[id] = norm(t[id])===norm(n) ? null : n; changed();
+    }));
+    el.querySelectorAll("input[data-other], input[data-bonus]").forEach(inp=>{
+      inp.addEventListener("change", ()=>{ const t = target(); t[inp.dataset.other || inp.dataset.bonus] = inp.value.trim() || null; changed(); });
+      inp.addEventListener("blur", ()=>{ if(S.deferred){ S.deferred = false; setTimeout(renderAll, 0); } });
+    });
+    el.querySelectorAll(".stepbtn").forEach(btn=>btn.addEventListener("click", ()=>{
+      const q = ev.bonus.find(x=>x.id===btn.dataset.q), k = bonusKey(q), t = target();
+      const cur = blank(t[k]) ? q.start : Number(t[k]);
+      t[k] = blank(t[k]) ? q.start : Math.min(q.max, Math.max(q.min, cur + Number(btn.dataset.step)));
+      changed();
+    }));
+    el.querySelectorAll(".chip[data-choice]").forEach(btn=>btn.addEventListener("click", ()=>{
+      const q = ev.bonus.find(x=>x.id===btn.dataset.choice), k = bonusKey(q), t = target();
+      t[k] = norm(t[k])===norm(btn.dataset.name) ? null : btn.dataset.name;
+      if(q.followUp && q.followUp.when.indexOf(t[k])===-1) t[q.followUp.key] = null;
+      changed();
+    }));
+    const clr = $("#clearBtn", el);
+    if(clr) clr.addEventListener("click", ()=>{
+      if(!confirm("Clear every pick on your card?")) return;
+      const t = target(); Object.keys(t).forEach(k=>delete t[k]); changed();
+    });
+  }
+
+  // ── render: league table ──
+  function renderTable(){
+    const el = $("#panel-table"); if(!el || S.tab!=="table") return;
+    const list = players();
+    if(!list.length){ el.innerHTML = `<div class="empty">Nobody has filled in a card yet. Choose your name on the card tab and get picking.</div>`; return; }
+    const anyResults = Object.keys(S.results).some(k=>!blank(S.results[k]));
+    const table = standings(ev, list, S.results);
+    if(!anyResults) table.sort((a,b)=>a.name.localeCompare(b.name));
+    let html = "";
+    if(S.final && S.final.winners && S.final.winners.length){
+      const w = S.final.winners.map(k=>nameFor(k)).join(" & ");
+      html += `<div class="winner"><h3>${esc(w)} ${S.final.winners.length>1?"share":"takes"} the swap token</h3>
+        <p>${S.final.granted ? `Added to ${S.final.winners.length>1?"their teams":"the team"} in AEW Fantasy (${esc(S.final.league||"")}).` : "Couldn't reach the fantasy season — tap retry below."}</p>
+        ${S.final.winners.length>1?`<p style="margin-top:6px">Level on picks and the tiebreaker, so each gets one.</p>`:""}
+        ${S.final.granted? `<button class="linkbtn" id="undoFinal">Results were wrong? Reopen and take the token back</button>` : `<button class="linkbtn" id="retryGrant">Retry sending the token</button>`}</div>`;
+    }
+    const tb = (ev.bonus||[]).find(q=>q.tiebreak);
+    html += `<h2 class="section-head" style="margin-top:0">${anyResults? "League table" : "Who's filled in a card"}</h2>`;
+    table.forEach((r,i)=>{
+      const isLeague = LEAGUE_KEYS.indexOf(r.key)!==-1;
+      html += `<div class="row ${anyResults&&i===0&&r.correct>0?"top":""}"><span class="rank">${anyResults? i+1 : "·"}</span>
+        <span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':""}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}</span>
+        ${anyResults? `<span class="sc">${r.correct}<span class="note" style="font-size:14px"> / ${r.graded}</span></span>` : `<span class="meta">${r.answered} of ${totalQs(ev)}</span>`}</div>`;
+    });
+    if(anyResults && tb) html += `<p class="note">Level on points? “${esc(tb.title)}” breaks the tie — closest guess wins. Guests play for pride; the swap token only goes to a league member.</p>`;
+
+    // finalise
+    if(!S.legacy && !S.final && anyResults){
+      const missing = ev.bouts.filter(b=>blank(S.results[b.id])).length;
+      const winners = tokenWinners(standings(ev, list, S.results));
+      html += `<div class="resultsmode-note" style="margin-top:16px">${missing
+        ? `${missing} match${missing>1?"es":""} still need a result before this show can be finalised.`
+        : `Every match has a result. Finalising locks the results and gives ${esc(winners.map(k=>nameFor(k)).join(" & ")||"nobody")} a swap token in AEW Fantasy.`}
+        <div style="margin-top:10px"><button class="btn primary" id="finalBtn" ${missing||!winners.length?"disabled":""}>Finalise and award the token</button></div></div>`;
+    }
+
+    // compare + RyAI reasoning
+    const others = table.filter(r=>r.key!==S.me);
+    if(S.me && myPicks() && others.length){
+      const sel = S.compareWith && others.some(o=>o.key===S.compareWith) ? S.compareWith : others[0].key;
+      html += `<div class="compare"><div class="compare-head"><h2 class="section-head" style="margin:0">Where you differ</h2>
+        <select id="cmpSel" aria-label="Compare with">${others.map(o=>`<option value="${esc(o.key)}" ${o.key===sel?"selected":""}>${esc(o.name)}</option>`).join("")}</select></div>`;
+      const o = others.find(x=>x.key===sel), mp = myPicks();
+      if(!locked() && !S.legacy && o.key!=="ryan") html += `<p class="note">You'll see their picks once the bell rings.</p>`;
+      else {
+        const rows = [];
+        ev.bouts.forEach(b=>{ const a = mp[b.id], c = o.picks[b.id]; if(!blank(a)&&!blank(c)&&norm(a)!==norm(c)) rows.push([a, b.title, c]); });
+        (ev.bonus||[]).forEach(q=>{
+          const keys = [[bonusKey(q), q.title]]; if(q.followUp) keys.push([q.followUp.key, q.followUp.label]);
+          keys.forEach(([k,l])=>{ const a = mp[k], c = o.picks[k]; if(!blank(a)&&!blank(c)&&norm(a)!==norm(c)) rows.push([a, l, c]); });
+        });
+        html += rows.length ? rows.map(r=>`<div class="diff"><span class="mine">${esc(r[0])}</span><span class="lbl">${esc(r[1])}</span><span class="theirs">${esc(r[2])}</span></div>`).join("")
+          : `<p class="note">You agree on everything you've both called.</p>`;
+      }
+      html += `</div>`;
+    }
+    html += ryanSection();
+    el.innerHTML = html;
+    const cmp = $("#cmpSel", el); if(cmp) cmp.addEventListener("change", ()=>{ S.compareWith = cmp.value; renderTable(); });
+    const fb = $("#finalBtn", el); if(fb) fb.addEventListener("click", finalise);
+    const ub = $("#undoFinal", el); if(ub) ub.addEventListener("click", reopen);
+    const rb = $("#retryGrant", el); if(rb) rb.addEventListener("click", ()=>grant(S.final));
+  }
+
+  function ryanSection(){
+    if(S.legacy) return "";
+    if(!S.ryan){
+      return `<div class="reasons"><h2 class="section-head">Ryan's picks</h2><p class="note">${S.ryanErr==="not found"
+        ? "RyAI hasn't filled in Ryan's card yet. It picks automatically a few hours before the show."
+        : "Couldn't load Ryan's card right now."}</p></div>`;
+    }
+    const r = S.ryan, notes = r.notes || {}, p = r.picks || {};
+    const late = r.generatedAt && new Date(r.generatedAt).getTime() > S.start;
+    let html = `<div class="reasons"><h2 class="section-head">Ryan's picks <span class="bot">🤖 RyAI</span></h2>
+      <p class="note">${esc(r.persona || "Picked by RyAI as a casual WWE watcher who skims the headlines.")} Sealed ${esc(fmtDate(r.generatedAt,{weekday:"short",hour:"numeric",minute:"2-digit"}))}${late?" — after the bell, so it shouldn't count":""}.</p>`;
+    ev.bouts.forEach(b=>{ html += `<div class="reason"><div class="q">${esc(b.title)}</div><div class="a">${esc(p[b.id]||"—")}</div>${notes[b.id]?`<div class="why">“${esc(notes[b.id])}”</div>`:""}</div>`; });
+    (ev.bonus||[]).forEach(q=>{
+      const k = bonusKey(q); let a = blank(p[k]) ? "—" : p[k] + (q.unit && q.type==="number" ? " "+q.unit : "");
+      if(q.followUp && !blank(p[q.followUp.key])) a += " — " + p[q.followUp.key];
+      html += `<div class="reason"><div class="q">${esc(q.title)}</div><div class="a">${esc(a)}</div>${notes[k]?`<div class="why">“${esc(notes[k])}”</div>`:""}</div>`;
+    });
+    return html + `</div>`;
+  }
+
+  function renderAll(){
+    if(S.dead) return;
+    renderLock(); renderWho(); renderCard(); renderTable();
+  }
+
+  // ── saving ──
+  function changed(){
+    if(S.resultsMode){
+      S.pendingResults = true; clearTimeout(S.resultsTimer); S.resultsTimer = setTimeout(saveResults, 500);
+    } else {
+      S.pendingMine = S.me; clearTimeout(S.saveTimer); S.saveTimer = setTimeout(saveMine, 600);
     }
     renderAll();
-  }catch(err){
-    setSyncStatus("load failed", "err");
   }
-}
+  function clean(o){ const r = {}; Object.keys(o||{}).forEach(k=>{ if(!blank(o[k])) r[k] = o[k]; }); return r; }
+  async function saveMine(){
+    const who = S.pendingMine; S.pendingMine = null;
+    if(!who || !db) return;
+    if(locked()){ toast("Picks are locked — the bell has rung."); return; }
+    const e = S.picks[who];
+    try{
+      await withinMs(db.ref(base+"/picks/"+who).set({ name:e.name || nameFor(who), picks:clean(e.picks), updatedAt:firebase.database.ServerValue.TIMESTAMP }), 10000);
+    }catch(err){ toast("Your picks didn't save: " + err.message); }
+  }
+  async function saveResults(){
+    S.pendingResults = null;
+    if(!db) return;
+    try{ await withinMs(db.ref(base+"/results").set(clean(S.results)), 10000); }
+    catch(err){ toast("Results didn't save: " + err.message); }
+  }
+  function flushSaves(){
+    if(S.pendingMine){ clearTimeout(S.saveTimer); saveMine(); }
+    if(S.pendingResults){ clearTimeout(S.resultsTimer); saveResults(); }
+  }
 
-async function initSync(){
-  if(!SYNC_ENABLED){
-    document.getElementById("setupBanner").style.display = "block";
-    setSyncStatus("not connected");
+  // ── finalise + award ──
+  async function finalise(){
+    flushSaves();
+    const table = standings(ev, players(), S.results);
+    const winners = tokenWinners(table);
+    if(!winners.length) return;
+    const names = winners.map(k=>nameFor(k)).join(" & ");
+    const scores = {}; table.forEach(r=>{ scores[r.key] = r.correct + "/" + r.graded; });
+    const ok = await confirmDialog(`Give ${names} the swap token?`,
+      `${names} ${winners.length>1?"are level":"called the most"} with ${esc(scores[winners[0]])}. This locks the results and adds a swap token to ${winners.length>1?"each of their teams":"their team"} in AEW Fantasy.`,
+      "Award the token");
+    if(!ok) return;
+    const final = { at: Date.now(), by: S.me || "someone", winners, scores, results: clean(S.results), granted:false };
+    try{
+      const res = await withinMs(db.ref(base+"/final").transaction(cur => cur ? undefined : final), 10000);
+      if(!res.committed){ toast("Someone else just finalised this show."); return; }
+    }catch(err){ toast("Couldn't finalise: " + err.message); return; }
+    S.resultsMode = false;
+    await grant(final);
+  }
+
+  function swapsShape(raw){
+    let v = raw;
+    try{ if(typeof v==="string") v = JSON.parse(v); if(typeof v==="string") v = JSON.parse(v); }catch(e){ v = null; }
+    if(!v || typeof v!=="object") v = {};
+    if(!v.tokens || typeof v.tokens!=="object") v.tokens = { maria:0, ryan:0, josh:0, erik:0 };
+    if(!Array.isArray(v.history)) v.history = v.history ? Object.values(v.history) : [];
+    if(!Array.isArray(v.awards)) v.awards = v.awards ? Object.values(v.awards) : [];
+    return v;
+  }
+  async function grant(final){
+    try{
+      const league = (await withinMs(db.ref("currentLeague").once("value"), 10000)).val();
+      if(!league) throw new Error("the fantasy app has no current season set");
+      const label = ev.name + (ev.subtitle? " " + ev.subtitle : "");
+      await withinMs(db.ref("leagues/"+league+"/data/aew_swaps").transaction(cur=>{
+        const sw = swapsShape(cur);
+        final.winners.forEach(team=>{
+          const id = ev.id + ":" + team;
+          if(sw.awards.some(a=>a && a.id===id)) return;
+          sw.tokens[team] = (Number(sw.tokens[team])||0) + 1;
+          sw.awards.push({ id, team, event: label, eventId: ev.id, score: final.scores[team] || "", date: shortDate(ev.start), at: Date.now() });
+        });
+        return JSON.stringify(sw);
+      }), 15000);
+      await withinMs(db.ref(base+"/final").update({ granted:true, league }), 10000);
+      toast("Swap token sent to AEW Fantasy.");
+    }catch(err){
+      toast("The show is final, but the token didn't send: " + err.message);
+    }
+  }
+
+  async function reopen(){
+    const ok = await confirmDialog("Reopen the results?",
+      "This takes back the swap token this show gave out (if it hasn't been spent) and unlocks the results for editing.", "Reopen");
+    if(!ok) return;
+    const f = S.final;
+    try{
+      if(f && f.league){
+        let spent = [];
+        await withinMs(db.ref("leagues/"+f.league+"/data/aew_swaps").transaction(cur=>{
+          const sw = swapsShape(cur); spent = [];
+          (f.winners||[]).forEach(team=>{
+            const id = ev.id + ":" + team, i = sw.awards.findIndex(a=>a && a.id===id);
+            if(i===-1) return;
+            sw.awards.splice(i,1);
+            if((Number(sw.tokens[team])||0) > 0) sw.tokens[team] = Number(sw.tokens[team]) - 1; else spent.push(team);
+          });
+          return JSON.stringify(sw);
+        }), 15000);
+        if(spent.length) toast(spent.map(k=>nameFor(k)).join(" & ") + " already used the token — sort that one out in the fantasy app.");
+      }
+      await withinMs(db.ref(base+"/final").remove(), 10000);
+      S.tab = "card"; S.resultsMode = true;
+      document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab==="card")));
+      $("#panel-card").classList.remove("hidden"); $("#panel-table").classList.add("hidden");
+      renderAll();
+    }catch(err){ toast("Couldn't reopen: " + err.message); }
+  }
+
+  // ── data ──
+  renderAll();
+  S.tick = setInterval(()=>{ renderLock(); if(locked() && !S.wasLocked){ S.wasLocked = true; renderAll(); } }, 20000);
+  S.wasLocked = locked();
+
+  if(S.legacy){
+    try{
+      const data = await getJSON(ev.legacySheet);
+      const parts = (data && data.participants) || [];
+      parts.forEach(p=>{
+        if(p.name==="__RESULTS__"){ S.results = p.picks || {}; return; }
+        const k = LEAGUE_KEYS.indexOf(slug(p.name))!==-1 ? slug(p.name) : "g_"+slug(p.name);
+        S.picks[k] = { name:p.name, picks:p.picks||{} };
+      });
+      S.tab = "table";
+      document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab==="table")));
+      $("#panel-card").classList.add("hidden"); $("#panel-table").classList.remove("hidden");
+    }catch(e){ toast("Couldn't read the old sheet: " + e.message); }
+    renderAll();
     return;
   }
+
+  getJSON("picks/"+ev.id+"/ryan.json").then(r=>{ S.ryan = r; renderAll(); }).catch(e=>{ S.ryanErr = e.message; renderAll(); });
+
   try{
-    const stored = await window.storage.get("aewName", false);
-    if(stored && stored.value){
-      currentUser = stored.value;
-      document.getElementById("nameInput").value = currentUser;
-    }
-  }catch(err){}
-  setSyncStatus(currentUser ? "loading…" : "enter your name");
-  await loadAll();
-  if(currentUser) setSyncStatus("synced", "ok");
+    await initDb();
+    if(S.dead) return;
+    S.ref = db.ref(base);
+    S.ref.on("value", snap=>{
+      const v = snap.val() || {};
+      const incoming = v.picks || {};
+      // Keep this device's unsaved edits; take everything else from the server.
+      Object.keys(incoming).forEach(k=>{ if(k===S.pendingMine) return; S.picks[k] = incoming[k]; if(S.picks[k] && !S.picks[k].picks) S.picks[k].picks = {}; });
+      if(!S.pendingResults) S.results = v.results || {};
+      S.final = v.final || null;
+      if(S.final) S.final.winners = arrayOf(S.final.winners);
+      if(S.final) S.resultsMode = false;
+      renderAll();
+    }, err=>toast("Can't read picks: " + err.message));
+  }catch(e){
+    toast("Can't reach the database — picks won't save until it's back. " + e.message);
+  }
 }
 
-document.getElementById("nameInput").addEventListener("change", async (e)=>{
-  currentUser = e.target.value.trim();
-  if(!currentUser) return;
-  try{ await window.storage.set("aewName", currentUser, false); }catch(err){}
-  setSyncStatus("loading…");
-  await loadAll();
-  setSyncStatus("synced", "ok");
-});
-
-document.getElementById("resultsToggle").addEventListener("click", ()=>{
-  resultsMode = !resultsMode;
-  const btn = document.getElementById("resultsToggle");
-  btn.textContent = "Full-time results: " + (resultsMode ? "on" : "off");
-  btn.classList.toggle("on", resultsMode);
-  renderAll();
-});
-
-document.getElementById("resetBtn").addEventListener("click", ()=>{
-  const t = activePicks();
-  Object.keys(t).forEach(k=>delete t[k]);
-  renderAll();
-  scheduleSave();
-});
-
-document.querySelectorAll(".tab-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
+// ── tiny confirm dialog ──
+function confirmDialog(title, body, okLabel){
+  return new Promise(res=>{
+    const host = $("#dialogs");
+    host.innerHTML = `<div class="scrim" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="dialog">
+      <h3 id="dlgT">${esc(title)}</h3><p>${body}</p>
+      <div class="btns"><button class="btn" data-a="no">Cancel</button><button class="btn primary" data-a="yes">${esc(okLabel)}</button></div></div></div>`;
+    const done = v=>{ host.innerHTML = ""; res(v); };
+    host.querySelector('[data-a="yes"]').focus();
+    host.querySelector(".scrim").addEventListener("click", e=>{
+      if(e.target.dataset.a==="yes") done(true);
+      else if(e.target.dataset.a==="no" || e.target.classList.contains("scrim")) done(false);
+    });
   });
-});
+}
 
-document.getElementById("rosterList").innerHTML =
-  ROSTER.map(n=>'<option value="'+n+'"></option>').join("");
-
-renderAll();
-initSync();
+route();
 </script>
 </body>
 </html>
