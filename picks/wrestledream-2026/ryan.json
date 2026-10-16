@@ -1,0 +1,39 @@
+{
+  "eventId": "wrestledream-2026",
+  "player": "ryan",
+  "generatedAt": "2026-10-16T16:07:00-07:00",
+  "generatedBy": "RyAI (Claude, persona run)",
+  "persona": "Picked by RyAI as Ryan: catches wrestling every few weeks, skims the headlines, picks on gut and star power.",
+  "picks": {
+    "tb_ftr_mcmg": "FTR",
+    "tb_sos": "Divine Dominion",
+    "tbs": "Persephone",
+    "jericho_wayne": "Chris Jericho",
+    "national": "Andrade El Idolo",
+    "continental": "Jon Moxley",
+    "trios": "Hangman Page & Brodido",
+    "tag": "Young Bucks",
+    "womens": "Mercedes Moné",
+    "carnage": "Kazuchika Okada",
+    "titles_changed": 2,
+    "callis_gold": "No",
+    "trios_three": "Yes",
+    "carnage_falls": 3
+  },
+  "notes": {
+    "tb_ftr_mcmg": "It's a best of five, so the guys who always win get the first one. FTR.",
+    "tb_sos": "No idea who either team is, but Divine Dominion sounds like a final boss.",
+    "tbs": "Four people and only one of them has the belt and Britt Baker in her corner. Easy.",
+    "jericho_wayne": "Jericho's been around since I was a kid. The kid can wait.",
+    "national": "Andrade's the champ and Ciampa looks like a guy who loses close ones.",
+    "continental": "You don't beat Moxley on a Saturday in October. That's the rule.",
+    "trios": "Hangman's on the poster looking furious. Furious guys win trios matches.",
+    "tag": "The Bucks have like a hundred tag title reigns. Make it a hundred and one.",
+    "womens": "Mercedes is the biggest star in the women's division and she knows it.",
+    "carnage": "Ospreay's great but Okada is the name my mates who stopped watching still know. Big moment.",
+    "titles_changed": "The world title and the trios belts. Everyone else hangs on.",
+    "callis_gold": "Callis is too smug. Someone always wipes that smile off.",
+    "trios_three": "Two out of three falls always goes the distance on a big show.",
+    "carnage_falls": "Fifteen minutes is loads of time. Three falls and he's champ."
+  }
+}
