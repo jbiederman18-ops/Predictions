@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#16181d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Orbitron:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Cinzel:wght@700;900&family=Lilita+One&family=Orbitron:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ── Themes ─────────────────────────────────────────────────────────────
      Each show names a theme in its event file. The home page uses "ringside". */
@@ -28,6 +28,13 @@
     --text:#f6eedb; --dim:#bfaed6; --accent:#f2c14e; --accent-ink:#241602;
     --good:#4cc38a; --bad:#f07a63; --nola-green:#46d36b; --nola-purple:#7b55d6; --iron:#0d0618;
     --display:'Orbitron','Big Shoulders Display',sans-serif; --display-weight:900; --display-track:0.01em;
+  }
+  /* WrestleDream: watercolour dawn, crimson silk ribbon, gold-framed plaques */
+  body[data-theme="dream"]{
+    --bg:#13172a; --surface:#1c2136; --surface2:#252b44; --line:#3a4262;
+    --text:#f7f1e3; --dim:#b3b4c8; --accent:#e9b65a; --accent-ink:#2a1a04;
+    --good:#5cc79a; --bad:#ef6b5b; --dream-red:#d3243a; --dream-gold:#e9b65a; --dream-sky:#7fa8c9;
+    --display:'Lilita One','Big Shoulders Display',sans-serif; --display-weight:400; --display-track:0.01em;
   }
   body[data-theme="matchday"]{
     --bg:#070d1f; --surface:#0e1936; --surface2:#152242; --line:#243358;
@@ -95,6 +102,32 @@
   body[data-theme="nola"] .bout:nth-of-type(3n){ border-left-color:var(--accent); }
   body[data-theme="nola"] .bout.correct{ border-left-color:var(--good); }
   body[data-theme="nola"] .bout.wrong{ border-left-color:var(--bad); }
+  body[data-theme="dream"]{ background:
+      radial-gradient(110% 55% at 80% -12%, rgba(233,182,90,.22), transparent 62%),
+      radial-gradient(80% 45% at 0% -5%, rgba(127,168,201,.25), transparent 62%),
+      radial-gradient(70% 40% at 100% 30%, rgba(211,36,58,.10), transparent 60%), no-repeat var(--bg); }
+  /* Poster wordmark: chunky white letters, crimson outline, inked drop shadow */
+  body[data-theme="dream"] .show-name{
+    font-size:clamp(40px, 12.6vw, 104px); line-height:.95; text-transform:uppercase; letter-spacing:.005em;
+    color:#fffaf0; -webkit-text-stroke:clamp(2px, .7vw, 5px) var(--dream-red); paint-order:stroke fill;
+    text-shadow:0 5px 0 #4a0d17, 0 0 40px rgba(233,182,90,.28);
+  }
+  body[data-theme="dream"] .promo{ font-family:'Cinzel',serif; font-weight:900; letter-spacing:.3em; color:var(--dream-gold); }
+  body[data-theme="dream"] .show-sub{
+    display:inline-block; font-family:'Cinzel',serif; font-weight:900; font-style:normal; text-transform:uppercase; letter-spacing:.14em;
+    font-size:clamp(16px, 4.6vw, 24px); color:var(--dream-gold); margin-top:12px; padding:5px 14px;
+    border:2px solid var(--dream-gold); border-radius:3px; box-shadow:inset 0 0 0 3px var(--bg), inset 0 0 0 4px rgba(233,182,90,.5);
+  }
+  body[data-theme="dream"] .bout h3, body[data-theme="dream"] .section-head{ font-family:'Cinzel',serif; font-weight:900; letter-spacing:.02em; }
+  body[data-theme="dream"] .bout h3{ font-size:18px; line-height:1.3; color:var(--dream-gold); }
+  body[data-theme="dream"] .section-head{ font-size:22px; text-transform:uppercase; color:#fffaf0; letter-spacing:.08em; }
+  body[data-theme="dream"] .lockline .count{ font-family:'Lilita One',sans-serif; font-weight:400; font-size:28px; color:#fffaf0; }
+  body[data-theme="dream"] .winner h3{ font-size:22px; }
+  body[data-theme="dream"] .bout{ border-color:rgba(233,182,90,.28); border-left-color:var(--dream-red); }
+  body[data-theme="dream"] .bout:nth-of-type(2n){ border-left-color:var(--dream-gold); }
+  body[data-theme="dream"] .bout.correct{ border-left-color:var(--good); }
+  body[data-theme="dream"] .bout.wrong{ border-left-color:var(--bad); }
+  .ribbon{ display:block; width:calc(100% + 32px); margin:20px -16px 0; height:54px; }
   .balcony{ display:block; width:calc(100% + 32px); margin:22px -16px 0; height:58px; color:var(--iron); }
   .balcony .rail{ fill:var(--accent); opacity:.85; }
 
@@ -345,7 +378,13 @@ const PRED_ROOT = "leagues/_predictions/events";
 const CARD_PATH = "leagues/_predictions/cards";      // cards made or edited on the setup page (JSON strings)
 const PUBLIC_CARD_PATH = "predictionCards";          // read-only mirror RyAI can fetch without signing in
 const PLAYER_PATH = "leagues/_predictions/players";  // player photos
-const THEMES = [["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
+const THEMES = [["dream","WrestleDream (dawn sky, crimson ribbon, gold)"],["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
+// Flowing crimson silk ribbon, used under the WrestleDream hero.
+const DREAM_RIBBON = `<svg class="ribbon" viewBox="0 0 400 54" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 34 C60 6 110 6 160 26 S260 50 310 22 S380 4 400 14 L400 24 C380 16 350 28 312 36 S220 56 158 38 S60 18 0 46 Z" fill="#d3243a"/>
+  <path d="M0 46 C60 18 120 22 158 38 C120 30 60 30 0 54 Z" fill="#8f1426"/>
+  <path d="M40 20 C90 2 140 4 175 18" fill="none" stroke="#e9b65a" stroke-width="1.6" opacity=".7"/>
+  <path d="M250 44 C290 38 330 18 400 8" fill="none" stroke="#e9b65a" stroke-width="1.6" opacity=".55"/></svg>`;
 // Wrought-iron French Quarter balcony railing, used under the New Orleans hero.
 const NOLA_BALCONY = (()=>{
   let bays = "";
@@ -375,7 +414,7 @@ const LEAGUE = [
   { key:"ryan",  name:"Ryan", bot:true },
 ];
 const LEAGUE_KEYS = LEAGUE.map(p=>p.key);
-const THEME_SWATCH = { nola:"#8b5cc4", briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
+const THEME_SWATCH = { dream:"#d3243a", nola:"#8b5cc4", briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
 
 // ── small helpers ──────────────────────────────────────────────────────────
 const $ = (s, r=document)=>r.querySelector(s);
@@ -705,7 +744,7 @@ async function showEvent(id, carry){
       ${ev.subtitle? `<p class="show-sub">${esc(ev.subtitle)}</p>`:""}
       <p class="show-meta">${esc(fmtDate(ev.start,{weekday:"long",month:"long",day:"numeric"}))}${ev.legacy||ev.legacySheet?"":" · "+esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}${ev.venue? " · "+esc(ev.venue):""}</p>
       <div class="lockline" id="lockline"></div>
-      ${ev.theme==="nola" ? NOLA_BALCONY : ""}
+      ${ev.theme==="nola" ? NOLA_BALCONY : ev.theme==="dream" ? DREAM_RIBBON : ""}
     </header>
     <div class="whobar" id="whobar"></div>
     <div class="tabs" role="tablist">
