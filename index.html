@@ -315,6 +315,10 @@
   .pedit label{ font-size:13px; font-weight:500; color:var(--accent); cursor:pointer; text-decoration:underline; }
   .pedit input{ position:absolute; width:1px; height:1px; opacity:0; }
   .pedit .linkbtn{ font-size:12px; padding:0; }
+  .pedit .gtag{ display:block; font-size:11px; font-weight:500; color:var(--dim); text-align:center; }
+  .pedit span{ text-align:center; }
+  .addguest{ flex-basis:100%; display:flex; gap:8px; margin-top:4px; }
+  .addguest .field{ flex:1; }
   .err{ color:var(--bad); font-size:14px; margin:8px 0 0; }
   .setup-link{ display:inline-block; margin:22px 0 0; color:var(--dim); font-size:14px; }
 
@@ -620,7 +624,7 @@ function norm(v){ return (v==null?"":String(v)).trim().toLowerCase().replace(/\s
 function arrayOf(v){ return Array.isArray(v) ? v : (v && typeof v==="object" ? Object.values(v) : []); }
 function blank(v){ return v===undefined || v===null || v===""; }
 function slug(s){ return norm(s).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "guest"; }
-function nameFor(key, entry){ const l = LEAGUE.find(p=>p.key===key); return l ? l.name : ((entry && entry.name) || key); }
+function nameFor(key, entry){ const l = LEAGUE.find(p=>p.key===key); return l ? l.name : ((entry && entry.name) || (typeof GUESTS!=="undefined" && GUESTS[key]) || key); }
 function fmtDate(iso, opts){ try{ return new Date(iso).toLocaleString(undefined, opts); }catch(e){ return iso; } }
 function shortDate(iso){ return fmtDate(iso, { month:"short", day:"numeric" }); }
 function toast(msg){
@@ -658,12 +662,27 @@ function initDb(){
 
 // ── Player photos ──────────────────────────────────────────────────────────
 let PHOTOS = {};
+let GUESTS = {};      // saved guest players: key → name. They play every show but never win a swap token.
+function guestKey(n){ return "g_" + slug(n); }
+// Save a guest to the shared player list (keeps any photo already there).
+async function saveGuest(n){
+  const name = String(n||"").trim(); if(!name) return null;
+  const k = slug(name);
+  if(LEAGUE_KEYS.indexOf(k)!==-1) return k;
+  await initDb();
+  await withinMs(db.ref(PLAYER_PATH+"/"+guestKey(name)).update({ name, guest:true }), 10000);
+  GUESTS[guestKey(name)] = name;
+  return guestKey(name);
+}
 let photosBound = false;
 function bindPhotos(){
   if(photosBound || !db) return; photosBound = true;
   db.ref(PLAYER_PATH).on("value", snap=>{
-    const v = snap.val() || {}; PHOTOS = {};
-    Object.keys(v).forEach(k=>{ if(v[k] && v[k].photo) PHOTOS[k] = v[k].photo; });
+    const v = snap.val() || {}; PHOTOS = {}; GUESTS = {};
+    Object.keys(v).forEach(k=>{
+      if(v[k] && v[k].photo) PHOTOS[k] = v[k].photo;
+      if(v[k] && v[k].guest && v[k].name && LEAGUE_KEYS.indexOf(k)===-1) GUESTS[k] = v[k].name;
+    });
     if(view && view.repaint) view.repaint();
   }, ()=>{ photosBound = false; });
 }
@@ -998,6 +1017,7 @@ async function showEvent(id, carry){
     if(S.legacy){ el.innerHTML = `<span class="note" style="margin:0">Cards from the old sheet are shown as they were saved.</span>`; return; }
     el.classList.add("photos");
     const guests = Object.keys(S.picks).filter(k=>LEAGUE_KEYS.indexOf(k)===-1);
+    Object.keys(GUESTS).sort((a,b)=>GUESTS[a].localeCompare(GUESTS[b])).forEach(k=>{ if(guests.indexOf(k)===-1) guests.push(k); });
     const people = LEAGUE.map(p=>({ key:p.key, name:p.name })).concat(guests.map(k=>({ key:k, name:nameFor(k,S.picks[k]) })));
     const p = target(), done = answeredCount(ev, p), tot = totalQs(ev);
     el.innerHTML = `<div class="head"><span>${S.me ? "Picking as" : "Who's picking? Tap your face."}</span></div>
@@ -1009,11 +1029,11 @@ async function showEvent(id, carry){
     el.querySelectorAll("[data-me]").forEach(b=>b.addEventListener("click", ()=>{
       let v = b.dataset.me;
       if(v==="__new"){
-        const n = (prompt("Guest's name?")||"").trim();
+        const n = (prompt("Guest's name? They'll be saved for every show, but can't win a swap token.")||"").trim();
         if(!n) return;
         const k = slug(n);
         if(LEAGUE_KEYS.indexOf(k)!==-1){ v = k; }
-        else { v = "g_"+k; if(!S.picks[v]) S.picks[v] = { name:n, picks:{} }; }
+        else { v = "g_"+k; if(!S.picks[v]) S.picks[v] = { name:n, picks:{} }; saveGuest(n).catch(()=>{}); }
       }
       flushSaves();
       S.me = v; lsSet("pred_me", v); renderAll();
@@ -1593,28 +1613,47 @@ async function setupHome(app){
     <p class="lede">Add a show, fix a card when it changes, or swap in new photos. Everything saves straight to the live site.</p>
     <h2>Players</h2>
     <div class="panel"><div class="players-edit" id="playersEdit"></div>
-      <p class="note" style="margin-bottom:0">Photos show up on the “who's picking” buttons and in the league table. Square-ish photos work best.</p></div>
+      <p class="note" style="margin-bottom:0">Photos show up on the “who's picking” buttons, the league table and the TV. Square-ish photos work best. Guests play every show and appear in the tables, but only Josh, Maria, Erik and Ryan can win a swap token.</p></div>
     <h2>Shows</h2>
     <div id="setupShows"><div class="empty">Loading the shows…</div></div>
     <p><a class="btn primary" href="#/setup/new" style="text-decoration:none;display:inline-block">Add a show</a></p>
   </div>`;
   const paintPlayers = ()=>{
     const el = $("#playersEdit"); if(!el) return;
-    el.innerHTML = LEAGUE.map(p=>`<div class="pedit">${avatar(p.key, p.name)}<span>${esc(p.name)}</span>
+    const people = LEAGUE.map(p=>({ key:p.key, name:p.name }))
+      .concat(Object.keys(GUESTS).sort((a,b)=>GUESTS[a].localeCompare(GUESTS[b])).map(k=>({ key:k, name:GUESTS[k], guest:true })));
+    el.innerHTML = people.map(p=>`<div class="pedit">${avatar(p.key, p.name)}<span>${esc(p.name)}${p.guest?`<small class="gtag">Guest</small>`:""}</span>
       <label for="ph_${p.key}">${PHOTOS[p.key] ? "Change photo" : "Add photo"}</label>
       <input type="file" accept="image/*" id="ph_${p.key}" data-photo="${p.key}">
-      ${PHOTOS[p.key] ? `<button class="linkbtn" data-unphoto="${p.key}">Remove</button>` : ""}</div>`).join("");
+      ${PHOTOS[p.key] ? `<button class="linkbtn" data-unphoto="${p.key}">Remove photo</button>` : ""}
+      ${p.guest ? `<button class="linkbtn" data-unguest="${p.key}">Remove player</button>` : ""}</div>`).join("") +
+      `<form class="addguest" id="addGuest"><input class="field" id="guestName" placeholder="Add a guest player" maxlength="30" autocomplete="off">
+        <button class="btn primary" type="submit">Add</button></form>`;
+    $("#addGuest", el).addEventListener("submit", async e=>{
+      e.preventDefault();
+      const n = $("#guestName", el).value.trim(); if(!n) return;
+      if(LEAGUE_KEYS.indexOf(slug(n))!==-1){ toast(n + " is already in the league."); return; }
+      try{ await saveGuest(n); paintPlayers(); toast(n + " added as a guest."); }
+      catch(err){ toast("Couldn't add them: " + err.message); }
+    });
+    el.querySelectorAll("[data-unguest]").forEach(b=>b.addEventListener("click", async ()=>{
+      const k = b.dataset.unguest;
+      if(!confirm(`Remove ${GUESTS[k]} from the player list? Picks they've already made stay on those shows.`)) return;
+      try{ await initDb(); await withinMs(db.ref(PLAYER_PATH+"/"+k).remove(), 10000); delete GUESTS[k]; delete PHOTOS[k]; paintPlayers(); }
+      catch(err){ toast("Couldn't remove them: " + err.message); }
+    }));
     el.querySelectorAll("[data-photo]").forEach(inp=>inp.addEventListener("change", async ()=>{
       const f = inp.files && inp.files[0]; if(!f) return;
       try{
         const data = await resizePhoto(f);
         await initDb();
-        await withinMs(db.ref(PLAYER_PATH+"/"+inp.dataset.photo).set({ photo:data, updatedAt:firebase.database.ServerValue.TIMESTAMP }), 15000);
+        await withinMs(db.ref(PLAYER_PATH+"/"+inp.dataset.photo).update({ photo:data, updatedAt:firebase.database.ServerValue.TIMESTAMP }), 15000);
         PHOTOS[inp.dataset.photo] = data; paintPlayers(); toast("Photo saved.");
       }catch(e){ toast("The photo didn't save: " + e.message); }
     }));
     el.querySelectorAll("[data-unphoto]").forEach(b=>b.addEventListener("click", async ()=>{
-      try{ await initDb(); await withinMs(db.ref(PLAYER_PATH+"/"+b.dataset.unphoto).remove(), 10000); delete PHOTOS[b.dataset.unphoto]; paintPlayers(); }
+      try{ await initDb(); const k = b.dataset.unphoto;
+        await withinMs(GUESTS[k] ? db.ref(PLAYER_PATH+"/"+k+"/photo").remove() : db.ref(PLAYER_PATH+"/"+k).remove(), 10000); delete PHOTOS[k]; paintPlayers(); }
       catch(e){ toast("Couldn't remove the photo: " + e.message); }
     }));
   };
