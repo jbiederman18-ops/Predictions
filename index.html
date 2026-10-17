@@ -334,6 +334,166 @@
     .show-name{ animation:rise .5s cubic-bezier(.2,.7,.2,1) both; }
     @keyframes rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
   }
+
+  /* ── Party mode: the TV view (#/<show>/tv) ─────────────────────────────── */
+  .tvlink{ display:inline-flex; align-items:center; gap:6px; margin:14px 0 0; padding:7px 14px; border:1px solid var(--line); border-radius:999px;
+           color:var(--text); text-decoration:none; font-weight:600; font-size:14px; background:var(--surface); }
+  .tvlink:hover{ border-color:var(--accent); }
+  body.tv{ padding:0; overflow:hidden; }
+  body.tv .wrap, body.tv #dialogs{ display:none; }
+  #tv{ --u:min(1.7vh, .95vw); position:fixed; inset:0; font-size:var(--u); overflow:hidden; }
+  .tv-msg{ height:100%; display:grid; place-items:center; color:var(--dim); font-size:2em; text-align:center; padding:2em; }
+  .tv-grid{ height:100%; display:grid; grid-template-columns:minmax(0,1fr) 31em; grid-template-rows:auto minmax(0,1fr) auto;
+            gap:1.6em 2.4em; padding:2.2em 3em 1.6em; }
+  .tv-head{ grid-column:1 / -1; display:flex; align-items:flex-end; justify-content:space-between; gap:2em; min-width:0; }
+  #tv .promo{ font-size:1.25em; margin:0 0 .35em; }
+  body.tv .show-name{ font-size:6.2em; animation:none; }
+  body.tv[data-theme="dream"] .show-name{ -webkit-text-stroke:.07em var(--dream-red); }
+  body.tv[data-theme="nola"] .show-name{ -webkit-text-stroke:.035em var(--nola-green); }
+  #tv .show-sub{ font-size:1.7em; }
+  .tv-status{ text-align:right; flex:none; }
+  .tv-status .k{ margin:0; color:var(--dim); font-size:1.15em; font-weight:700; text-transform:uppercase; letter-spacing:.14em; }
+  .tv-status .big{ font-family:var(--display); font-weight:var(--display-weight); font-size:4.6em; line-height:1; font-variant-numeric:tabular-nums; margin:.08em 0 0; }
+  .tv-status .sub{ margin:.3em 0 0; color:var(--dim); font-size:1.15em; }
+  .tv-live{ display:inline-flex; align-items:center; gap:.45em; }
+  .tv-live::before{ content:""; width:.62em; height:.62em; border-radius:50%; background:#ff3b3b; box-shadow:0 0 0 0 rgba(255,59,59,.6); animation:tvpulse 1.8s infinite; }
+  @keyframes tvpulse{ 70%{ box-shadow:0 0 0 .7em rgba(255,59,59,0); } 100%{ box-shadow:0 0 0 0 rgba(255,59,59,0); } }
+  .tv-conn{ display:inline-block; width:.6em; height:.6em; border-radius:50%; background:var(--dim); margin-left:.5em; vertical-align:.1em; }
+  .tv-conn.ok{ background:var(--good); } .tv-conn.err{ background:var(--bad); }
+
+  .tv-main{ grid-column:1; grid-row:2; min-height:0; min-width:0; display:flex; flex-direction:column; }
+  .tv-k{ margin:0; font-size:1.2em; font-weight:700; text-transform:uppercase; letter-spacing:.16em; color:var(--accent); }
+  .tv-title{ font-family:var(--display); font-weight:var(--display-weight); font-size:3.6em; line-height:1.02; margin:.12em 0 0; text-wrap:balance; }
+  body.tv[data-theme="dream"] .tv-title{ font-family:'Cinzel',serif; font-weight:900; color:var(--dream-gold); font-size:3.1em; }
+  .tv-stip{ margin:.35em 0 0; color:var(--dim); font-size:1.35em; }
+  .tiles{ flex:1; min-height:0; display:grid; gap:1em; margin:1.4em 0 0; grid-template-columns:repeat(auto-fit, minmax(15em, 1fr)); align-content:start; }
+  .tiles.few{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+  .tile{ background:var(--surface); border:2px solid var(--line); border-radius:1em; padding:1.2em 1.3em; display:flex; flex-direction:column; gap:.7em; min-width:0; }
+  .tiles.few .tile{ padding:1.8em; min-height:14em; }
+  .tile.fav{ border-color:var(--accent); box-shadow:0 0 0 .2em color-mix(in srgb, var(--accent) 25%, transparent); }
+  .tile.none{ opacity:.5; }
+  .tile .tn{ font-family:var(--display); font-weight:var(--display-weight); font-size:1.9em; line-height:1.05; overflow-wrap:anywhere; }
+  .tiles.few .tile .tn{ font-size:2.8em; }
+  .tile .champ{ display:block; font-family:'Public Sans',sans-serif; font-size:.42em; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-top:.35em; }
+  .tile .tw{ display:flex; flex-wrap:wrap; gap:.5em; margin-top:auto; }
+  .tile .tw .av{ --s:calc(var(--u) * 3.4); }
+  .tiles.few .tile .tw .av{ --s:calc(var(--u) * 5); }
+  .tile .tc{ color:var(--dim); font-size:1.1em; font-weight:600; }
+  .tv-next{ margin:1.2em 0 0; display:flex; gap:.6em; align-items:center; flex-wrap:wrap; font-size:1.15em; color:var(--dim); }
+  .tv-next span{ background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:.3em .9em; color:var(--text); }
+  .tv-next b{ font-weight:700; text-transform:uppercase; letter-spacing:.12em; font-size:.85em; color:var(--dim); margin-right:.2em; }
+
+  .tv-pre{ flex:1; min-height:0; display:grid; grid-template-columns:auto minmax(0,1fr); gap:2.4em; align-items:start; margin-top:.4em; }
+  .tv-join{ background:var(--surface); border:1px solid var(--line); border-radius:1.2em; padding:1.8em; width:22em; text-align:center; }
+  .tv-join .qr{ background:#fff; border-radius:.8em; padding:.8em; width:16em; height:16em; margin:0 auto 1.2em; }
+  .tv-join .qr svg{ width:100%; height:100%; display:block; }
+  .tv-join .url{ font-weight:700; font-size:1.25em; overflow-wrap:anywhere; margin:.3em 0; }
+  .tv-join .d{ color:var(--dim); font-size:1.1em; margin:0; }
+  .tv-card{ min-height:0; overflow:hidden; }
+  .tv-card ol{ list-style:none; margin:.8em 0 0; padding:0; columns:2; column-gap:2em; }
+  .tv-card li{ break-inside:avoid; padding:.55em 0; border-bottom:1px solid var(--line); font-size:1.35em; font-weight:600; }
+  .tv-card li small{ display:block; color:var(--dim); font-weight:500; font-size:.78em; }
+
+  .tv-done{ flex:1; display:flex; flex-direction:column; justify-content:center; }
+  .tv-done .tv-title{ font-size:5em; }
+  .tv-done p{ font-size:1.6em; color:var(--dim); margin:.6em 0 0; max-width:34em; }
+  .tv-champs{ display:flex; gap:2em; margin:1.6em 0 0; flex-wrap:wrap; }
+  .tv-champs .c{ display:flex; flex-direction:column; align-items:center; gap:.5em; font-weight:700; font-size:1.6em; }
+  .tv-champs .av{ --s:calc(var(--u) * 6.5); border:.18em solid var(--accent); box-shadow:0 0 2.5em color-mix(in srgb, var(--accent) 45%, transparent); }
+  .tv-token{ display:inline-block; margin-top:1.2em; padding:.5em 1.2em; border-radius:999px; background:var(--accent); color:var(--accent-ink); font-weight:800; font-size:1.4em; }
+
+  .tv-board{ grid-column:2; grid-row:2; min-height:0; background:var(--surface); border:1px solid var(--line); border-radius:1.1em; padding:1.4em 1.4em 1em;
+             display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .tv-board h2{ margin:0 0 .7em; font-family:var(--display); font-weight:var(--display-weight); font-size:2.2em; line-height:1; }
+  body.tv[data-theme="dream"] .tv-board h2{ font-family:'Cinzel',serif; font-weight:900; text-transform:uppercase; letter-spacing:.08em; font-size:1.7em; }
+  .tvr{ display:grid; grid-template-columns:1.6em auto minmax(0,1fr) auto; gap:.8em; align-items:center; padding:.7em .4em; border-bottom:1px solid var(--line); }
+  .tvr:last-child{ border-bottom:0; }
+  .tvr .rk{ font-family:var(--display); font-weight:var(--display-weight); font-size:1.7em; color:var(--dim); text-align:center; }
+  .tvr .av{ --s:calc(var(--u) * 3.6); }
+  .tvr .nm{ font-weight:700; font-size:1.45em; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tvr .nm small{ display:block; font-weight:500; font-size:.68em; color:var(--dim); }
+  .tvr .pts{ font-family:var(--display); font-weight:var(--display-weight); font-size:2.6em; line-height:1; font-variant-numeric:tabular-nums; text-align:right; }
+  .tvr .pts small{ display:block; font-family:'Public Sans',sans-serif; font-size:.36em; font-weight:600; color:var(--dim); letter-spacing:.06em; text-transform:uppercase; }
+  .tvr.lead .rk{ color:var(--accent); }
+  .tvr.lead .av{ border-color:var(--accent); box-shadow:0 0 0 .15em var(--accent); }
+  .tvr.lead .pts{ color:var(--accent); }
+  .tvr .bar{ width:7em; }
+  .tvr .bar .track{ display:block; height:.45em; background:var(--surface2); border-radius:.3em; overflow:hidden; }
+  .tvr .bar .fill{ display:block; height:100%; background:var(--accent); transition:width .5s; }
+  .tvr .bar span.l{ display:block; text-align:right; font-size:1em; color:var(--dim); margin-top:.3em; font-weight:600; }
+  .tvr .bar.done span.l{ color:var(--good); }
+  .tvr.empty{ opacity:.45; }
+  .tv-board .note2{ margin:auto 0 0; padding-top:.8em; color:var(--dim); font-size:1em; }
+  .tv-lead{ position:absolute; left:1em; right:1em; bottom:1em; background:var(--accent); color:var(--accent-ink); border-radius:.8em; padding:.8em 1em;
+            font-weight:800; font-size:1.4em; text-align:center; animation:tvpop .5s cubic-bezier(.2,.9,.3,1.4) both; }
+  @keyframes tvpop{ from{ transform:translateY(1.5em) scale(.9); opacity:0; } to{ transform:none; opacity:1; } }
+
+  .tv-foot{ grid-column:1 / -1; grid-row:3; display:flex; align-items:center; gap:1.2em; min-width:0; color:var(--dim); font-size:1.1em; }
+  .tv-ticker{ flex:1; min-width:0; display:flex; gap:.7em; overflow:hidden; justify-content:flex-start; }
+  .tv-ticker .tk{ flex:none; display:inline-flex; align-items:center; gap:.5em; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:.35em .5em .35em 1em; white-space:nowrap; }
+  .tv-ticker .tk b{ color:var(--text); }
+  .tv-ticker .tk .av{ --s:calc(var(--u) * 1.8); border-width:1px; margin-left:-.35em; }
+  .tv-ticker .tk .av:first-of-type{ margin-left:0; }
+  .tv-ticker .tk .zero{ font-size:.9em; padding-right:.5em; }
+  .tv-foot .join{ flex:none; white-space:nowrap; }
+  .tv-foot .join b{ color:var(--text); }
+
+  .tv-reveal{ position:fixed; inset:0; z-index:40; display:grid; place-items:center; padding:3em; font-size:min(1.7vh, .95vw);
+              background:radial-gradient(80% 70% at 50% 38%, var(--surface2), var(--bg) 75%);
+              opacity:0; visibility:hidden; transition:opacity .45s, visibility 0s .45s; }
+  .tv-reveal.on{ opacity:1; visibility:visible; transition:opacity .45s; }
+  .rv{ width:min(76em, 100%); text-align:center; }
+  .rv-k{ margin:0; font-size:1.5em; font-weight:800; letter-spacing:.24em; text-transform:uppercase; color:var(--accent); }
+  .rv-t{ margin:.25em 0 0; font-size:2.6em; line-height:1.1; font-weight:700; text-wrap:balance; }
+  body.tv[data-theme="dream"] .rv-t{ font-family:'Cinzel',serif; font-weight:900; color:var(--dream-gold); }
+  .rv-l{ display:block; margin:1.4em 0 .1em; color:var(--dim); font-size:1.4em; font-weight:700; text-transform:uppercase; letter-spacing:.16em; }
+  .rv-v{ display:block; font-family:var(--display); font-weight:var(--display-weight); font-size:8em; line-height:.95; text-wrap:balance; }
+  body.tv[data-theme="dream"] .rv-v{ text-transform:uppercase; color:#fffaf0; -webkit-text-stroke:.05em var(--dream-red); paint-order:stroke fill; text-shadow:0 .06em 0 #4a0d17; }
+  body.tv[data-theme="nola"] .rv-v{ text-transform:uppercase; color:var(--nola-purple); -webkit-text-stroke:.03em var(--nola-green); paint-order:stroke fill; }
+  .rv-groups{ display:grid; grid-template-columns:1fr 1fr; gap:2em; margin:2.2em 0 0; text-align:left; }
+  .rv-g{ background:var(--surface); border:2px solid var(--line); border-radius:1.1em; padding:1.3em 1.5em; }
+  .rv-g.hit{ border-color:var(--good); }
+  .rv-g h3{ margin:0 0 .8em; font-size:1.3em; text-transform:uppercase; letter-spacing:.14em; }
+  .rv-g.hit h3{ color:var(--good); } .rv-g.miss h3{ color:var(--bad); }
+  .rv-p{ display:inline-flex; flex-direction:column; align-items:center; gap:.35em; width:8.5em; margin:0 .4em .6em 0; text-align:center; vertical-align:top; }
+  .rv-p .av{ --s:calc(var(--u) * 5.2); }
+  .rv-g.hit .rv-p .av{ border-color:var(--good); box-shadow:0 0 0 .15em var(--good); }
+  .rv-g.miss .rv-p .av{ filter:grayscale(.8); opacity:.75; }
+  .rv-p b{ font-size:1.3em; }
+  .rv-p small{ color:var(--dim); font-size:1em; line-height:1.2; }
+  .rv-p .plus{ color:var(--good); font-weight:800; font-size:1.2em; }
+  .rv-g .nobody{ color:var(--dim); font-size:1.3em; margin:.4em 0; }
+  .rv-x{ margin:1.4em 0 0; font-size:2em; font-weight:800; color:var(--accent); }
+  .rv-big{ font-family:var(--display); font-weight:var(--display-weight); font-size:9em; line-height:.95; margin:.15em 0 0; }
+  .rv-sub{ font-size:2em; color:var(--dim); margin:.5em 0 0; }
+  .rv .tv-champs{ justify-content:center; margin-top:2em; }
+  @media (prefers-reduced-motion: no-preference){
+    .tv-reveal.on .rv-k, .tv-reveal.on .rv-t{ animation:rise .5s cubic-bezier(.2,.7,.2,1) both; }
+    .tv-reveal.on .rv-l{ animation:rise .4s 1.1s both; }
+    .tv-reveal.on .rv-v{ animation:slam .55s 1.3s cubic-bezier(.2,.9,.3,1.25) both; }
+    .tv-reveal.on .rv-groups, .tv-reveal.on .rv-x{ animation:rise .5s 2.4s both; }
+    .tv-reveal.on .rv-big{ animation:slam .6s .4s cubic-bezier(.2,.9,.3,1.25) both; }
+    .tv-reveal.on .tv-champs, .tv-reveal.on .rv-sub{ animation:rise .5s 1.2s both; }
+    @keyframes slam{ from{ transform:scale(1.8); opacity:0; } to{ transform:none; opacity:1; } }
+  }
+  .tv-ctl{ position:fixed; right:1.2em; bottom:1.2em; z-index:45; display:flex; gap:.6em; font-size:min(1.7vh, .95vw); transition:opacity .4s; }
+  .tv-ctl a, .tv-ctl button{ background:var(--surface2); border:1px solid var(--line); color:var(--text); border-radius:999px; padding:.6em 1.1em; font-size:1.05em; font-weight:600; text-decoration:none; }
+  .tv-ctl button{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  #tv.idle .tv-ctl{ opacity:0; pointer-events:none; }
+  #tv.idle, #tv.idle *{ cursor:none; }
+  /* A phone or a tall window: stack it and let it scroll */
+  @media (max-aspect-ratio: 1/1){
+    body.tv{ overflow:auto; }
+    #tv{ --u:2.4vw; position:static; font-size:2.4vw; overflow:visible; }
+    .tv-grid{ height:auto; grid-template-columns:1fr; grid-template-rows:none; padding:1.6em; }
+    .tv-head{ flex-direction:column; align-items:flex-start; }
+    .tv-status{ text-align:left; }
+    .tv-main, .tv-board, .tv-foot{ grid-column:1; grid-row:auto; }
+    .tv-pre{ grid-template-columns:1fr; }
+    .tv-join{ width:auto; }
+    .tv-reveal, .tv-ctl{ font-size:2.4vw; }
+    .rv-groups{ grid-template-columns:1fr; }
+  }
 </style>
 </head>
 <body data-theme="ringside">
@@ -519,6 +679,7 @@ function route(){
   const id = m ? m[1] : "";
   window.scrollTo(0,0);
   if(id==="setup") showSetup(m[2] || "");
+  else if(id && m[2]==="tv") showTV(id);
   else if(id) showEvent(id); else showHome();
 }
 window.addEventListener("hashchange", route);
@@ -744,6 +905,7 @@ async function showEvent(id, carry){
       ${ev.subtitle? `<p class="show-sub">${esc(ev.subtitle)}</p>`:""}
       <p class="show-meta">${esc(fmtDate(ev.start,{weekday:"long",month:"long",day:"numeric"}))}${ev.legacy||ev.legacySheet?"":" · "+esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}${ev.venue? " · "+esc(ev.venue):""}</p>
       <div class="lockline" id="lockline"></div>
+      ${ev.legacySheet ? "" : `<a class="tvlink" href="#/${esc(ev.id)}/tv">📺 Party mode — put this on the TV</a>`}
       ${ev.theme==="nola" ? NOLA_BALCONY : ev.theme==="dream" ? DREAM_RIBBON : ""}
     </header>
     <div class="whobar" id="whobar"></div>
@@ -1613,6 +1775,443 @@ async function setupEditor(app, id){
   window.onbeforeunload = ()=> dirty ? "You have unsaved changes." : undefined;
   view = { teardown(){ window.onbeforeunload = null; } };
   paint();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Party mode — #/<show id>/tv. A read-only big-screen view for show night.
+// Before the bell: countdown, a QR code to join, and who's locked in. After it:
+// everyone's picks for the match that's on, a full-screen reveal each time a
+// result goes in on a phone, the live table, and the swap-token moment once the
+// show is finalised. It never writes to the database.
+// ════════════════════════════════════════════════════════════════════════════
+const QR_LIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+let qrLoading = null;
+function loadQR(){
+  if(window.qrcode) return Promise.resolve();
+  if(!qrLoading) qrLoading = new Promise((res, rej)=>{
+    const s = document.createElement("script"); s.src = QR_LIB;
+    s.onload = res; s.onerror = ()=>{ qrLoading = null; rej(new Error("QR code library didn't load")); };
+    document.head.appendChild(s);
+  });
+  return qrLoading;
+}
+function qrSVG(text){
+  try{ const q = qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize:4, margin:0, scalable:true }); }
+  catch(e){ return ""; }
+}
+function clockFmt(ms){
+  let s = Math.max(0, Math.ceil(ms/1000));
+  const d = Math.floor(s/86400); s -= d*86400;
+  const h = Math.floor(s/3600); s -= h*3600;
+  const m = Math.floor(s/60); s -= m*60;
+  if(d) return d+"d "+h+"h";
+  return (h ? h+":"+pad2(m) : m) + ":" + pad2(s);
+}
+const clone = o => JSON.parse(JSON.stringify(o || {}));
+
+async function showTV(id){
+  document.body.classList.add("tv");
+  $("#homeLink").classList.remove("hidden");
+  const old = $("#tv"); if(old) old.remove();
+  const host = document.createElement("div"); host.id = "tv";
+  host.innerHTML = `<div class="tv-msg">Loading the card…</div>`;
+  document.body.appendChild(host);
+
+  const T = { dead:false, refs:[], timers:[], tick:null, picks:{}, results:{}, shown:{}, seen:{}, final:null, ryan:null,
+              queue:[], showing:false, loaded:false, leaders:null, audio:null, wake:null, conn:null, qr:"" };
+  const onVis = ()=>{ if(document.visibilityState==="visible") keepAwake(); };
+  let idleTimer = null;
+  const onMove = ()=>{ host.classList.remove("idle"); clearTimeout(idleTimer); idleTimer = setTimeout(()=>host.classList.add("idle"), 3500); };
+  view = {
+    teardown(){
+      T.dead = true; T.refs.forEach(r=>r.off()); clearInterval(T.tick); T.timers.forEach(clearTimeout); clearTimeout(idleTimer);
+      document.removeEventListener("visibilitychange", onVis); document.removeEventListener("mousemove", onMove);
+      try{ if(T.wake) T.wake.release(); }catch(e){}
+      host.remove(); document.body.classList.remove("tv");
+    },
+    repaint: ()=>{ if(T.loaded) paint(); }
+  };
+  document.addEventListener("visibilitychange", onVis);
+  document.addEventListener("mousemove", onMove); onMove();
+  const later = (fn, ms)=>{ const t = setTimeout(()=>{ if(!T.dead) fn(); }, ms); T.timers.push(t); return t; };
+
+  let ev = CARD_CACHE[id] || await loadCard(id);
+  if(T.dead) return;
+  if(!ev){ host.innerHTML = `<div class="tv-msg">There's no show called “${esc(id)}”.</div>`; return; }
+  if(!ev.id) ev.id = id;
+  if(ev.legacySheet){ host.innerHTML = `<div class="tv-msg">This show is from the old sheet, so there's no party mode for it.</div>`; return; }
+  const evStr = JSON.stringify(ev);
+  const start = new Date(ev.start).getTime();
+  const locked = ()=> Date.now() >= start;
+  T.wasLocked = locked();
+  document.body.dataset.theme = ev.theme || "ringside";
+  document.title = ev.name + " — Party mode";
+  const joinURL = location.origin + location.pathname + "#/" + ev.id;
+  const joinShort = (location.host + location.pathname).replace(/\/(index\.html)?$/, "");
+
+  // Everything that gets a result, in card order. Follow-up names count as their own item.
+  const items = [];
+  ev.bouts.forEach(b=>items.push({ key:b.id, kind:"bout", title:b.title, stip:b.stip, b }));
+  (ev.bonus||[]).forEach(q=>{
+    items.push({ key:bonusKey(q), kind:q.type || "choice", title:q.title, stip:q.stip, q });
+    if(q.followUp) items.push({ key:q.followUp.key, kind:"follow", title:q.followUp.label, q, parent:bonusKey(q) });
+  });
+  const itemFor = k => items.find(i=>i.key===k);
+  const relevant = (it, R)=> it.kind!=="follow" || (!blank(R[it.parent]) && (it.q.followUp.when||[]).indexOf(R[it.parent])!==-1);
+
+  // Same cards the event page uses: Ryan = RyAI's picks with Ryan's own on top.
+  function players(){
+    const list = [];
+    Object.keys(T.picks).forEach(k=>{
+      if(k==="ryan") return;
+      const e = T.picks[k]; if(!e || !e.picks || !Object.keys(e.picks).length) return;
+      list.push({ key:k, name:nameFor(k,e), picks:e.picks });
+    });
+    const merged = Object.assign({}, (T.ryan && T.ryan.picks) || {});
+    const own = (T.picks.ryan && T.picks.ryan.picks) || {};
+    Object.keys(own).forEach(k=>{ if(!blank(own[k])) merged[k] = own[k]; });
+    if(Object.keys(merged).length) list.push({ key:"ryan", name:"Ryan", picks:merged, bot:true });
+    return list;
+  }
+  const hasPick = (it, v)=> !blank(v) && (it.kind==="bout" || it.kind==="follow" || it.kind==="text" || fits(it.q, v));
+  function groupsFor(it, list){
+    const g = [];
+    if(it.kind==="bout") it.b.options.forEach(o=>g.push({ label:o.n, champ:!!o.c, who:[] }));
+    else if(it.kind==="choice") (it.q.options||[]).forEach(o=>g.push({ label:o, who:[] }));
+    list.forEach(p=>{
+      const v = p.picks[it.key];
+      if(!hasPick(it, v)) return;
+      let grp = g.find(x=>norm(x.label)===norm(v));
+      if(!grp){ grp = { label:String(v), who:[] }; g.push(grp); }
+      grp.who.push(p);
+    });
+    if(it.kind==="number") g.sort((a,b)=>Number(a.label)-Number(b.label));
+    return g;
+  }
+  const unit = (it, v) => it.kind==="number" && it.q.unit ? " " + (Number(v)===1 ? it.q.unit.replace(/s$/,"") : it.q.unit) : "";
+  function pending(R){ return items.filter(it=>relevant(it, R) && blank(R[it.key])); }
+
+  // ── standings from what's been revealed so far ──
+  function table(){
+    const list = players();
+    const anyRes = items.some(it=>!blank(T.shown[it.key]));
+    let rows = anyRes ? standings(ev, list, T.shown)
+                      : list.map(p=>Object.assign({}, p, { correct:0, graded:0, bonus:0, answered:answeredCount(ev, p.picks) }));
+    LEAGUE.forEach(l=>{ if(!rows.some(r=>r.key===l.key)) rows.push({ key:l.key, name:l.name, picks:{}, correct:0, graded:0, bonus:0, answered:0, empty:true }); });
+    if(!anyRes){
+      const at = k=>{ const i = LEAGUE_KEYS.indexOf(k); return i===-1 ? 99 : i; };
+      rows.sort((a,b)=> at(a.key)-at(b.key) || a.name.localeCompare(b.name));
+    }
+    rows.forEach((r,i)=>{
+      const first = rows.findIndex(x=>x.correct===r.correct && x.bonus===r.bonus);
+      r.rank = first + 1;
+      r.lead = anyRes && r.correct>0 && r.correct===rows[0].correct && r.bonus===rows[0].bonus;
+    });
+    return { rows, anyRes };
+  }
+
+  // ── shell ──
+  host.innerHTML = `
+    <div class="tv-grid">
+      <header class="tv-head">
+        <div style="min-width:0">
+          <p class="promo">${esc(ev.promotion)}${ev.subtitle? " · "+esc(ev.subtitle):""}<span class="tv-conn" id="tvConn" title="Connection"></span></p>
+          <h1 class="show-name">${esc(ev.name)}</h1>
+        </div>
+        <div class="tv-status" id="tvStatus"></div>
+      </header>
+      <section class="tv-main" id="tvMain"></section>
+      <aside class="tv-board" id="tvBoardWrap"><h2>League table</h2><div id="tvBoard"></div><div id="tvLead"></div></aside>
+      <footer class="tv-foot" id="tvFoot"></footer>
+    </div>
+    <div class="tv-reveal" id="tvReveal" aria-live="assertive"></div>
+    <div class="tv-ctl"><a href="#/${esc(ev.id)}">Exit</a><button id="tvFs">Full screen + sound</button></div>`;
+
+  // ── header ──
+  function paintStatus(){
+    const el = $("#tvStatus", host); if(!el) return;
+    const decided = items.filter(it=>relevant(it, T.shown) && !blank(T.shown[it.key])).length;
+    const total = items.filter(it=>relevant(it, T.shown)).length;
+    if(T.final && T.final.winners && T.final.winners.length){
+      el.innerHTML = `<p class="k">Final</p><p class="big">${decided}/${total}</p><p class="sub">results in</p>`;
+    } else if(!locked()){
+      el.innerHTML = `<p class="k">Picks lock in</p><p class="big" id="tvClock">${esc(clockFmt(start-Date.now()))}</p>
+        <p class="sub">Bell at ${esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}</p>`;
+    } else {
+      el.innerHTML = `<p class="k"><span class="tv-live">Live</span></p><p class="big">${decided}/${total}</p><p class="sub">results in</p>`;
+    }
+  }
+
+  // ── main panel ──
+  function paintMain(){
+    const el = $("#tvMain", host); if(!el) return;
+    const list = players();
+    if(T.final && T.final.winners && T.final.winners.length){
+      const w = T.final.winners;
+      el.innerHTML = `<div class="tv-done"><p class="tv-k">Final</p>
+        <h2 class="tv-title">${esc(w.map(k=>nameFor(k)).join(" & "))} ${w.length>1?"share":"takes"} the swap token</h2>
+        <div class="tv-champs">${w.map(k=>`<div class="c">${avatar(k, nameFor(k))}<span>${esc(nameFor(k))}${T.final.scores && T.final.scores[k] ? ` · ${esc(T.final.scores[k])}`:""}</span></div>`).join("")}</div>
+        <p>${T.final.granted ? "It's already in AEW Fantasy — spend it on a roster swap." : "The token is on its way to AEW Fantasy."}</p></div>`;
+      return;
+    }
+    if(!locked()){
+      const done = list.filter(p=>answeredCount(ev, p.picks)>=totalQs(ev)).length;
+      el.innerHTML = `<p class="tv-k">Make your picks</p>
+        <h2 class="tv-title">${done ? `${done} card${done>1?"s":""} locked in` : "Grab your phone and call the card"}</h2>
+        <div class="tv-pre" style="margin-top:1.4em">
+          <div class="tv-join">${T.qr ? `<div class="qr" aria-label="QR code for the picks page">${T.qr}</div>` : ""}
+            <p class="d">Scan or open</p><p class="url">${esc(joinShort)}</p>
+            <p class="d">Tap your face, then call every match. Picks lock at the bell.</p></div>
+          <div class="tv-card"><p class="tv-k" style="color:var(--dim)">Tonight's card · ${totalQs(ev)} calls</p><ol>
+            ${ev.bouts.map(b=>`<li>${esc(b.title)}${b.stip?`<small>${esc(b.stip)}</small>`:""}</li>`).join("")}
+            ${(ev.bonus||[]).length ? `<li>${(ev.bonus||[]).length} bonus question${ev.bonus.length>1?"s":""}<small>The tiebreaker if you're level on points</small></li>` : ""}
+          </ol></div>
+        </div>`;
+      return;
+    }
+    const left = pending(T.shown);
+    const it = left[0];
+    if(!it){
+      const { rows } = table();
+      const leaders = rows.filter(r=>r.lead && LEAGUE_KEYS.indexOf(r.key)!==-1);
+      el.innerHTML = `<div class="tv-done"><p class="tv-k">Every result's in</p>
+        <h2 class="tv-title">${leaders.length ? esc(leaders.map(r=>r.name).join(" & ")) + (leaders.length>1?" are level at the top":" wins the night") : "That's the show"}</h2>
+        <p>Open the show on a phone, go to League table and tap Finalise to send the swap token to AEW Fantasy.</p></div>`;
+      return;
+    }
+    const groups = groupsFor(it, list);
+    const most = Math.max(0, ...groups.map(g=>g.who.length));
+    const answered = list.filter(p=>hasPick(it, p.picks[it.key])).length;
+    const few = groups.length<=3 && it.kind!=="number";
+    const label = it.kind==="bout" ? "Up now" : it.kind==="follow" ? "Name it" : "Bonus question";
+    el.innerHTML = `<p class="tv-k">${label}</p><h2 class="tv-title">${esc(it.title)}</h2>${it.stip?`<p class="tv-stip">${esc(it.stip)}</p>`:""}
+      <div class="tiles ${few?"few":""}">` + (groups.length ? groups.map(g=>`
+        <div class="tile ${g.who.length && g.who.length===most && most<answered ? "fav" : ""} ${g.who.length?"":"none"}">
+          <div class="tn">${esc(g.label)}${esc(unit(it, g.label))}${g.champ?`<span class="champ">Champion</span>`:""}</div>
+          <div class="tw">${g.who.map(p=>avatar(p.key, p.name)).join("")}</div>
+          <div class="tc">${g.who.length ? (g.who.length===answered && answered>1 ? "Everyone" : g.who.map(p=>esc(p.name)).join(", ")) : "Nobody"}</div>
+        </div>`).join("") : `<div class="tile none"><div class="tn">Nobody answered this one</div></div>`) + `</div>
+      ${left.length>1 ? `<div class="tv-next"><b>Up next</b>${left.slice(1,4).map(n=>`<span>${esc(n.title)}</span>`).join("")}${left.length>4?`<span>+${left.length-4} more</span>`:""}</div>` : ""}`;
+  }
+
+  // ── league table, animated when places change ──
+  function paintBoard(){
+    const el = $("#tvBoard", host); if(!el) return;
+    const { rows, anyRes } = table();
+    const tb = (ev.bonus||[]).length>0, tot = totalQs(ev), pre = !locked();
+    const bonusIn = (ev.bonus||[]).some(q=>!blank(T.shown[bonusKey(q)]));
+    const before = {};
+    el.querySelectorAll("[data-k]").forEach(n=>{ before[n.dataset.k] = n.getBoundingClientRect().top; });
+    el.innerHTML = rows.map(r=>{
+      const tag = r.bot ? "🤖 RyAI" + (T.picks.ryan && T.picks.ryan.picks && Object.keys(T.picks.ryan.picks).length ? " + Ryan" : "") : (LEAGUE_KEYS.indexOf(r.key)===-1 ? "Guest" : "");
+      let right;
+      if(anyRes) right = `<span class="pts">${r.correct}<small>${bonusIn ? r.bonus+" bonus" : r.correct===1 ? "pt" : "pts"}</small></span>`;
+      else if(pre || !r.answered){
+        const full = r.answered>=tot;
+        right = `<span class="bar ${full?"done":""}"><span class="track"><span class="fill" style="width:${tot?r.answered/tot*100:0}%"></span></span>
+          <span class="l">${full ? "✓ Locked in" : r.answered ? r.answered+" of "+tot : "No picks yet"}</span></span>`;
+      } else right = `<span class="pts">0<small>pts</small></span>`;
+      return `<div class="tvr ${r.lead?"lead":""} ${r.empty?"empty":""}" data-k="${esc(r.key)}">
+        <span class="rk">${anyRes ? r.rank : "·"}</span>${avatar(r.key, r.name)}
+        <span class="nm">${esc(r.name)}${tag?`<small>${esc(tag)}</small>`:""}</span>${right}</div>`;
+    }).join("") + (anyRes && tb ? `<p class="note2">Level on points? Most bonus questions right wins it.</p>` : "");
+    if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+      el.querySelectorAll("[data-k]").forEach(n=>{
+        const b = before[n.dataset.k]; if(b==null) return;
+        const d = b - n.getBoundingClientRect().top;
+        if(Math.abs(d)>1 && n.animate) n.animate([{ transform:`translateY(${d}px)` }, { transform:"none" }], { duration:800, easing:"cubic-bezier(.2,.8,.2,1)" });
+      });
+    }
+    // Lead changes get a shout
+    const leaders = rows.filter(r=>r.lead && LEAGUE_KEYS.indexOf(r.key)!==-1).map(r=>r.key).join(",");
+    if(T.leaders!==null && leaders && leaders!==T.leaders && !T.final){
+      const names = rows.filter(r=>leaders.split(",").indexOf(r.key)!==-1).map(r=>r.name);
+      const box = $("#tvLead", host);
+      box.innerHTML = `<div class="tv-lead">${names.length>1 ? esc(names.join(" & "))+" level at the top" : "New leader: "+esc(names[0])}</div>`;
+      later(()=>{ box.innerHTML = ""; }, 7000);
+    }
+    T.leaders = leaders;
+  }
+
+  // ── footer: results so far ──
+  function paintFoot(){
+    const el = $("#tvFoot", host); if(!el) return;
+    const list = players();
+    const done = items.filter(it=>relevant(it, T.shown) && !blank(T.shown[it.key]));
+    const ticks = done.slice(-5).reverse().map(it=>{
+      const v = T.shown[it.key];
+      const base = Object.assign({}, T.shown); delete base[it.key];
+      const everyone = list.map(p=>p.picks);
+      const hit = list.filter(p=>scoreCard(ev, p.picks, T.shown, everyone).correct > scoreCard(ev, p.picks, base, everyone).correct);
+      const short = it.title.replace(/^(AEW |Tailgate Brawl: )/,"").replace(/ Championship$/," title");
+      return `<span class="tk"><span>${esc(short)}</span> <b>${esc(v)}${esc(unit(it, v))}</b>${hit.length ? hit.map(p=>avatar(p.key,p.name)).join("") : `<span class="zero">nobody</span>`}</span>`;
+    }).join("");
+    el.innerHTML = `<div class="tv-ticker">${ticks || (locked() ? `<span>Results show up here as they go in on a phone.</span>` : `<span>Enter results on a phone during the show and they'll pop up here.</span>`)}</div>
+      ${locked() ? `<span class="join">Join: <b>${esc(joinShort)}</b></span>` : ""}`;
+  }
+
+  function paint(){
+    if(T.dead) return;
+    paintStatus(); paintMain(); paintBoard(); paintFoot();
+  }
+
+  // ── reveals ──
+  const rvEl = ()=>$("#tvReveal", host);
+  function enqueue(){
+    items.forEach(it=>{
+      const nv = T.results[it.key], ov = T.seen[it.key];
+      if(blank(nv) || norm(nv)===norm(ov)) return;
+      if(!T.queue.some(q=>q.key===it.key)) T.queue.push({ key:it.key, correction:!blank(ov) });
+    });
+    T.seen = clone(T.results);
+  }
+  function pump(){
+    if(T.showing || T.dead) return;
+    const next = T.queue.shift();
+    if(!next){ T.shown = clone(T.results); paint(); return; }
+    if(next.special) return special(next.special);
+    const it = itemFor(next.key), v = T.results[next.key];
+    if(!it || blank(v)) return pump();
+    const after = clone(T.shown); after[next.key] = v;
+    const base = clone(after); delete base[next.key];
+    const list = players(), everyone = list.map(p=>p.picks);
+    const hits = [], misses = [];
+    list.forEach(p=>{
+      const got = scoreCard(ev, p.picks, after, everyone).correct > scoreCard(ev, p.picks, base, everyone).correct;
+      if(got) hits.push(p); else if(hasPick(it, p.picks[it.key])) misses.push(p);
+    });
+    const lbl = it.kind==="bout" ? "Winner" : it.kind==="number" ? "Actual" : "Answer";
+    const person = (p, extra)=>`<span class="rv-p">${avatar(p.key, p.name)}<b>${esc(p.name)}</b>${extra}</span>`;
+    let flair = "";
+    if(!hits.length && misses.length>1) flair = "Nobody saw that coming";
+    else if(hits.length>1 && !misses.length) flair = "Clean sweep — everyone called it";
+    else if(hits.length===1 && misses.length>1) flair = esc(hits[0].name) + " is the only one who called it";
+    show(`<div class="rv">
+      <p class="rv-k">${next.correction ? "Correction" : it.kind==="bout" ? "Result" : "Bonus question"}</p>
+      <h2 class="rv-t">${esc(it.title)}</h2>
+      <span class="rv-l">${lbl}</span><span class="rv-v">${esc(v)}${esc(unit(it, v))}</span>
+      <div class="rv-groups">
+        <div class="rv-g hit"><h3>${it.kind==="number" ? "Closest" : "Called it"}</h3>${hits.length ? hits.map(p=>person(p, `<span class="plus">+1</span>${it.kind==="number" ? `<small>guessed ${esc(p.picks[it.key])}</small>` : ""}`)).join("") : `<p class="nobody">Nobody</p>`}</div>
+        <div class="rv-g miss"><h3>Missed</h3>${misses.length ? misses.map(p=>person(p, `<small>${it.kind==="number"?"guessed ":""}${esc(p.picks[it.key])}</small>`)).join("") : `<p class="nobody">Nobody</p>`}</div>
+      </div>${flair ? `<p class="rv-x">${flair}</p>` : ""}</div>`,
+      T.queue.length ? 8000 : 10000, 1, ()=>{ T.shown = after; });
+  }
+  function special(kind){
+    if(kind==="bell"){
+      const list = players();
+      show(`<div class="rv"><p class="rv-k">Ding ding ding</p><h2 class="rv-big">Picks are locked</h2>
+        <p class="rv-sub">${list.length} card${list.length===1?"":"s"} in. Good luck, everyone.</p></div>`, 6000, 3);
+      return;
+    }
+    if(kind==="final"){
+      const f = T.final;
+      if(!f || !f.winners || !f.winners.length) return pump();
+      const w = f.winners;
+      show(`<div class="rv"><p class="rv-k">And the winner is</p>
+        <h2 class="rv-big">${esc(w.map(k=>nameFor(k)).join(" & "))}</h2>
+        <div class="tv-champs">${w.map(k=>`<div class="c">${avatar(k, nameFor(k))}</div>`).join("")}</div>
+        <p class="rv-sub">${w.length>1 ? "Level at the top — a swap token each" : "Takes the swap token"}${f.scores && f.scores[w[0]] ? " · " + esc(f.scores[w[0]]) : ""}</p></div>`, 20000, 3);
+    }
+  }
+  // Show one overlay, then take it down, apply its result and move on.
+  function show(html, ms, dings, apply){
+    T.showing = true;
+    const el = rvEl(); el.innerHTML = html;
+    void el.offsetWidth; el.classList.add("on");
+    ding(dings);
+    let finished = false;
+    const finish = ()=>{
+      if(finished) return; finished = true;
+      el.classList.remove("on"); el.onclick = null;
+      later(()=>{
+        if(apply) apply();
+        paint();
+        later(()=>{ T.showing = false; pump(); }, 1600);
+      }, 450);
+    };
+    el.onclick = finish;
+    later(finish, ms);
+  }
+
+  // ── sound + screen ──
+  function ding(n){
+    const ctx = T.audio; if(!ctx || !n) return;
+    for(let i=0;i<n;i++){
+      const t0 = ctx.currentTime + 0.05 + i*0.38;
+      [[1, .5], [2.76, .22], [5.4, .1]].forEach(([m, g])=>{
+        const o = ctx.createOscillator(), a = ctx.createGain();
+        o.type = "sine"; o.frequency.value = 880*m;
+        a.gain.setValueAtTime(0, t0); a.gain.linearRampToValueAtTime(g*.45, t0+.006); a.gain.exponentialRampToValueAtTime(.0001, t0+1.5);
+        o.connect(a); a.connect(ctx.destination); o.start(t0); o.stop(t0+1.6);
+      });
+    }
+  }
+  async function keepAwake(){
+    try{ if(navigator.wakeLock && document.visibilityState==="visible" && !T.dead && !T.wake){ T.wake = await navigator.wakeLock.request("screen"); T.wake.addEventListener("release", ()=>{ T.wake = null; }); } }catch(e){}
+  }
+  const fsBtn = $("#tvFs", host);
+  fsBtn.addEventListener("click", async ()=>{
+    try{
+      if(!T.audio){ const A = window.AudioContext || window.webkitAudioContext; if(A) T.audio = new A(); }
+      if(T.audio && T.audio.state==="suspended") await T.audio.resume();
+    }catch(e){}
+    ding(1); keepAwake();
+    try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); }catch(e){}
+    fsBtn.textContent = "Sound on";
+  });
+  keepAwake();
+
+  // ── clock ──
+  T.tick = setInterval(()=>{
+    const c = $("#tvClock", host);
+    if(c && !locked()) c.textContent = clockFmt(start - Date.now());
+    if(!T.wasLocked && locked()){ T.wasLocked = true; paint(); T.queue.unshift({ special:"bell" }); pump(); }
+  }, 1000);
+
+  // ── data ──
+  loadQR().then(()=>{ T.qr = qrSVG(joinURL); if(T.loaded && !locked()) paintMain(); }).catch(()=>{});
+  getJSON("picks/"+ev.id+"/ryan.json").then(r=>{ T.ryan = r; if(T.loaded) paint(); }).catch(()=>{});
+  try{
+    await initDb();
+    if(T.dead) return;
+    const conn = db.ref(".info/connected");
+    conn.on("value", s=>{ const c = $("#tvConn", host); if(c) c.className = "tv-conn " + (s.val()===true ? "ok" : "err"); });
+    T.refs.push(conn);
+    const cardRef = db.ref(CARD_PATH+"/"+ev.id);
+    cardRef.on("value", snap=>{
+      const d = parseDef(snap.val());
+      if(!d || d.deleted) return;
+      if(!d.id) d.id = ev.id;
+      if(JSON.stringify(d)===evStr) return;
+      CARD_CACHE[ev.id] = d;
+      if(view && view.teardown) view.teardown();
+      view = null;
+      showTV(ev.id);
+    });
+    T.refs.push(cardRef);
+    const ref = db.ref(PRED_ROOT + "/" + ev.id);
+    ref.on("value", snap=>{
+      const v = snap.val() || {};
+      T.picks = v.picks || {};
+      T.results = v.results || {};
+      const fin = v.final || null;
+      if(fin) fin.winners = arrayOf(fin.winners);
+      if(!T.loaded){
+        T.loaded = true; T.seen = clone(T.results); T.shown = clone(T.results); T.final = fin;
+        paint(); return;
+      }
+      const newFinal = !!(fin && fin.winners && fin.winners.length && !(T.final && T.final.winners && T.final.winners.length));
+      T.final = fin;
+      enqueue();
+      if(newFinal) T.queue.push({ special:"final" });
+      if(!T.showing && !T.queue.length) T.shown = clone(T.results);
+      paint();
+      pump();
+    }, err=>{ host.querySelector("#tvFoot").innerHTML = `<span>Can't read the picks: ${esc(err.message)}</span>`; });
+    T.refs.push(ref);
+  }catch(e){
+    host.innerHTML = `<div class="tv-msg">Can't reach the database (${esc(e.message)}). Check the connection and reload.</div>`;
+  }
 }
 
 // ── tiny confirm dialog ──
