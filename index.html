@@ -2431,6 +2431,8 @@ async function showTV(id){
       if(!T.loaded){
         T.loaded = true; T.seen = clone(T.results); T.shown = clone(T.results); T.final = fin;
         if(P && P.revealed) Object.keys(P.revealed).forEach(r=>{ T.pShown[r] = true; });
+        // Opening party mode before the bell starts party picks (unless they've already been played).
+        if(!locked() && !(P && (P.on || P.done))) db.ref(base+"/party").transaction(c=> c && (c.on || c.done) ? undefined : { on:true, round:-1, at:Date.now() }).catch(()=>{});
         paint(); partyCheck(); return;
       }
       if(P && P.on && !locked()){
