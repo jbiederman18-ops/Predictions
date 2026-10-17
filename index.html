@@ -339,6 +339,15 @@
   .tvlink{ display:inline-flex; align-items:center; gap:6px; margin:14px 0 0; padding:7px 14px; border:1px solid var(--line); border-radius:999px;
            color:var(--text); text-decoration:none; font-weight:600; font-size:14px; background:var(--surface); }
   .tvlink:hover{ border-color:var(--accent); }
+  .party{ margin:16px 0 0; }
+  .party-head{ background:var(--surface); border:1px solid var(--accent); border-radius:12px; padding:14px 16px; margin:0 0 12px; }
+  .party-head h2{ font-family:var(--display); font-weight:var(--display-weight); font-size:28px; line-height:1.05; margin:0 0 4px; }
+  .party-head p{ margin:0 0 10px; color:var(--dim); font-size:15px; } .party-head p:last-child{ margin:0; }
+  .party-head .pk{ margin:0; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.12em; font-size:13px; }
+  .lockbar{ position:sticky; bottom:0; display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding:12px 0 calc(12px + env(safe-area-inset-bottom));
+            background:linear-gradient(to top, var(--bg) 75%, transparent); font-size:14px; color:var(--dim); }
+  .lockbar .btn{ font-size:17px; padding:12px 26px; }
+  .lockbar.done b{ color:var(--good); font-size:17px; }
   body.tv{ padding:0; overflow:hidden; }
   body.tv .wrap, body.tv #dialogs{ display:none; }
   #tv{ --u:min(1.7vh, .95vw); position:fixed; inset:0; font-size:var(--u); overflow:hidden; }
@@ -477,6 +486,34 @@
     @keyframes slam{ from{ transform:scale(1.8); opacity:0; } to{ transform:none; opacity:1; } }
   }
   .tv-ctl{ position:fixed; right:1.2em; bottom:1.2em; z-index:45; display:flex; gap:.6em; font-size:min(1.7vh, .95vw); transition:opacity .4s; }
+  .tv-ctl #tvPartyCtl{ display:contents; }
+  .tv-ctl button.ghost{ background:var(--surface2); color:var(--text); border-color:var(--line); }
+  .tv-btn{ background:var(--accent); color:var(--accent-ink); border:0; border-radius:999px; padding:.7em 1.6em; font-size:1.6em; font-weight:800; }
+  .tv-btn:disabled{ opacity:.4; cursor:default; }
+  .tv-btn.ghost{ background:var(--surface2); color:var(--text); border:1px solid var(--line); font-size:1.2em; }
+  .pp-row{ display:flex; gap:1.4em; flex-wrap:wrap; }
+  .pp{ display:flex; flex-direction:column; align-items:center; gap:.3em; width:7.5em; text-align:center; }
+  .pp .av{ --s:calc(var(--u) * 5); transition:opacity .3s, box-shadow .3s; }
+  .pp b{ font-size:1.3em; } .pp small{ color:var(--dim); font-size:1em; }
+  .pp:not(.in) .av{ opacity:.45; }
+  .pp:not(.in) small{ animation:tvblink 1.4s ease-in-out infinite; }
+  @keyframes tvblink{ 50%{ opacity:.35; } }
+  .pp.in .av{ border-color:var(--good); box-shadow:0 0 0 .15em var(--good); }
+  .pp.in small{ color:var(--good); font-weight:700; }
+  .pp-foot{ margin-top:auto; padding-top:1.4em; display:flex; align-items:flex-end; justify-content:space-between; gap:1.4em; flex-wrap:wrap; }
+  .tiles.bare{ flex:none; } .tiles.bare .tile, .tiles.bare.few .tile{ min-height:0; padding:1.4em 1.5em; }
+  .pq{ margin:1.2em 0 0; padding-left:1.3em; font-size:1.6em; font-weight:600; } .pq li{ margin:.35em 0; }
+  .rv-tiles{ display:grid; gap:1em; grid-template-columns:repeat(auto-fit, minmax(15em, 1fr)); margin:2em 0 0; text-align:left; }
+  .rv-tiles.few{ grid-template-columns:repeat(auto-fit, minmax(20em, 1fr)); }
+  .rv-tiles .tile .tw .av{ --s:calc(var(--u) * 4.6); }
+  .rv-tiles .tile .tn{ font-size:2.2em; }
+  .rv-bq{ display:grid; gap:1em; margin:1.6em 0 0; text-align:left; }
+  .bq{ background:var(--surface); border:1px solid var(--line); border-radius:1em; padding:1em 1.3em; }
+  .bq h3{ margin:0 0 .6em; font-size:1.4em; }
+  .bqa{ display:flex; flex-wrap:wrap; gap:.7em; }
+  .bqa .ans{ display:inline-flex; align-items:center; gap:.45em; background:var(--surface2); border-radius:999px; padding:.3em .4em .3em 1em; }
+  .bqa .ans b{ font-size:1.3em; margin-right:.3em; }
+  .bqa .av{ --s:calc(var(--u) * 2.6); border-width:1px; }
   .tv-ctl a, .tv-ctl button{ background:var(--surface2); border:1px solid var(--line); color:var(--text); border-radius:999px; padding:.6em 1.1em; font-size:1.05em; font-weight:600; text-decoration:none; }
   .tv-ctl button{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
   #tv.idle .tv-ctl{ opacity:0; pointer-events:none; }
@@ -700,6 +737,12 @@ function answeredCount(ev, p){
   return ev.bouts.filter(b=>!blank(p[b.id])).length + (ev.bonus||[]).filter(q=>bonusAnswered(q,p)).length;
 }
 function totalQs(ev){ return ev.bouts.length + (ev.bonus||[]).length; }
+// Party picks: one round per match, then every bonus question together as the last round.
+function partyRounds(ev){
+  const r = ev.bouts.map(b=>({ kind:"bout", id:b.id, title:b.title, stip:b.stip, b }));
+  if((ev.bonus||[]).length) r.push({ kind:"bonus", id:"__bonus", title:"Bonus questions", stip:"All of them at once — they break ties" });
+  return r;
+}
 
 // Score one card. `everyone` is every card on the show, for closest-guess questions.
 function scoreCard(ev, p, results, everyone){
@@ -845,7 +888,7 @@ async function showEvent(id, carry){
     legacy: !!ev.legacySheet,
     resultsMode: !!(carry && carry.resultsMode), tab: (carry && carry.tab) || "card",
     saveTimer: null, resultsTimer: null, pendingMine: null, pendingResults: null,
-    ref: null, tick: null, dead: false,
+    ref: null, tick: null, dead: false, party: null, partyShell: "",
   };
   const base = PRED_ROOT + "/" + ev.id;
   view = { teardown(){ S.dead = true; if(S.ref) S.ref.off(); if(S.cardRef) S.cardRef.off(); clearInterval(S.tick); flushSaves(); }, repaint: ()=>renderAll() };
@@ -874,7 +917,20 @@ async function showEvent(id, carry){
     if(S.me==="ryan" && !S.legacy){ const b = botPicks(); Object.keys(b).forEach(k=>{ if(blank(t[k])) t[k] = b[k]; }); }
     return t;
   };
-  const canEdit = ()=> !S.legacy && (S.resultsMode ? !S.final : (!!S.me && !locked()));
+  // ── party picks (started from the TV) ──
+  const ROUNDS = partyRounds(ev);
+  const partyLive = ()=>{ const P = S.party; return !!(P && P.on && !P.done && !locked() && !S.legacy && !S.resultsMode); };
+  const pRound = ()=> S.party && typeof S.party.round==="number" ? S.party.round : -1;
+  const pJoined = ()=> Object.keys((S.party && S.party.players) || {});
+  const pLocks = ()=> (S.party && S.party.locks && S.party.locks[pRound()]) || {};
+  const pRevealed = ()=> !!(S.party && S.party.revealed && S.party.revealed[pRound()]);
+  const myLock = ()=> !!pLocks()[S.me];
+  const partyKeys = ()=>{ const R = ROUNDS[pRound()]; return new Set(R ? [R.id] : []); };
+  const roundDone = ()=>{
+    const R = ROUNDS[pRound()]; if(!R) return false; const t = target();
+    return R.kind==="bout" ? !blank(t[R.id]) : (ev.bonus||[]).every(q=>bonusAnswered(q, t));
+  };
+  const canEdit = ()=> !S.legacy && (S.resultsMode ? !S.final : (!!S.me && !locked() && !(partyLive() && (pRound()<0 || myLock() || pRevealed() || !S.party.players || !S.party.players[S.me]))));
   function players(){
     const list = [];
     Object.keys(S.picks).forEach(k=>{
@@ -909,6 +965,7 @@ async function showEvent(id, carry){
       ${ev.theme==="nola" ? NOLA_BALCONY : ev.theme==="dream" ? DREAM_RIBBON : ""}
     </header>
     <div class="whobar" id="whobar"></div>
+    <section id="panel-party" class="party hidden"></section>
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" data-tab="card" aria-selected="${S.tab==="card"}">The card</button>
       <button class="tab" role="tab" data-tab="table" aria-selected="${S.tab==="table"}">League table</button>
@@ -965,19 +1022,22 @@ async function showEvent(id, carry){
 
   // ── render: the card ──
   function renderCard(){
-    const el = $("#panel-card"); if(!el) return;
-    if(S.tab!=="card") return;
+    const party = partyLive();
+    const el = party ? $("#partyBody") : $("#panel-card"); if(!el) return;
+    if(!party && S.tab!=="card") return;
+    const only = party ? partyKeys() : null;
     if(S.dragging || (el.contains(document.activeElement) && document.activeElement.tagName==="INPUT")) { S.deferred = true; return; }
     const t = target(), mine = myPicks(), edit = canEdit(), showResults = !S.resultsMode;
     const others = locked() || S.legacy ? players() : [];
     let html = "";
-    if(!S.legacy && !S.final){
+    if(!S.legacy && !S.final && !only){
       html += `<div class="official"><span>${S.final? "Results are final." : "Watching live? Put the results in as they happen."}</span>
         <button class="toggle" id="resToggle" aria-pressed="${S.resultsMode}">${S.resultsMode?"Done entering results":"Enter results"}</button></div>`;
       if(S.resultsMode) html += `<div class="resultsmode-note">You're entering the official results — everyone sees these. Tap a winner again to clear it.</div>`;
       else if(!S.me) html += `<div class="resultsmode-note">Choose who's picking above, then call the card.</div>`;
     }
     ev.bouts.forEach(b=>{
+      if(only && !only.has(b.id)) return;
       const chosen = t[b.id], actual = S.results[b.id], my = mine[b.id];
       let cls = "bout";
       if(showResults && !blank(actual) && !blank(my)) cls += norm(actual)===norm(my) ? " correct" : " wrong";
@@ -1005,11 +1065,12 @@ async function showEvent(id, carry){
       if(others.length) html += whoPicked(others, b.id);
       html += `</article>`;
     });
-    if((ev.bonus||[]).length){
-      html += `<h2 class="section-head">Bonus questions</h2>`;
+    if((ev.bonus||[]).length && (!only || only.has("__bonus"))){
+      if(!only) html += `<h2 class="section-head">Bonus questions</h2>`;
       ev.bonus.forEach(q=>{ html += bonusHTML(q, t, mine, edit, showResults, others); });
     }
-    if(edit && !S.resultsMode && S.me==="ryan" && S.ryan) html += `<div class="clear-row"><button class="linkbtn" id="botBtn">Go back to RyAI's picks</button></div>`;
+    if(only){}
+    else if(edit && !S.resultsMode && S.me==="ryan" && S.ryan) html += `<div class="clear-row"><button class="linkbtn" id="botBtn">Go back to RyAI's picks</button></div>`;
     else if(edit && !S.resultsMode) html += `<div class="clear-row"><button class="linkbtn" id="clearBtn">Clear my card</button></div>`;
     el.innerHTML = html;
     wireCard(el);
@@ -1263,9 +1324,57 @@ async function showEvent(id, carry){
     return html + `</div>`;
   }
 
+  function renderParty(){
+    const sec = $("#panel-party"); if(!sec) return;
+    const live = partyLive();
+    sec.classList.toggle("hidden", !live);
+    const tabs = app.querySelector(".tabs"); if(tabs) tabs.classList.toggle("hidden", live);
+    $("#panel-card").classList.toggle("hidden", live || S.tab!=="card");
+    $("#panel-table").classList.toggle("hidden", live || S.tab!=="table");
+    if(!live){ S.partyShell = ""; return; }
+    const P = S.party, r = pRound(), R = ROUNDS[r];
+    const joined = !!(S.me && P.players && P.players[S.me]);
+    const key = [S.me, joined, r].join("|");
+    if(key!==S.partyShell){
+      S.partyShell = key;
+      let head;
+      if(!S.me) head = `<h2>Party picks are on</h2><p>Tap your face above to play along.</p>`;
+      else if(!joined) head = `<h2>Party picks are on</h2><p>One match at a time, revealed on the TV.</p><button class="btn primary" id="pJoin">I'm playing</button>`;
+      else if(r<0 || !R) head = `<h2>You're in</h2><p>Waiting for everyone to join. The first match starts from the TV.</p>`;
+      else head = `<p class="pk">${R.kind==="bout" ? `Match ${r+1} of ${ev.bouts.length}` : "Bonus round"}</p>`;
+      sec.innerHTML = `<div class="party-head">${head}</div>${joined && R ? `<div id="partyBody"></div>` : ""}<div id="partyFoot"></div>`;
+      const jb = $("#pJoin", sec);
+      if(jb) jb.addEventListener("click", async ()=>{
+        jb.disabled = true;
+        try{ await withinMs(db.ref(base+"/party/players/"+S.me).set({ name: (S.picks[S.me] && S.picks[S.me].name) || nameFor(S.me), at: firebase.database.ServerValue.TIMESTAMP }), 10000); }
+        catch(err){ jb.disabled = false; toast("Couldn't join: " + err.message); }
+      });
+    }
+    const foot = $("#partyFoot", sec); if(!foot) return;
+    if(!joined || !R){ foot.innerHTML = ""; return; }
+    const waiting = pJoined().filter(k=>!pLocks()[k]).map(k=>nameFor(k, P.players[k]));
+    if(pRevealed()) foot.innerHTML = `<div class="lockbar done"><b>Picks are up on the TV 👀</b><span>The next ${r+1 < ROUNDS.length ? "match" : "round"} opens in a moment.</span></div>`;
+    else if(myLock()) foot.innerHTML = `<div class="lockbar done"><b>✓ Locked in</b><span>${waiting.length ? "Waiting on " + esc(waiting.join(", ")) : "Revealing…"}</span>
+      <button class="linkbtn" id="pUnlock">Change my pick</button></div>`;
+    else {
+      const ok = roundDone();
+      foot.innerHTML = `<div class="lockbar"><button class="btn primary" id="pLock" ${ok?"":"disabled"}>Lock in</button>
+        <span>${ok ? "Happy with that? Nobody sees it until everyone's in." : R.kind==="bout" ? "Pick a winner." : "Answer every question to lock in."}</span></div>`;
+    }
+    const lb = $("#pLock", foot);
+    if(lb) lb.addEventListener("click", async ()=>{
+      lb.disabled = true;
+      flushSaves();
+      try{ await withinMs(db.ref(base+"/party/locks/"+r+"/"+S.me).set(true), 10000); }
+      catch(err){ lb.disabled = false; toast("Couldn't lock in: " + err.message); }
+    });
+    const ub = $("#pUnlock", foot);
+    if(ub) ub.addEventListener("click", ()=>{ db.ref(base+"/party/locks/"+r+"/"+S.me).remove().catch(err=>toast(err.message)); });
+  }
+
   function renderAll(){
     if(S.dead) return;
-    renderLock(); renderWho(); renderCard(); renderTable();
+    renderLock(); renderWho(); renderParty(); renderCard(); renderTable();
   }
 
   // ── saving ──
@@ -1429,6 +1538,7 @@ async function showEvent(id, carry){
       Object.keys(incoming).forEach(k=>{ if(k===S.pendingMine) return; S.picks[k] = incoming[k]; if(S.picks[k] && !S.picks[k].picks) S.picks[k].picks = {}; });
       if(!S.pendingResults) S.results = v.results || {};
       S.final = v.final || null;
+      S.party = v.party || null;
       if(S.final) S.final.winners = arrayOf(S.final.winners);
       if(S.final) S.resultsMode = false;
       renderAll();
@@ -1818,21 +1928,22 @@ async function showTV(id){
   document.body.appendChild(host);
 
   const T = { dead:false, refs:[], timers:[], tick:null, picks:{}, results:{}, shown:{}, seen:{}, final:null, ryan:null,
-              queue:[], showing:false, loaded:false, leaders:null, audio:null, wake:null, conn:null, qr:"" };
+              queue:[], showing:false, loaded:false, leaders:null, audio:null, wake:null, conn:null, qr:"",
+              party:null, pShown:{}, pClaim:null };
   const onVis = ()=>{ if(document.visibilityState==="visible") keepAwake(); };
   let idleTimer = null;
   const onMove = ()=>{ host.classList.remove("idle"); clearTimeout(idleTimer); idleTimer = setTimeout(()=>host.classList.add("idle"), 3500); };
   view = {
     teardown(){
       T.dead = true; T.refs.forEach(r=>r.off()); clearInterval(T.tick); T.timers.forEach(clearTimeout); clearTimeout(idleTimer);
-      document.removeEventListener("visibilitychange", onVis); document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("visibilitychange", onVis); document.removeEventListener("mousemove", onMove); document.removeEventListener("pointerdown", onMove);
       try{ if(T.wake) T.wake.release(); }catch(e){}
       host.remove(); document.body.classList.remove("tv");
     },
     repaint: ()=>{ if(T.loaded) paint(); }
   };
   document.addEventListener("visibilitychange", onVis);
-  document.addEventListener("mousemove", onMove); onMove();
+  document.addEventListener("mousemove", onMove); document.addEventListener("pointerdown", onMove); onMove();
   const later = (fn, ms)=>{ const t = setTimeout(()=>{ if(!T.dead) fn(); }, ms); T.timers.push(t); return t; };
 
   let ev = CARD_CACHE[id] || await loadCard(id);
@@ -1847,6 +1958,10 @@ async function showTV(id){
   document.body.dataset.theme = ev.theme || "ringside";
   document.title = ev.name + " — Party mode";
   const joinURL = location.origin + location.pathname + "#/" + ev.id;
+  const base = PRED_ROOT + "/" + ev.id;
+  const ROUNDS = partyRounds(ev);
+  const partyOn = ()=>{ const P = T.party; return !!(P && P.on && !P.done && !locked()); };
+  const pRound = ()=> T.party && typeof T.party.round==="number" ? T.party.round : -1;
   const joinShort = (location.host + location.pathname).replace(/\/(index\.html)?$/, "");
 
   // Everything that gets a result, in card order. Follow-up names count as their own item.
@@ -1925,14 +2040,18 @@ async function showTV(id){
       <footer class="tv-foot" id="tvFoot"></footer>
     </div>
     <div class="tv-reveal" id="tvReveal" aria-live="assertive"></div>
-    <div class="tv-ctl"><a href="#/${esc(ev.id)}">Exit</a><button id="tvFs">Full screen + sound</button></div>`;
+    <div class="tv-ctl"><span id="tvPartyCtl"></span><a href="#/${esc(ev.id)}">Exit</a><button id="tvFs">Full screen + sound</button></div>`;
 
   // ── header ──
   function paintStatus(){
     const el = $("#tvStatus", host); if(!el) return;
     const decided = items.filter(it=>relevant(it, T.shown) && !blank(T.shown[it.key])).length;
     const total = items.filter(it=>relevant(it, T.shown)).length;
-    if(T.final && T.final.winners && T.final.winners.length){
+    if(partyOn()){
+      const r = pRound();
+      el.innerHTML = `<p class="k">Party picks</p><p class="big">${r<0 ? "Lobby" : Math.min(r+1, ROUNDS.length)+"/"+ROUNDS.length}</p>
+        <p class="sub">Bell in <span id="tvClock">${esc(clockFmt(start-Date.now()))}</span></p>`;
+    } else if(T.final && T.final.winners && T.final.winners.length){
       el.innerHTML = `<p class="k">Final</p><p class="big">${decided}/${total}</p><p class="sub">results in</p>`;
     } else if(!locked()){
       el.innerHTML = `<p class="k">Picks lock in</p><p class="big" id="tvClock">${esc(clockFmt(start-Date.now()))}</p>
@@ -1945,6 +2064,7 @@ async function showTV(id){
   // ── main panel ──
   function paintMain(){
     const el = $("#tvMain", host); if(!el) return;
+    if(partyOn()) return paintParty(el);
     const list = players();
     if(T.final && T.final.winners && T.final.winners.length){
       const w = T.final.winners;
@@ -2052,7 +2172,104 @@ async function showTV(id){
 
   function paint(){
     if(T.dead) return;
-    paintStatus(); paintMain(); paintBoard(); paintFoot();
+    paintStatus(); paintMain(); paintBoard(); paintFoot(); paintCtl();
+  }
+
+  // ── party picks: lobby, then one round at a time ──
+  const pName = k => nameFor(k, T.party && T.party.players && T.party.players[k]);
+  function paintCtl(){
+    const el = $("#tvPartyCtl", host); if(!el) return;
+    let h = "";
+    if(!locked() && db){
+      if(partyOn()) h = `<button class="ghost" id="pEnd">End party picks</button>`;
+      else h = `<button id="pBegin">🎉 Party picks</button>`;
+    }
+    el.innerHTML = h;
+    const b = $("#pBegin", el);
+    if(b) b.addEventListener("click", ()=>{
+      const restart = T.party && T.party.done;
+      if(restart && !confirm("Run party picks again from the first match? Everyone's picks so far are kept.")) return;
+      T.pShown = {};
+      db.ref(base+"/party").set({ on:true, round:-1, at:Date.now() }).catch(e=>toast(e.message));
+    });
+    const e = $("#pEnd", el);
+    if(e) e.addEventListener("click", ()=>{ if(confirm("End party picks? Phones go back to the full card.")) db.ref(base+"/party/done").set(true).catch(err=>toast(err.message)); });
+  }
+  function paintParty(el){
+    const P = T.party, r = pRound(), joined = Object.keys(P.players || {});
+    const lk = (P.locks && P.locks[r]) || {};
+    const face = (k, inn, label)=>`<div class="pp ${inn?"in":""}">${avatar(k, pName(k))}<b>${esc(pName(k))}</b><small>${label}</small></div>`;
+    if(r<0){
+      el.innerHTML = `<p class="tv-k">Party picks</p><h2 class="tv-title">${joined.length ? joined.length + (joined.length>1?" players in":" player in") : "Grab your phone and join in"}</h2>
+        <div class="tv-pre" style="margin-top:1.4em">
+          <div class="tv-join">${T.qr ? `<div class="qr" aria-label="QR code for the picks page">${T.qr}</div>` : ""}
+            <p class="d">Scan or open</p><p class="url">${esc(joinShort)}</p><p class="d">Tap your face, then “I'm playing”.</p></div>
+          <div><div class="pp-row">${joined.map(k=>face(k, true, "Ready")).join("") || `<p class="tv-stip">Nobody's in yet.</p>`}</div>
+            <p class="tv-stip" style="margin-top:1.6em;max-width:30em">One match at a time: everyone locks in on their phone, the TV shows who picked whom, then on to the next. Bonus questions come last, all together.</p>
+            <p style="margin-top:1.6em"><button class="tv-btn" id="pStart" ${joined.length?"":"disabled"}>Start the first match</button></p></div>
+        </div>`;
+    } else {
+      const R = ROUNDS[r]; if(!R){ el.innerHTML = ""; return; }
+      const done = joined.filter(k=>lk[k]).length;
+      const body = R.kind==="bout"
+        ? `<div class="tiles bare ${R.b.options.length<=3?"few":""}">${R.b.options.map(o=>`<div class="tile"><div class="tn">${esc(o.n)}${o.c?`<span class="champ">Champion</span>`:""}</div></div>`).join("")}</div>`
+        : `<ol class="pq">${(ev.bonus||[]).map(q=>`<li>${esc(q.title)}</li>`).join("")}</ol>`;
+      el.innerHTML = `<p class="tv-k">${R.kind==="bout" ? `Match ${r+1} of ${ev.bouts.length} · make your pick` : "Bonus round · answer them all"}</p>
+        <h2 class="tv-title">${esc(R.title)}</h2>${R.stip?`<p class="tv-stip">${esc(R.stip)}</p>`:""}${body}
+        <div class="pp-foot"><div class="pp-row">${joined.map(k=>face(k, !!lk[k], lk[k] ? "✓ Locked in" : "Picking…")).join("")}</div>
+          ${done && done<joined.length && !(P.revealed && P.revealed[r]) ? `<button class="tv-btn ghost" id="pNow">Reveal now</button>` : ""}</div>`;
+    }
+    const st = $("#pStart", el);
+    if(st) st.addEventListener("click", ()=>{ st.disabled = true; db.ref(base+"/party/round").transaction(c=> c===-1 ? 0 : undefined).catch(e=>toast(e.message)); });
+    const nw = $("#pNow", el);
+    if(nw) nw.addEventListener("click", ()=>claimReveal(r));
+  }
+  // Everyone in? Mark the round revealed (any TV can; the first wins). Every TV then shows it.
+  function partyCheck(){
+    if(!partyOn() || !db) return;
+    const P = T.party, r = pRound(); if(r<0 || r>=ROUNDS.length) return;
+    const joined = Object.keys(P.players || {}), lk = (P.locks && P.locks[r]) || {};
+    if(P.revealed && P.revealed[r]){
+      // Reveal shown but never moved on (a TV reloaded mid-reveal): nudge it along.
+      if(!T.showing && !T.queue.length && Date.now() - Number(P.revealed[r]) > 25000) advance(r);
+      return;
+    }
+    if(joined.length && joined.every(k=>lk[k]) && T.pClaim!==r){ T.pClaim = r; later(()=>claimReveal(r), 1200); }
+  }
+  function claimReveal(r){
+    db.ref(base+"/party/revealed/"+r).transaction(c=> c ? undefined : Date.now()).catch(()=>{ T.pClaim = null; });
+  }
+  function advance(r){
+    db.ref(base+"/party").transaction(p=>{
+      if(!p || p.round!==r || p.done) return;
+      p.round = r+1; if(p.round>=ROUNDS.length) p.done = true;
+      return p;
+    }).catch(()=>{});
+  }
+  function partyRevealHTML(r){
+    const R = ROUNDS[r], list = players();
+    const tiles = it=>{
+      const g = groupsFor(it, list).filter(x=>x.who.length || it.kind==="bout");
+      return g.map(x=>`<div class="tile ${x.who.length?"":"none"}"><div class="tn">${esc(x.label)}${esc(unit(it, x.label))}${x.champ?`<span class="champ">Champion</span>`:""}</div>
+        <div class="tw">${x.who.map(p=>avatar(p.key, p.name)).join("")}</div><div class="tc">${x.who.length ? x.who.map(p=>esc(p.name)).join(", ") : "Nobody"}</div></div>`).join("");
+    };
+    if(R.kind==="bout"){
+      const it = itemFor(R.id), g = groupsFor(it, list).filter(x=>x.who.length);
+      const total = g.reduce((a,x)=>a+x.who.length, 0);
+      let flair = "";
+      if(g.length===1 && total>1) flair = `Unanimous — everyone's on ${esc(g[0].label)}`;
+      else if(total>=3){
+        const lone = g.find(x=>x.who.length===1);
+        if(g.length>=2 && g[0].who.length===g[1].who.length && g.length===2) flair = "Split right down the middle";
+        else if(lone) flair = `${esc(lone.who[0].name)} is out on an island with ${esc(lone.label)}`;
+      }
+      return `<div class="rv"><p class="rv-k">Match ${r+1} picks</p><h2 class="rv-t">${esc(R.title)}</h2>
+        <div class="rv-tiles ${it.b.options.length<=3?"few":""}">${tiles(it)}</div>${flair?`<p class="rv-x">${flair}</p>`:""}</div>`;
+    }
+    return `<div class="rv"><p class="rv-k">Bonus round picks</p>
+      <div class="rv-bq">${(ev.bonus||[]).map(q=>{ const it = itemFor(bonusKey(q));
+        const g = groupsFor(it, list).filter(x=>x.who.length);
+        return `<div class="bq"><h3>${esc(q.title)}</h3><div class="bqa">${g.map(x=>`<span class="ans"><b>${esc(x.label)}${esc(unit(it, x.label))}</b>${x.who.map(p=>avatar(p.key, p.name)).join("")}</span>`).join("") || `<span class="tc">No answers</span>`}</div></div>`; }).join("")}</div></div>`;
   }
 
   // ── reveals ──
@@ -2069,7 +2286,7 @@ async function showTV(id){
     if(T.showing || T.dead) return;
     const next = T.queue.shift();
     if(!next){ T.shown = clone(T.results); paint(); return; }
-    if(next.special) return special(next.special);
+    if(next.special) return special(next);
     const it = itemFor(next.key), v = T.results[next.key];
     if(!it || blank(v)) return pump();
     const after = clone(T.shown); after[next.key] = v;
@@ -2096,7 +2313,19 @@ async function showTV(id){
       </div>${flair ? `<p class="rv-x">${flair}</p>` : ""}</div>`,
       T.queue.length ? 8000 : 10000, 1, ()=>{ T.shown = after; });
   }
-  function special(kind){
+  function special(next){
+    const kind = next.special;
+    if(kind==="party"){
+      const r = next.round, R = ROUNDS[r];
+      if(!R) return pump();
+      show(partyRevealHTML(r), R.kind==="bonus" ? 15000 : 9000, 1, ()=>advance(r));
+      return;
+    }
+    if(kind==="partydone"){
+      show(`<div class="rv"><p class="rv-k">That's every pick</p><h2 class="rv-big">Cards are in</h2>
+        <p class="rv-sub">Change anything on your phone until the bell at ${esc(fmtDate(ev.start,{hour:"numeric",minute:"2-digit"}))}.</p></div>`, 7000, 3);
+      return;
+    }
     if(kind==="bell"){
       const list = players();
       show(`<div class="rv"><p class="rv-k">Ding ding ding</p><h2 class="rv-big">Picks are locked</h2>
@@ -2165,6 +2394,7 @@ async function showTV(id){
   T.tick = setInterval(()=>{
     const c = $("#tvClock", host);
     if(c && !locked()) c.textContent = clockFmt(start - Date.now());
+    if(T.loaded && partyOn()) partyCheck();
     if(!T.wasLocked && locked()){ T.wasLocked = true; paint(); T.queue.unshift({ special:"bell" }); pump(); }
   }, 1000);
 
@@ -2196,10 +2426,21 @@ async function showTV(id){
       T.results = v.results || {};
       const fin = v.final || null;
       if(fin) fin.winners = arrayOf(fin.winners);
+      const P = v.party || null, wasDone = !!(T.party && T.party.done), wasOn = !!(T.party && T.party.on);
+      T.party = P;
       if(!T.loaded){
         T.loaded = true; T.seen = clone(T.results); T.shown = clone(T.results); T.final = fin;
-        paint(); return;
+        if(P && P.revealed) Object.keys(P.revealed).forEach(r=>{ T.pShown[r] = true; });
+        paint(); partyCheck(); return;
       }
+      if(P && P.on && !locked()){
+        if(P.revealed) Object.keys(P.revealed).forEach(r=>{
+          if(T.pShown[r]) return; T.pShown[r] = true;
+          if(Number(r)===P.round) T.queue.push({ special:"party", round:Number(r) });
+        });
+        if(P.done && !wasDone && wasOn) T.queue.push({ special:"partydone" });
+      }
+      if(!P || !P.on) T.pShown = {};
       const newFinal = !!(fin && fin.winners && fin.winners.length && !(T.final && T.final.winners && T.final.winners.length));
       T.final = fin;
       enqueue();
@@ -2207,6 +2448,7 @@ async function showTV(id){
       if(!T.showing && !T.queue.length) T.shown = clone(T.results);
       paint();
       pump();
+      partyCheck();
     }, err=>{ host.querySelector("#tvFoot").innerHTML = `<span>Can't read the picks: ${esc(err.message)}</span>`; });
     T.refs.push(ref);
   }catch(e){
