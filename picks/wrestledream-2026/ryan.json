@@ -1,7 +1,7 @@
 {
   "eventId": "wrestledream-2026",
   "player": "ryan",
-  "generatedAt": "2026-10-16T16:07:00-07:00",
+  "generatedAt": "2026-10-17T12:40:00-07:00",
   "generatedBy": "RyAI (Claude, persona run)",
   "persona": "Picked by RyAI as Ryan: catches wrestling every few weeks, skims the headlines, picks on gut and star power.",
   "picks": {
@@ -15,10 +15,10 @@
     "tag": "Young Bucks",
     "womens": "Mercedes Moné",
     "carnage": "Kazuchika Okada",
-    "titles_changed": 2,
-    "callis_gold": "No",
-    "trios_three": "Yes",
-    "carnage_falls": 3
+    "callis_gold": 3,
+    "trios_three": "Austin Creed",
+    "carnage_falls": 3,
+    "q-how-many-matches-fea": 2
   },
   "notes": {
     "tb_ftr_mcmg": "It's a best of five, so the guys who always win get the first one. FTR.",
@@ -31,9 +31,9 @@
     "tag": "The Bucks have like a hundred tag title reigns. Make it a hundred and one.",
     "womens": "Mercedes is the biggest star in the women's division and she knows it.",
     "carnage": "Ospreay's great but Okada is the name my mates who stopped watching still know. Big moment.",
-    "titles_changed": "The world title and the trios belts. Everyone else hangs on.",
-    "callis_gold": "Callis is too smug. Someone always wipes that smile off.",
-    "trios_three": "Two out of three falls always goes the distance on a big show.",
-    "carnage_falls": "Fifteen minutes is loads of time. Three falls and he's champ."
+    "callis_gold": "Eight guys in a three-minute rotation? Three of them are gone before the clock even starts.",
+    "trios_three": "I've got Hangman's lot winning, so somebody from New Level's eating pins. Creed feels like the guy.",
+    "carnage_falls": "Fifteen minutes is loads of time. Three falls and he's champ.",
+    "q-how-many-matches-fea": "Moxley and Ciampa are definitely chopping someone. That's two."
   }
 }
