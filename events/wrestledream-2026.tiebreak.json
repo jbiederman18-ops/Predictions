@@ -1,0 +1,105 @@
+{
+  "_comment": "Tiebreaker for wrestledream-2026. Shown to the league members tied for the swap token once every result is in. `answer` is the true order of item ids, base64-encoded so it is not readable at a glance. Kept separate from the card so the Setup page never overwrites it.",
+  "eventId": "wrestledream-2026",
+  "title": "Clockwork Carnage timeline",
+  "intro": "Put all 13 falls from the main event in the order they happened: two Stage 1 eliminations, then eleven points in the iron man.",
+  "scoring": "A fall in its exact spot scores 0, one spot off scores 1, two off scores 2, and so on. Fewest points wins the swap token. Still level? Most falls in the exact spot wins.",
+  "source": {
+    "label": "AEW official WrestleDream results",
+    "url": "https://www.allelitewrestling.com/post/aew-wrestledream-results-october-17-2026"
+  },
+  "items": [
+    {
+      "id": "cope-joe",
+      "winner": "Adam Copeland",
+      "loser": "Samoa Joe",
+      "move": "Spear",
+      "kind": "pin"
+    },
+    {
+      "id": "cope-rico",
+      "winner": "Adam Copeland",
+      "loser": "Ricochet",
+      "move": "Spear",
+      "kind": "pin"
+    },
+    {
+      "id": "darby-cope",
+      "winner": "Darby Allin",
+      "loser": "Adam Copeland",
+      "move": "La Magistral cradle",
+      "kind": "pin"
+    },
+    {
+      "id": "darby-ospreay",
+      "winner": "Darby Allin",
+      "loser": "Will Ospreay",
+      "move": "Coffin Drop",
+      "kind": "pin"
+    },
+    {
+      "id": "joe-darby",
+      "winner": "Samoa Joe",
+      "loser": "Darby Allin",
+      "move": "Muscle Buster",
+      "kind": "pin"
+    },
+    {
+      "id": "joe-ospreay",
+      "winner": "Samoa Joe",
+      "loser": "Will Ospreay",
+      "move": "Coquina Clutch",
+      "kind": "sub"
+    },
+    {
+      "id": "okada-cope",
+      "winner": "Kazuchika Okada",
+      "loser": "Adam Copeland",
+      "move": "Rainmaker",
+      "kind": "pin"
+    },
+    {
+      "id": "okada-tk",
+      "winner": "Kazuchika Okada",
+      "loser": "Takeshita",
+      "move": "Rainmaker",
+      "kind": "elim"
+    },
+    {
+      "id": "ospreay-cope",
+      "winner": "Will Ospreay",
+      "loser": "Adam Copeland",
+      "move": "Hidden Blade in the final seconds",
+      "kind": "pin"
+    },
+    {
+      "id": "ospreay-darby",
+      "winner": "Will Ospreay",
+      "loser": "Darby Allin",
+      "move": "Hidden Blade",
+      "kind": "pin"
+    },
+    {
+      "id": "ospreay-rico",
+      "winner": "Will Ospreay",
+      "loser": "Ricochet",
+      "move": "Styles Clash",
+      "kind": "pin"
+    },
+    {
+      "id": "rico-darby",
+      "winner": "Ricochet",
+      "loser": "Darby Allin",
+      "move": "Stole the pin on a downed Allin",
+      "kind": "pin"
+    },
+    {
+      "id": "tk-bailey",
+      "winner": "Takeshita",
+      "loser": "Mike Bailey",
+      "move": "Raging Fire",
+      "kind": "elim"
+    }
+  ],
+  "answer": "WyJ0ay1iYWlsZXkiLCJva2FkYS10ayIsImpvZS1kYXJieSIsInJpY28tZGFyYnkiLCJva2FkYS1jb3BlIiwib3NwcmVheS1yaWNvIiwiZGFyYnktb3NwcmVheSIsImRhcmJ5LWNvcGUiLCJvc3ByZWF5LWRhcmJ5Iiwiam9lLW9zcHJlYXkiLCJjb3BlLWpvZSIsImNvcGUtcmljbyIsIm9zcHJlYXktY29wZSJd"
+}

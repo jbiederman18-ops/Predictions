@@ -352,6 +352,37 @@
             background:linear-gradient(to top, var(--bg) 75%, transparent); font-size:14px; color:var(--dim); }
   .lockbar .btn{ font-size:17px; padding:12px 26px; }
   .lockbar.done b{ color:var(--good); font-size:17px; }
+
+  /* ── Tiebreaker: drag a match's falls into order ── */
+  .tb{ margin:16px 0 0; }
+  .tb-who{ display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:12px; }
+  .tb-p{ display:flex; align-items:center; gap:8px; }
+  .tb-p .av{ --s:34px; border-width:1px; }
+  .tb-p b{ display:block; font-weight:600; line-height:1.2; }
+  .tb-p small{ display:block; color:var(--dim); font-size:12px; }
+  .tb-p.in small{ color:var(--good); }
+  .tb-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .tb-card{ display:grid; grid-template-columns:30px 1fr auto; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line);
+            border-radius:10px; padding:10px 8px 10px 10px; user-select:none; -webkit-user-select:none; cursor:grab; }
+  .tb-card.static{ grid-template-columns:30px 1fr; cursor:default; user-select:text; -webkit-user-select:text; padding-right:12px; }
+  .tb-card.sortable-ghost{ opacity:.35; }
+  .tb-card.sortable-chosen{ border-color:var(--accent); box-shadow:0 8px 20px rgba(0,0,0,.35); }
+  .tb-pos{ font-family:var(--display); font-weight:800; font-size:21px; color:var(--accent); text-align:center; font-variant-numeric:tabular-nums; align-self:start; }
+  .tb-txt{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .tb-txt b{ font-weight:700; line-height:1.25; }
+  .tb-txt > span{ color:var(--dim); font-size:14px; }
+  .tb-tag{ align-self:flex-start; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:1px 7px; border-radius:4px;
+           border:1px solid var(--line); color:var(--dim) !important; margin-top:3px; }
+  .tb-tag.elim{ border-color:var(--bad); color:var(--bad) !important; }
+  .tb-tag.sub{ border-color:var(--accent); color:var(--accent) !important; }
+  .tb-arrows{ display:flex; flex-direction:column; gap:4px; }
+  .tb-arrows button{ width:36px; height:30px; border:1px solid var(--line); background:var(--surface2); border-radius:6px; font-size:13px; line-height:1; }
+  .tb-arrows button:disabled{ opacity:.3; cursor:default; }
+  .tb-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .tb-chip{ font-size:12px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--dim); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .tb-chip.d0{ border-color:var(--good); color:var(--good); }
+  .tb-chip.far{ border-color:var(--bad); color:var(--bad); }
+  .tb .section-head{ font-size:24px; margin:22px 0 10px; }
   body.tv{ padding:0; overflow:hidden; }
   body.tv .wrap, body.tv #dialogs{ display:none; }
   #tv{ --u:min(1.7vh, .95vw); position:fixed; inset:0; font-size:var(--u); overflow:hidden; }
@@ -549,6 +580,7 @@
 <div id="dialogs"></div>
 <datalist id="rosterList"></datalist>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -815,6 +847,32 @@ function tokenWinners(table){
   return league.filter(r=>r.correct===top.correct && r.bonus===top.bonus).map(r=>r.key);
 }
 
+// ── Tiebreaker ─────────────────────────────────────────────────────────────
+// A show can ship events/<id>.tiebreak.json: a match's falls to put in order.
+// It only appears when league members are level for the swap token. Each of them
+// locks in an order (leagues/_predictions/events/<id>/tiebreak/orders/<key>), and
+// once the last one is in, everyone sees the answer. Every fall scores how many
+// spots it is from where it really happened; fewest points wins, then most falls
+// in the exact spot.
+function tbTruth(def){ try{ const a = JSON.parse(atob(def.answer)); return Array.isArray(a) ? a : null; }catch(e){ return null; } }
+function tbScore(def, order){
+  const truth = tbTruth(def) || [];
+  const per = {}; let total = 0, exact = 0;
+  arrayOf(order).forEach((id,i)=>{
+    const t = truth.indexOf(id); if(t<0) return;
+    const d = Math.abs(i-t); per[id] = { pos:i+1, d }; total += d; if(!d) exact++;
+  });
+  return { per, total, exact };
+}
+function tbOutcome(def, keys, orders){
+  if(keys.length<2 || !keys.every(k=>orders[k] && arrayOf(orders[k].order).length)) return null;
+  const rows = keys.map(k=>Object.assign({ key:k, name:nameFor(k) }, tbScore(def, orders[k].order)))
+    .sort((a,b)=> a.total-b.total || b.exact-a.exact || a.name.localeCompare(b.name));
+  const top = rows[0];
+  return { rows, winners: rows.filter(r=>r.total===top.total && r.exact===top.exact).map(r=>r.key) };
+}
+function tbShuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
 // ════════════════════════════════════════════════════════════════════════════
 // Home
 // ════════════════════════════════════════════════════════════════════════════
@@ -908,6 +966,7 @@ async function showEvent(id, carry){
     resultsMode: !!(carry && carry.resultsMode), tab: (carry && carry.tab) || "card",
     saveTimer: null, resultsTimer: null, pendingMine: null, pendingResults: null,
     ref: null, tick: null, dead: false, party: null, partyShell: "",
+    tbDef: null, tb: null, tbWork: null, tbShell: "", tbSort: null,
   };
   const base = PRED_ROOT + "/" + ev.id;
   view = { teardown(){ S.dead = true; if(S.ref) S.ref.off(); if(S.cardRef) S.cardRef.off(); clearInterval(S.tick); flushSaves(); }, repaint: ()=>renderAll() };
@@ -964,6 +1023,25 @@ async function showEvent(id, carry){
     }
     return list;
   }
+  // ── tiebreaker ──
+  const allResultsIn = ()=> ev.bouts.every(b=>!blank(S.results[b.id]));
+  const tbOrders = ()=> (S.tb && S.tb.orders) || {};
+  // Who's playing it: frozen once the first order is in; otherwise the league members level for the token.
+  const tbPlayers = ()=>{
+    if(!S.tbDef || S.legacy) return [];
+    if(S.tb && S.tb.players) return arrayOf(S.tb.players);
+    if(S.final){
+      if(S.final.tiebreak) return arrayOf(S.final.tiebreak.players);
+      return S.final.winners.length>1 ? S.final.winners.slice() : [];
+    }
+    if(!allResultsIn()) return [];
+    const w = tokenWinners(standings(ev, players(), S.results));
+    return w.length>1 ? w : [];
+  };
+  const tbResult = ()=> S.tbDef ? tbOutcome(S.tbDef, tbPlayers(), tbOrders()) : null;
+  const tbActive = ()=> !!S.tbDef && tbPlayers().length>1;
+  const namesOf = keys=> keys.map(k=>nameFor(k)).join(" & ");
+
   // Tag on a question when Ryan is looking at a pick RyAI made for him
   function botTag(k){
     if(S.me!=="ryan" || S.resultsMode || !S.ryan) return "";
@@ -985,6 +1063,7 @@ async function showEvent(id, carry){
     </header>
     <div class="whobar" id="whobar"></div>
     <section id="panel-party" class="party hidden"></section>
+    <section id="panel-tb" class="tb hidden"></section>
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" data-tab="card" aria-selected="${S.tab==="card"}">The card</button>
       <button class="tab" role="tab" data-tab="table" aria-selected="${S.tab==="table"}">League table</button>
@@ -1262,7 +1341,8 @@ async function showEvent(id, carry){
       const w = S.final.winners.map(k=>nameFor(k)).join(" & ");
       html += `<div class="winner"><h3>${esc(w)} ${S.final.winners.length>1?"share":"takes"} the swap token</h3>
         <p>${S.final.granted ? `Added to ${S.final.winners.length>1?"their teams":"the team"} in AEW Fantasy (${esc(S.final.league||"")}).` : "Couldn't reach the fantasy season — tap retry below."}</p>
-        ${S.final.winners.length>1?`<p style="margin-top:6px">Level on points and on bonus points, so each gets one.</p>`:""}
+        ${S.final.tiebreak && S.final.winners.length===1 ? `<p style="margin-top:6px">Won the ${esc((S.tbDef && S.tbDef.title) || "tiebreaker")} tiebreaker.</p>`
+          : S.final.winners.length>1?`<p style="margin-top:6px">Level on points and on bonus points${S.final.tiebreak?" and on the tiebreaker":""}, so each gets one.</p>`:""}
         ${S.final.granted? `<button class="linkbtn" id="undoFinal">Results were wrong? Reopen and take the token back</button>` : `<button class="linkbtn" id="retryGrant">Retry sending the token</button>`}</div>`;
     }
     const tb = (ev.bonus||[]).length > 0;
@@ -1278,10 +1358,13 @@ async function showEvent(id, carry){
     // finalise
     if(!S.legacy && !S.final && anyResults){
       const missing = ev.bouts.filter(b=>blank(S.results[b.id])).length;
-      const winners = tokenWinners(standings(ev, list, S.results));
+      const tbr = tbActive() ? tbResult() : null;
+      const winners = tbActive() ? (tbr ? tbr.winners : []) : tokenWinners(standings(ev, list, S.results));
       html += `<div class="resultsmode-note" style="margin-top:16px">${missing
         ? `${missing} match${missing>1?"es":""} still need a result before this show can be finalised.`
-        : `Every match has a result. Finalising locks the results and gives ${esc(winners.map(k=>nameFor(k)).join(" & ")||"nobody")} a swap token in AEW Fantasy.`}
+        : tbActive() && !tbr
+          ? `${esc(namesOf(tbPlayers()))} are level, so the ${esc(S.tbDef.title)} tiebreaker at the top of the page decides the swap token. This unlocks once they've all locked in.`
+          : `Every match has a result. Finalising locks the results and gives ${esc(winners.map(k=>nameFor(k)).join(" & ")||"nobody")} a swap token in AEW Fantasy${tbr?" (decided by the tiebreaker)":""}.`}
         <div style="margin-top:10px"><button class="btn primary" id="finalBtn" ${missing||!winners.length?"disabled":""}>Finalise and award the token</button></div></div>`;
     }
 
@@ -1392,9 +1475,142 @@ async function showEvent(id, carry){
     if(ub) ub.addEventListener("click", ()=>{ db.ref(base+"/party/locks/"+r+"/"+S.me).remove().catch(err=>toast(err.message)); });
   }
 
+  // ── render: tiebreaker ──
+  const tbItem = id=> S.tbDef.items.find(i=>i.id===id);
+  const tbVerb = it=> it.kind==="sub" ? "submits" : it.kind==="elim" ? "eliminates" : "pins";
+  const tbTag = it=> `<span class="tb-tag ${esc(it.kind)}">${it.kind==="elim" ? "Elimination" : it.kind==="sub" ? "Submission" : "Pinfall"}</span>`;
+  const tbLine = it=> `<b>${esc(it.winner)} ${tbVerb(it)} ${esc(it.loser)}</b><span>${esc(it.move)}</span>`;
+  function tbWorking(){
+    const ids = S.tbDef.items.map(i=>i.id);
+    if(S.tbWork && S.tbWork.who===S.me) return S.tbWork.order;
+    let o = null;
+    const mine = tbOrders()[S.me];
+    if(mine) o = arrayOf(mine.order);
+    else { try{ o = JSON.parse(lsGet("tb_"+ev.id+"_"+S.me) || "null"); }catch(e){ o = null; } }
+    if(!Array.isArray(o) || o.length!==ids.length || ids.some(id=>o.indexOf(id)<0)) o = tbShuffle(ids);
+    S.tbWork = { who:S.me, order:o };
+    return o;
+  }
+  function tbPaintList(){
+    const ol = $("#tbList"); if(!ol) return;
+    const o = S.tbWork.order;
+    ol.innerHTML = o.map((id,i)=>{ const it = tbItem(id); return `<li class="tb-card" data-id="${esc(id)}">
+      <span class="tb-pos">${i+1}</span><span class="tb-txt">${tbLine(it)}${tbTag(it)}</span>
+      <span class="tb-arrows"><button type="button" data-dir="-1" aria-label="Move up" ${i===0?"disabled":""}>▲</button>
+      <button type="button" data-dir="1" aria-label="Move down" ${i===o.length-1?"disabled":""}>▼</button></span></li>`; }).join("");
+  }
+  function renderTB(){
+    const sec = $("#panel-tb"); if(!sec) return;
+    const show = tbActive() && !partyLive();
+    sec.classList.toggle("hidden", !show);
+    if(!show){ S.tbShell = ""; if(S.tbSort){ S.tbSort.destroy(); S.tbSort = null; } sec.innerHTML = ""; return; }
+    const def = S.tbDef, keys = tbPlayers(), orders = tbOrders(), res = tbResult();
+    const inIt = !!S.me && keys.indexOf(S.me)!==-1;
+    const mode = res ? "reveal" : (inIt && !orders[S.me] ? "order" : "wait");
+    const waiting = keys.filter(k=>!orders[k]);
+    const lockedIn = keys.filter(k=>orders[k] && k!==S.me);
+    const statusText = ()=> lockedIn.length ? `${namesOf(lockedIn)} ${lockedIn.length>1?"have":"has"} locked in.` : "Nobody else has locked in yet.";
+
+    // While someone is ordering, leave the list alone (they may be mid-drag) and only update the status line.
+    const shell = [mode, S.me, keys.join(","), JSON.stringify(Object.keys(orders).sort()), S.final ? JSON.stringify([S.final.winners, !!S.final.tiebreak, !!S.final.granted]) : ""].join("|");
+    if(mode==="order" && S.tbShell.split("|")[0]==="order" && S.tbShell.split("|")[1]===S.me){
+      const st = $("#tbStatus", sec); if(st) st.textContent = statusText(); return;
+    }
+    if(shell===S.tbShell) return;
+    S.tbShell = shell;
+    if(S.tbSort){ S.tbSort.destroy(); S.tbSort = null; }
+
+    const who = `<div class="tb-who">${keys.map(k=>`<span class="tb-p ${orders[k]?"in":""}">${avatar(k, nameFor(k))}<span><b>${esc(nameFor(k))}</b><small>${orders[k]?"✓ Locked in":"Still ordering"}</small></span></span>`).join("")}</div>`;
+    let html = `<div class="party-head"><p class="pk">Tiebreaker for the swap token</p><h2>${esc(def.title)}</h2>`;
+
+    if(mode==="order"){
+      html += `<p>${esc(namesOf(keys))} are level. ${esc(def.intro)}</p><p>${esc(def.scoring)}</p>${who}</div>
+        <p class="note">Press and hold a fall to drag it, or use the arrows. #1 is the first fall of the match. Nobody sees anyone's order until you've all locked in.</p>
+        <ol class="tb-list" id="tbList"></ol>
+        <div class="lockbar"><button class="btn primary" id="tbLock">Lock in my order</button><span id="tbStatus">${esc(statusText())}</span></div>`;
+      sec.innerHTML = html;
+      tbWorking(); tbPaintList();
+      const ol = $("#tbList", sec);
+      const keep = ()=>{ lsSet("tb_"+ev.id+"_"+S.me, JSON.stringify(S.tbWork.order)); };
+      ol.addEventListener("click", e=>{
+        const b = e.target.closest("button[data-dir]"); if(!b) return;
+        const id = b.closest(".tb-card").dataset.id, o = S.tbWork.order;
+        const i = o.indexOf(id), j = i + Number(b.dataset.dir);
+        if(j<0 || j>=o.length) return;
+        o.splice(i,1); o.splice(j,0,id); keep(); tbPaintList();
+        const again = ol.querySelector(`[data-id="${id}"] button[data-dir="${b.dataset.dir}"]`); if(again && !again.disabled) again.focus();
+      });
+      if(typeof Sortable!=="undefined"){
+        S.tbSort = Sortable.create(ol, { animation:150, delay:160, delayOnTouchOnly:true, touchStartThreshold:6, filter:"button", preventOnFilter:false,
+          onEnd(){ S.tbWork.order = Array.prototype.map.call(ol.children, li=>li.dataset.id); keep(); tbPaintList(); } });
+      }
+      $("#tbLock", sec).addEventListener("click", async e=>{
+        const btn = e.currentTarget; btn.disabled = true;
+        const upd = {}; upd["orders/"+S.me] = { order: S.tbWork.order.slice(), at: firebase.database.ServerValue.TIMESTAMP };
+        if(!(S.tb && S.tb.players)) upd.players = keys;
+        try{ await withinMs(db.ref(base+"/tiebreak").update(upd), 10000); toast("Locked in."); }
+        catch(err){ btn.disabled = false; toast("Couldn't lock in: " + err.message); }
+      });
+      return;
+    }
+
+    if(mode==="wait"){
+      html += `<p>${esc(namesOf(keys))} are level for the swap token, so it comes down to the ${esc(def.title)}. ${esc(def.scoring)}</p>${who}</div>`;
+      if(inIt) html += `<div class="lockbar done"><b>✓ Locked in</b><span>Waiting on ${esc(namesOf(waiting))}. The answer appears here once everyone's in.</span><button class="linkbtn" id="tbUnlock">Change my order</button></div>`;
+      else if(!S.me) html += `<p class="note">Playing? Tap your face above to put your order in.</p>`;
+      else html += `<p class="note">Waiting on ${esc(namesOf(waiting))}. The answer appears here once they've all locked in.</p>`;
+      sec.innerHTML = html;
+      const ub = $("#tbUnlock", sec);
+      if(ub) ub.addEventListener("click", ()=>{
+        S.tbWork = { who:S.me, order: arrayOf(orders[S.me].order).slice() };
+        lsSet("tb_"+ev.id+"_"+S.me, JSON.stringify(S.tbWork.order));
+        db.ref(base+"/tiebreak/orders/"+S.me).remove().catch(err=>toast(err.message));
+      });
+      return;
+    }
+
+    // reveal
+    const W = res.winners, single = W.length===1;
+    html += `<h2 style="margin-top:6px">${single ? `${esc(nameFor(W[0]))} wins the tiebreaker` : `Still level: ${esc(namesOf(W))}`}</h2>
+      <p>${single ? `Fewest points from the real order${res.rows[0].total===(res.rows[1]||{}).total ? ", and more falls in the exact spot" : ""}.` : "Same points and the same number of falls in the exact spot, so the token stays shared."}</p></div>`;
+    let rank = 0, prev = null;
+    res.rows.forEach((r,i)=>{
+      const tag = r.total + "/" + r.exact; if(tag!==prev){ rank = i+1; prev = tag; }
+      html += `<div class="row ${W.indexOf(r.key)!==-1&&single?"top":""}"><span class="rank">${rank}</span>
+        <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}<small>${r.exact} of ${def.items.length} spot on</small></span></span>
+        <span class="sc">${r.total}<span class="note" style="font-size:14px"> pts</span></span></div>`;
+    });
+
+    // what to do with the token
+    if(!S.final){
+      html += allResultsIn()
+        ? `<div style="margin:12px 0 4px"><button class="btn primary" id="tbFinal">${single ? `Finalise and give ${esc(nameFor(W[0]))} the token` : "Finalise and share the token"}</button></div>`
+        : `<p class="resultsmode-note">A match result has been cleared since the tie. Fill it back in before finalising.</p>`;
+    } else if(S.final.tiebreak){
+      html += `<p class="note">${esc(namesOf(S.final.winners))} ${S.final.winners.length>1?"share":"has"} the swap token${S.final.granted?" in AEW Fantasy":""}.</p>`;
+    } else if(W.length < S.final.winners.length){
+      html += `<p class="note">The show was finalised before the tiebreaker, so the token went to all of you.</p>
+        <div style="margin:4px 0"><button class="btn primary" id="tbSettle">Give ${esc(namesOf(W))} the token and take back the others</button></div>`;
+    } else {
+      html += `<p class="note">The shared token stands.</p>`;
+    }
+
+    html += `<h2 class="section-head">What actually happened</h2><ol class="tb-list">`;
+    tbTruth(def).forEach((id,i)=>{
+      const it = tbItem(id); if(!it) return;
+      const chips = res.rows.map(r=>{ const p = r.per[id] || { pos:"?", d:99 };
+        return `<span class="tb-chip ${p.d===0?"d0":p.d>=3?"far":""}">${esc(r.name)} #${p.pos} · ${p.d===0?"exact":"+"+p.d}</span>`; }).join("");
+      html += `<li class="tb-card static"><span class="tb-pos">${i+1}</span><span class="tb-txt">${tbLine(it)}<span class="tb-chips">${chips}</span></span></li>`;
+    });
+    html += `</ol>${def.source ? `<p class="note">Source: <a href="${esc(def.source.url)}" target="_blank" rel="noopener">${esc(def.source.label)}</a>.</p>` : ""}`;
+    sec.innerHTML = html;
+    const fbtn = $("#tbFinal", sec); if(fbtn) fbtn.addEventListener("click", finalise);
+    const sbtn = $("#tbSettle", sec); if(sbtn) sbtn.addEventListener("click", settleTiebreak);
+  }
+
   function renderAll(){
     if(S.dead) return;
-    renderLock(); renderWho(); renderParty(); renderCard(); renderTable();
+    renderLock(); renderWho(); renderParty(); renderTB(); renderCard(); renderTable();
   }
 
   // ── saving ──
@@ -1434,15 +1650,27 @@ async function showEvent(id, carry){
   async function finalise(){
     flushSaves();
     const table = standings(ev, players(), S.results);
-    const winners = tokenWinners(table);
+    let winners = tokenWinners(table);
+    const tbr = tbActive() ? tbResult() : null;
+    if(tbActive()){
+      if(!tbr){ toast("Finish the tiebreaker first — it decides the token."); return; }
+      winners = tbr.winners.slice();
+    }
     if(!winners.length) return;
     const names = winners.map(k=>nameFor(k)).join(" & ");
     const scores = {}; table.forEach(r=>{ scores[r.key] = r.correct + "/" + r.graded; });
+    const why = tbr
+      ? (winners.length>1 ? `${names} are still level after the tiebreaker` : `${names} won the ${S.tbDef.title} tiebreaker`)
+      : `${names} ${winners.length>1?"are level":"called the most"} with ${scores[winners[0]]}`;
     const ok = await confirmDialog(`Give ${names} the swap token?`,
-      `${names} ${winners.length>1?"are level":"called the most"} with ${esc(scores[winners[0]])}. This locks the results and adds a swap token to ${winners.length>1?"each of their teams":"their team"} in AEW Fantasy.`,
+      `${esc(why)}. This locks the results and adds a swap token to ${winners.length>1?"each of their teams":"their team"} in AEW Fantasy.`,
       "Award the token");
     if(!ok) return;
     const final = { at: Date.now(), by: S.me || "someone", winners, scores, results: clean(S.results), granted:false };
+    if(tbr){
+      const totals = {}; tbr.rows.forEach(r=>{ totals[r.key] = r.total; });
+      final.tiebreak = { players: tbPlayers(), winners: tbr.winners, totals };
+    }
     try{
       const res = await withinMs(db.ref(base+"/final").transaction(cur => cur ? undefined : final), 10000);
       if(!res.committed){ toast("Someone else just finalised this show."); return; }
@@ -1480,6 +1708,36 @@ async function showEvent(id, carry){
     }catch(err){
       toast("The show is final, but the token didn't send: " + err.message);
     }
+  }
+
+  // The show was finalised with a shared token before the tiebreaker was played:
+  // keep the tiebreaker winner's token and take the others back.
+  async function settleTiebreak(){
+    const res = tbResult(); if(!res || !S.final) return;
+    const W = res.winners, losers = S.final.winners.filter(k=>W.indexOf(k)===-1);
+    if(!losers.length) return;
+    const ok = await confirmDialog(`Give ${namesOf(W)} the swap token?`,
+      `${esc(namesOf(W))} won the ${esc(S.tbDef.title)} tiebreaker. This takes the shared token back from ${esc(namesOf(losers))} in AEW Fantasy.`,
+      "Settle it");
+    if(!ok) return;
+    try{
+      let spent = [];
+      if(S.final.league){
+        await withinMs(db.ref("leagues/"+S.final.league+"/data/aew_swaps").transaction(cur=>{
+          const sw = swapsShape(cur); spent = [];
+          losers.forEach(team=>{
+            const id = ev.id + ":" + team, i = sw.awards.findIndex(a=>a && a.id===id);
+            if(i===-1) return;
+            sw.awards.splice(i,1);
+            if((Number(sw.tokens[team])||0) > 0) sw.tokens[team] = Number(sw.tokens[team]) - 1; else spent.push(team);
+          });
+          return JSON.stringify(sw);
+        }), 15000);
+      }
+      const totals = {}; res.rows.forEach(r=>{ totals[r.key] = r.total; });
+      await withinMs(db.ref(base+"/final").update({ winners:W, sharedBefore:S.final.winners, tiebreak:{ players:tbPlayers(), winners:W, totals } }), 10000);
+      toast(spent.length ? namesOf(spent) + " already used the token — sort that one out in the fantasy app." : namesOf(W) + " keeps the swap token.");
+    }catch(err){ toast("Couldn't settle the tiebreaker: " + err.message); }
   }
 
   async function reopen(){
@@ -1533,6 +1791,7 @@ async function showEvent(id, carry){
   }
 
   getJSON("picks/"+ev.id+"/ryan.json").then(r=>{ S.ryan = r; renderAll(); }).catch(e=>{ S.ryanErr = e.message; renderAll(); });
+  getJSON("events/"+ev.id+".tiebreak.json").then(d=>{ if(d && Array.isArray(d.items) && tbTruth(d)){ S.tbDef = d; renderAll(); } }).catch(()=>{});
 
   try{
     await initDb();
@@ -1559,6 +1818,7 @@ async function showEvent(id, carry){
       if(!S.pendingResults) S.results = v.results || {};
       S.final = v.final || null;
       S.party = v.party || null;
+      S.tb = v.tiebreak || null;
       if(S.final) S.final.winners = arrayOf(S.final.winners);
       if(S.final) S.resultsMode = false;
       renderAll();
