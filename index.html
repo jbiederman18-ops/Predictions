@@ -44,7 +44,7 @@
   }
 
   *{ box-sizing:border-box; }
-  html{ -webkit-text-size-adjust:100%; }
+  html{ -webkit-text-size-adjust:100%; overflow-x:clip; }  /* no sideways panning on phones (and no sideways autoscroll while dragging) */
   body{
     margin:0; background:var(--bg); color:var(--text);
     font:400 16px/1.5 'Public Sans',system-ui,sans-serif;
@@ -375,9 +375,10 @@
            border:1px solid var(--line); color:var(--dim) !important; margin-top:3px; }
   .tb-tag.elim{ border-color:var(--bad); color:var(--bad) !important; }
   .tb-tag.sub{ border-color:var(--accent); color:var(--accent) !important; }
-  .tb-arrows{ display:flex; flex-direction:column; gap:4px; }
-  .tb-arrows button{ width:36px; height:30px; border:1px solid var(--line); background:var(--surface2); border-radius:6px; font-size:13px; line-height:1; }
-  .tb-arrows button:disabled{ opacity:.3; cursor:default; }
+  .tb-grip{ align-self:stretch; width:40px; margin:-10px -8px -10px 0; display:grid; place-items:center; color:var(--dim); touch-action:none; cursor:grab; border-left:1px solid var(--line); }
+  .tb-grip svg{ width:14px; height:22px; fill:currentColor; }
+  .tb-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .tb-card.sortable-fallback, .tb-card.sortable-drag{ opacity:1 !important; border-color:var(--accent); box-shadow:0 12px 28px rgba(0,0,0,.45); }
   .tb-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
   .tb-chip{ font-size:12px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--dim); white-space:nowrap; font-variant-numeric:tabular-nums; }
   .tb-chip.d0{ border-color:var(--good); color:var(--good); }
@@ -1491,13 +1492,13 @@ async function showEvent(id, carry){
     S.tbWork = { who:S.me, order:o };
     return o;
   }
+  const TB_GRIP = `<svg viewBox="0 0 14 22"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="4" cy="11" r="2"/><circle cx="10" cy="11" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="10" cy="18" r="2"/></svg>`;
   function tbPaintList(){
     const ol = $("#tbList"); if(!ol) return;
     const o = S.tbWork.order;
-    ol.innerHTML = o.map((id,i)=>{ const it = tbItem(id); return `<li class="tb-card" data-id="${esc(id)}">
+    ol.innerHTML = o.map((id,i)=>{ const it = tbItem(id); return `<li class="tb-card" data-id="${esc(id)}" tabindex="0" aria-label="${esc(i+1+". "+it.winner+" "+tbVerb(it)+" "+it.loser)}. Arrow keys move it.">
       <span class="tb-pos">${i+1}</span><span class="tb-txt">${tbLine(it)}${tbTag(it)}</span>
-      <span class="tb-arrows"><button type="button" data-dir="-1" aria-label="Move up" ${i===0?"disabled":""}>▲</button>
-      <button type="button" data-dir="1" aria-label="Move down" ${i===o.length-1?"disabled":""}>▼</button></span></li>`; }).join("");
+      <span class="tb-grip" aria-hidden="true">${TB_GRIP}</span></li>`; }).join("");
   }
   function renderTB(){
     const sec = $("#panel-tb"); if(!sec) return;
@@ -1525,24 +1526,36 @@ async function showEvent(id, carry){
 
     if(mode==="order"){
       html += `<p>${esc(namesOf(keys))} are level. ${esc(def.intro)}</p><p>${esc(def.scoring)}</p>${who}</div>
-        <p class="note">Press and hold a fall to drag it, or use the arrows. #1 is the first fall of the match. Nobody sees anyone's order until you've all locked in.</p>
+        <p class="note">Drag the falls into order: grab the dots to move one straight away, or press and hold anywhere on a card. #1 is the first fall of the match. Nobody sees anyone's order until you've all locked in.</p>
         <ol class="tb-list" id="tbList"></ol>
         <div class="lockbar"><button class="btn primary" id="tbLock">Lock in my order</button><span id="tbStatus">${esc(statusText())}</span></div>`;
       sec.innerHTML = html;
       tbWorking(); tbPaintList();
       const ol = $("#tbList", sec);
       const keep = ()=>{ lsSet("tb_"+ev.id+"_"+S.me, JSON.stringify(S.tbWork.order)); };
-      ol.addEventListener("click", e=>{
-        const b = e.target.closest("button[data-dir]"); if(!b) return;
-        const id = b.closest(".tb-card").dataset.id, o = S.tbWork.order;
-        const i = o.indexOf(id), j = i + Number(b.dataset.dir);
+      // Keyboard: focus a card and use the arrow keys.
+      ol.addEventListener("keydown", e=>{
+        if(e.key!=="ArrowUp" && e.key!=="ArrowDown") return;
+        const li = e.target.closest(".tb-card"); if(!li) return;
+        e.preventDefault();
+        const id = li.dataset.id, o = S.tbWork.order, i = o.indexOf(id), j = i + (e.key==="ArrowUp" ? -1 : 1);
         if(j<0 || j>=o.length) return;
         o.splice(i,1); o.splice(j,0,id); keep(); tbPaintList();
-        const again = ol.querySelector(`[data-id="${id}"] button[data-dir="${b.dataset.dir}"]`); if(again && !again.disabled) again.focus();
+        const again = ol.querySelector(`[data-id="${id}"]`); if(again) again.focus();
       });
       if(typeof Sortable!=="undefined"){
-        S.tbSort = Sortable.create(ol, { animation:150, delay:160, delayOnTouchOnly:true, touchStartThreshold:6, filter:"button", preventOnFilter:false,
-          onEnd(){ S.tbWork.order = Array.prototype.map.call(ol.children, li=>li.dataset.id); keep(); tbPaintList(); } });
+        // Cards drag after a short hold, so a quick swipe still scrolls the page.
+        // The dots on the right have no hold: grabbing them starts the drag at once.
+        const HOLD = 120;
+        S.tbSort = Sortable.create(ol, { animation:160, delay:HOLD, delayOnTouchOnly:true, touchStartThreshold:5,
+          forceFallback:true, fallbackTolerance:3, scroll:true, bubbleScroll:true, scrollSensitivity:90, scrollSpeed:14,
+          onChoose(){ try{ navigator.vibrate && navigator.vibrate(12); }catch(e){} },
+          onEnd(){ S.tbSort.option("delay", HOLD); S.tbWork.order = Array.prototype.map.call(ol.children, li=>li.dataset.id); keep(); tbPaintList(); },
+          onUnchoose(){ S.tbSort && S.tbSort.option("delay", HOLD); } });
+        const now = e=>{ if(e.target.closest(".tb-grip") && S.tbSort) S.tbSort.option("delay", 0); };
+        ol.addEventListener("touchstart", now, { passive:true, capture:true });
+        ol.addEventListener("pointerdown", now, { capture:true });
+        ol.addEventListener("mousedown", now, { capture:true });
       }
       $("#tbLock", sec).addEventListener("click", async e=>{
         const btn = e.currentTarget; btn.disabled = true;
