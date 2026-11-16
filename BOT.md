@@ -92,10 +92,9 @@ and maybe a `night`), and `nights` (TV episodes with a `start`).
     points, 3 a win and 1 a draw) unless he'd have a gut reason not to.
   - `lf_<league id>` → which of those two wins the league final.
   - `champ` → which of the two league winners wins the whole thing.
-  - `draws` → a whole number of league matches that end in a draw (0–30).
 - After the first bell, only fill in a match that has no pick yet and whose
   night hasn't started (an injury replacement, say). Never touch the bracket keys.
-- Notes: one per bracket key (`lf_<league>`, `champ`, `draws`) plus a handful of
+- Notes: one per bracket key (`lf_<league>`, `champ`) plus a handful of
   match notes — not all thirty.
 
 ## Shipping

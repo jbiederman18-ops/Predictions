@@ -660,6 +660,19 @@
   .cc-grid td.d{ background:rgba(226,181,82,.25); color:var(--accent); }
   .cc-grid td.tbd{ font-weight:500; font-size:10px; color:var(--dim); }
 
+  /* Squared-off pills on the tournament page */
+  body[data-theme="classic"] .chip, body[data-theme="classic"] .toggle, body[data-theme="classic"] .whopicked span,
+  body[data-theme="classic"] .bot, body[data-theme="classic"] .cc-lock, body[data-theme="classic"] .cc-tie{ border-radius:5px; }
+  .cc-awards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:10px; margin:0 0 22px; }
+  .cc-award{ background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--lg, var(--accent)); border-radius:10px; padding:12px 14px; }
+  .cc-award.overall{ --lg:var(--accent); }
+  .cc-award h3{ font-family:var(--display); font-weight:900; font-size:26px; line-height:1.05; margin:0; color:var(--lg); }
+  .cc-award .btn{ margin-top:10px; width:100%; }
+  .cc-award .linkbtn{ padding:0; margin-top:6px; }
+  .cc-lead{ list-style:none; margin:0; padding:0; }
+  .cc-lead li{ display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px solid var(--line); font-size:15px; }
+  .cc-lead li:last-child{ border-bottom:0; }
+  .cc-lead b{ font-family:var(--display); font-weight:800; font-size:18px; }
   .cc-sched{ display:grid; grid-template-columns:1fr; gap:6px; padding:10px 0; border-bottom:1px solid var(--line); }
   .cc-sched .nm{ font-weight:600; }
   @media (min-width:560px){ .cc-sched{ grid-template-columns:1fr 210px auto; align-items:center; } }
@@ -2899,11 +2912,11 @@ function confirmDialog(title, body, okLabel){
 //                     night yet stays open until its result goes in (or the final).
 //   fin_<league>_1/_2 the two who make that league's final   ┐
 //   lf_<league>       who wins the league final               │ lock at the
-//   champ             who wins the whole thing                │ Night 1 bell
-//   draws             how many league matches end in a draw   ┘ (tiebreaker)
-// Results use the same keys. One swap token for the whole tournament, awarded
-// once the champion is in: most points, then most bracket points, then the
-// closest draws guess.
+//   champ             who wins the whole thing                ┘ Night 1 bell
+// Results use the same keys. Three swap tokens: one per league (that league's
+// matches, finalists and final) once its final is in, and one overall once the
+// winner is in. Most points wins; level on points, most bracket points; still
+// level, the token is shared.
 // ════════════════════════════════════════════════════════════════════════════
 const CC_DRAW = "Draw";
 const CC_PTS = { match:1, finalist:2, leagueFinal:3, champ:5 };
@@ -2919,7 +2932,7 @@ function ccLockAt(ev, m){
   return isFinite(t) ? t : (ev.end ? new Date(ev.end).getTime() : Infinity);
 }
 function ccTBA(ev){ return ccLeagues(ev).some(L=>ccEntrants(L).some(n=>!n.trim() || CC_TBA.test(n))); }
-function ccBracketKeys(ev){ return ccLeagues(ev).flatMap(L=>["fin_"+L.id+"_1","fin_"+L.id+"_2","lf_"+L.id]).concat(["champ","draws"]); }
+function ccBracketKeys(ev){ return ccLeagues(ev).flatMap(L=>["fin_"+L.id+"_1","fin_"+L.id+"_2","lf_"+L.id]).concat(["champ"]); }
 // Every pairing in each league. Ids are by slot (gold-1v2), so renaming an entrant keeps the match.
 function ccGenMatches(ev){
   const old = {}; ccAllMatches(ev).forEach(m=>{ old[m.id] = m; });
@@ -2973,14 +2986,15 @@ function ccTable(ev, lg, map){
 }
 function ccDraws(ev, map){ return ccMatches(ev).filter(m=>ccOutcome(m, map[m.id])==="d").length; }
 function ccBlocksDone(ev, R){ return ccMatches(ev).every(m=>!!ccOutcome(m, R[m.id])); }
-function ccScore(ev, p, R){
+// lg: score one league only (its matches, finalists and final). No lg: everything.
+function ccScore(ev, p, R, lg){
   let pts = 0, max = 0, bracket = 0, hit = 0, graded = 0;
-  ccMatches(ev).forEach(m=>{
+  ccMatches(ev, lg).forEach(m=>{
     const r = ccOutcome(m, R[m.id]); if(!r) return;
     graded++; max += CC_PTS.match;
     if(ccOutcome(m, p[m.id])===r){ hit++; pts += CC_PTS.match; }
   });
-  ccLeagues(ev).forEach(L=>{
+  ccLeagues(ev).filter(L=>!lg || L.id===lg).forEach(L=>{
     const real = [R["fin_"+L.id+"_1"], R["fin_"+L.id+"_2"]].filter(x=>!blank(x)).map(norm);
     max += real.length * CC_PTS.finalist;
     Array.from(new Set([p["fin_"+L.id+"_1"], p["fin_"+L.id+"_2"]].filter(x=>!blank(x)).map(norm)))
@@ -2988,22 +3002,25 @@ function ccScore(ev, p, R){
     const lf = R["lf_"+L.id];
     if(!blank(lf)){ max += CC_PTS.leagueFinal; if(norm(p["lf_"+L.id])===norm(lf)){ pts += CC_PTS.leagueFinal; bracket += CC_PTS.leagueFinal; } }
   });
-  if(!blank(R.champ)){ max += CC_PTS.champ; if(norm(p.champ)===norm(R.champ)){ pts += CC_PTS.champ; bracket += CC_PTS.champ; } }
-  const drawsOff = ccBlocksDone(ev, R) && !blank(p.draws) && isFinite(Number(p.draws)) ? Math.abs(Number(p.draws) - ccDraws(ev, R)) : null;
-  return { pts, max, bracket, hit, graded, drawsOff };
+  if(!lg && !blank(R.champ)){ max += CC_PTS.champ; if(norm(p.champ)===norm(R.champ)){ pts += CC_PTS.champ; bracket += CC_PTS.champ; } }
+  return { pts, max, bracket, hit, graded };
 }
 function ccAnswered(ev, p){ return ccMatches(ev).filter(m=>ccOutcome(m, p[m.id])).length + ccBracketKeys(ev).filter(k=>!blank(p[k])).length; }
 function ccTotal(ev){ return ccMatches(ev).length + ccBracketKeys(ev).length; }
-const ccOff = r => r.drawsOff==null ? 999 : r.drawsOff;
-function ccStandings(ev, players, R){
-  return players.map(p=>Object.assign({}, p, ccScore(ev, p.picks||{}, R), { answered: ccAnswered(ev, p.picks||{}) }))
-    .sort((a,b)=> b.pts-a.pts || b.bracket-a.bracket || ccOff(a)-ccOff(b) || a.name.localeCompare(b.name));
+function ccStandings(ev, players, R, lg){
+  return players.map(p=>Object.assign({}, p, ccScore(ev, p.picks||{}, R, lg), { answered: ccAnswered(ev, p.picks||{}) }))
+    .sort((a,b)=> b.pts-a.pts || b.bracket-a.bracket || a.name.localeCompare(b.name));
 }
 function ccTokenWinners(table){
   const league = table.filter(r=>LEAGUE_KEYS.indexOf(r.key)!==-1 && r.answered>0);
   if(!league.length) return [];
   const t = league[0];
-  return league.filter(r=>r.pts===t.pts && r.bracket===t.bracket && ccOff(r)===ccOff(t)).map(r=>r.key);
+  return league.filter(r=>r.pts===t.pts && r.bracket===t.bracket).map(r=>r.key);
+}
+// The three swap tokens: one per league, then the overall (stored at final, which the home page reads).
+function ccAwards(ev){
+  return ccLeagues(ev).map(L=>({ id:L.id, lg:L.id, label:L.name, path:"final_"+L.id, award:ev.id+":"+L.id+":" }))
+    .concat([{ id:"overall", lg:null, label:"Overall", path:"final", award:ev.id+":" }]);
 }
 // Two overlapping rings, gold and blue — the two leagues meeting in one final.
 const CC_EMBLEM = `<svg class="cc-emblem" viewBox="0 0 120 64" aria-hidden="true">
@@ -3017,7 +3034,7 @@ async function showClassic(id, carry, ev){
   const evStr = JSON.stringify(ev);
   const LGS = ccLeagues(ev);
   const S = {
-    me: lsGet("pred_me") || "", picks:{}, server:{}, results:{}, final:null, ryan:null, ryanErr:"",
+    me: lsGet("pred_me") || "", picks:{}, server:{}, results:{}, final:null, finals:{}, ryan:null, ryanErr:"",
     resultsMode: !!(carry && carry.resultsMode), tab: (carry && carry.tab) || "matches",
     lg: (carry && carry.lg) || lsGet("cc_lg") || (LGS[0] && LGS[0].id),
     saveTimer:null, resultsTimer:null, pendingMine:null, pendingResults:null, ref:null, cardRef:null, tick:null, dead:false,
@@ -3055,7 +3072,11 @@ async function showClassic(id, carry, ev){
     if(S.me==="ryan"){ const b = botPicks(); Object.keys(b).forEach(k=>{ if(blank(t[k])) t[k] = b[k]; }); }
     return t;
   };
-  const canEdit = k => S.resultsMode ? !S.final : (!!S.me && !tba() && !keyLocked(k));
+  const AWARDS = ccAwards(ev);
+  // Which league a key belongs to (null for the overall winner).
+  const keyLeague = k => { const m = matchById(k); if(m) return m.league; const x = String(k).match(/^(?:fin|lf)_(.+?)(?:_\d)?$/); return x ? x[1] : null; };
+  const resultLocked = k => !!S.final || (!!keyLeague(k) && !!S.finals[keyLeague(k)]);
+  const canEdit = k => S.resultsMode ? !resultLocked(k) : (!!S.me && !tba() && !keyLocked(k));
   function players(){
     const list = [];
     Object.keys(S.picks).forEach(k=>{
@@ -3076,7 +3097,6 @@ async function showClassic(id, carry, ev){
     if((x = k.match(/^fin_(.+)_\d$/))) return lgName(x[1]) + " finalist";
     if((x = k.match(/^lf_(.+)$/))) return lgName(x[1]) + " final";
     if(k==="champ") return (ev.name||"Tournament") + " winner";
-    if(k==="draws") return "Draws in league play";
     return k;
   }
   function botTag(k){
@@ -3122,7 +3142,7 @@ async function showClassic(id, carry, ev){
   function renderLock(){
     const el = $("#lockline"); if(!el) return;
     if(S.final && S.final.winners && S.final.winners.length){
-      el.innerHTML = `<span class="count">Final</span><span class="why">${esc(S.final.winners.map(k=>nameFor(k)).join(" & "))} took the swap token</span>`; return;
+      el.innerHTML = `<span class="count">Final</span><span class="why">${AWARDS.filter(a=>S.finals[a.id]).map(a=>`${esc(a.lg?a.label:"Overall")}: ${esc(S.finals[a.id].winners.map(k=>nameFor(k)).join(" & "))}`).join(" · ")}</span>`; return;
     }
     if(tba()){ el.innerHTML = `<span class="count">Field TBA</span><span class="why">Picks open as soon as all twelve names are in.</span>`; return; }
     if(!bracketLocked()){
@@ -3284,22 +3304,6 @@ async function showClassic(id, carry, ev){
     if(others.length) h += who(others, "champ", null);
     h += `</article>`;
 
-    // tiebreaker
-    const total = ccMatches(ev).length, drawsNow = ccDraws(ev, R);
-    h += `<article class="bout"><h3>Tiebreaker: how many league matches end in a draw?</h3>
-      <p class="stip">${total} league matches, 20-minute time limits. Only used if you're level on points and bracket points — closest guess wins.</p>`;
-    if(S.resultsMode) h += `<p class="outcome">Worked out from the match results: <strong>${drawsNow}</strong> so far.</p>`;
-    else {
-      const has = !blank(t.draws), ed = canEdit("draws");
-      h += `<div class="stepper">
-        <button class="stepbtn" data-draws="-1" ${ed?"":"disabled"} aria-label="Fewer">−</button>
-        <span class="stepval ${has?"":"unset"}">${has? esc(t.draws) : 2}</span>
-        <button class="stepbtn" data-draws="1" ${ed?"":"disabled"} aria-label="More">+</button>
-        <span class="note" style="margin:0">${has? "draws" : (ed?"tap − or + to lock in a number":"no guess")}</span></div>`;
-      if(ccBlocksDone(ev, R)) h += `<p class="outcome">Actual: <strong>${drawsNow}</strong>${blank(mine.draws)?"":` — you were ${Math.abs(Number(mine.draws)-drawsNow)===0?"spot on":Math.abs(Number(mine.draws)-drawsNow)+" out"}`}</p>`;
-      if(others.length) h += who(others, "draws", null);
-    }
-    h += `</article>`;
     el.innerHTML = h;
   }
 
@@ -3334,14 +3338,33 @@ async function showClassic(id, carry, ev){
   }
 
   // ── Table tab ──
-  function readyToFinal(){
-    const R = S.results;
-    const miss = [];
-    const left = ccMatches(ev).filter(m=>!ccOutcome(m, R[m.id])).length;
+  function readyFor(aw){
+    const R = S.results, miss = [];
+    const left = ccMatches(ev, aw.lg).filter(m=>!ccOutcome(m, R[m.id])).length;
     if(left) miss.push(`${left} league match${left>1?"es":""}`);
-    LGS.forEach(L=>{ if(finalists(R, L.id).length<2) miss.push(L.name+" finalists"); if(blank(R["lf_"+L.id])) miss.push(L.name+" final"); });
-    if(blank(R.champ)) miss.push("the winner");
+    LGS.filter(L=>!aw.lg || L.id===aw.lg).forEach(L=>{ if(finalists(R, L.id).length<2) miss.push(L.name+" finalists"); if(blank(R["lf_"+L.id])) miss.push(L.name+" final"); });
+    if(!aw.lg && blank(R.champ)) miss.push("the winner");
+    if(!aw.lg) LGS.forEach(L=>{ if(!S.finals[L.id]) miss.push("the "+L.name+" token"); });
     return miss;
+  }
+  function awardsHTML(list){
+    let h = `<h2 class="section-head" style="margin-top:0">Swap tokens</h2><div class="cc-awards">`;
+    AWARDS.forEach(aw=>{
+      const f = S.finals[aw.id], table = ccStandings(ev, list, S.results, aw.lg);
+      h += `<div class="cc-award ${aw.lg ? "lg-"+esc(aw.lg) : "overall"}"><p class="cc-kicker">${esc(aw.label)}</p>`;
+      if(f && f.winners && f.winners.length){
+        h += `<h3>${esc(f.winners.map(k=>nameFor(k)).join(" & "))}</h3><p class="note" style="margin:2px 0 0">${f.winners.length>1?"Share":"Takes"} the token with ${esc(f.scores[f.winners[0]]||"")}${f.granted?"":" — it hasn't reached AEW Fantasy yet"}.</p>
+          ${f.granted ? `<button class="linkbtn" data-reopen="${esc(aw.id)}">Reopen</button>` : `<button class="linkbtn" data-regrant="${esc(aw.id)}">Retry sending</button>`}`;
+      } else {
+        const lead = table.filter(r=>LEAGUE_KEYS.indexOf(r.key)!==-1 && r.answered>0).slice(0,3);
+        h += lead.length ? `<ol class="cc-lead">${lead.map(r=>`<li><span>${esc(r.name)}</span><b>${r.pts}</b></li>`).join("")}</ol>` : `<p class="note">No league picks yet.</p>`;
+        const miss = readyFor(aw), winners = ccTokenWinners(table);
+        h += miss.length ? `<p class="note" style="margin:6px 0 0">Waiting on ${esc(miss.join(", "))}.</p>`
+          : `<button class="btn primary" data-finalise="${esc(aw.id)}" ${winners.length?"":"disabled"}>Award to ${esc(winners.map(k=>nameFor(k)).join(" & ")||"nobody")}</button>`;
+      }
+      h += `</div>`;
+    });
+    return h + `</div>`;
   }
   function renderTable(el){
     const list = players();
@@ -3350,30 +3373,16 @@ async function showClassic(id, carry, ev){
     const table = ccStandings(ev, list, S.results);
     if(!anyResults) table.sort((a,b)=>a.name.localeCompare(b.name));
     let h = "";
-    if(S.final && S.final.winners && S.final.winners.length){
-      const w = S.final.winners.map(k=>nameFor(k)).join(" & ");
-      h += `<div class="winner"><h3>${esc(w)} ${S.final.winners.length>1?"share":"takes"} the swap token</h3>
-        <p>${S.final.granted ? `Added to ${S.final.winners.length>1?"their teams":"the team"} in AEW Fantasy (${esc(S.final.league||"")}).` : "Couldn't reach the fantasy season — tap retry below."}</p>
-        ${S.final.granted? `<button class="linkbtn" id="undoFinal">Results were wrong? Reopen and take the token back</button>` : `<button class="linkbtn" id="retryGrant">Retry sending the token</button>`}</div>`;
-    }
+    if(anyResults) h += awardsHTML(list);
     h += `<h2 class="section-head" style="margin-top:0">${anyResults? "League table" : "Who's picked"}</h2>`;
     table.forEach((r,i)=>{
       const isLeague = LEAGUE_KEYS.indexOf(r.key)!==-1;
       h += `<div class="row ${anyResults&&i===0&&r.pts>0?"top":""}"><span class="rank">${anyResults? i+1 : "·"}</span>
         <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':(r.mixed?'<span class="bot">🤖 + Ryan</span>':"")}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}
-          ${anyResults?`<small style="display:block;margin:0">${r.hit} of ${r.graded} matches · ${r.bracket} bracket${r.drawsOff!=null?` · draws ${r.drawsOff===0?"spot on":r.drawsOff+" out"}`:""}</small>`:""}</span></span>
+          ${anyResults?`<small style="display:block;margin:0">${r.hit} of ${r.graded} matches · ${r.bracket} bracket</small>`:""}</span></span>
         ${anyResults? `<span class="sc">${r.pts}<span class="note" style="font-size:14px"> / ${r.max}</span></span>` : `<span class="meta">${r.answered} of ${ccTotal(ev)}</span>`}</div>`;
     });
-    if(anyResults) h += `<p class="note">League matches are worth ${CC_PTS.match}, each finalist ${CC_PTS.finalist}, each league final ${CC_PTS.leagueFinal} and the winner ${CC_PTS.champ}. Level on points? More bracket points wins, then the closest draws guess. Still level, and each gets a token. Guests play for pride.</p>`;
-
-    if(!S.final && anyResults){
-      const miss = readyToFinal();
-      const winners = ccTokenWinners(ccStandings(ev, list, S.results));
-      h += `<div class="resultsmode-note" style="margin-top:16px">${miss.length
-        ? `Still to come before the tournament can be finalised: ${esc(miss.join(", "))}.`
-        : `Everything's in. Finalising locks the results and gives ${esc(winners.map(k=>nameFor(k)).join(" & ")||"nobody")} a swap token in AEW Fantasy.`}
-        <div style="margin-top:10px"><button class="btn primary" id="finalBtn" ${miss.length||!winners.length?"disabled":""}>Finalise and award the token</button></div></div>`;
-    }
+    if(anyResults) h += `<p class="note">League matches are worth ${CC_PTS.match}, each finalist ${CC_PTS.finalist}, each league final ${CC_PTS.leagueFinal} and the winner ${CC_PTS.champ}. There's a swap token for the best predictor in each league and one overall. Level on points? More bracket points wins; still level, and each gets a token. Guests play for pride.</p>`;
 
     // compare
     const others = table.filter(r=>r.key!==S.me);
@@ -3388,7 +3397,7 @@ async function showClassic(id, carry, ev){
         const a = finalists(mp, L.id).map(norm).sort().join("|"), c = finalists(o.picks, L.id).map(norm).sort().join("|");
         if(a && c && a!==c) rows.push([finalists(mp,L.id).join(" & "), L.name+" finalists", finalists(o.picks,L.id).join(" & ")]);
       });
-      LGS.map(L=>"lf_"+L.id).concat(["champ","draws"]).concat(ccMatches(ev).map(m=>m.id)).forEach(k=>{
+      LGS.map(L=>"lf_"+L.id).concat(["champ"]).concat(ccMatches(ev).map(m=>m.id)).forEach(k=>{
         if(!visible(k)) return;
         const a = mp[k], c = o.picks[k];
         if(!blank(a) && !blank(c) && norm(a)!==norm(c)) rows.push([a, keyLabel(k), c]);
@@ -3402,9 +3411,9 @@ async function showClassic(id, carry, ev){
     h += ryanSection();
     el.innerHTML = h;
     const cmp = $("#cmpSel", el); if(cmp) cmp.addEventListener("change", ()=>{ S.compareWith = cmp.value; renderAll(); });
-    const fb = $("#finalBtn", el); if(fb) fb.addEventListener("click", finalise);
-    const ub = $("#undoFinal", el); if(ub) ub.addEventListener("click", reopen);
-    const rb = $("#retryGrant", el); if(rb) rb.addEventListener("click", ()=>grant(S.final));
+    el.querySelectorAll("[data-finalise]").forEach(x=>x.addEventListener("click", ()=>finalise(AWARDS.find(a=>a.id===x.dataset.finalise))));
+    el.querySelectorAll("[data-reopen]").forEach(x=>x.addEventListener("click", ()=>reopen(AWARDS.find(a=>a.id===x.dataset.reopen))));
+    el.querySelectorAll("[data-regrant]").forEach(x=>x.addEventListener("click", ()=>{ const a = AWARDS.find(a=>a.id===x.dataset.regrant); grant(a, S.finals[a.id]); }));
   }
   function ryanSection(){
     if(!S.ryan){
@@ -3419,7 +3428,7 @@ async function showClassic(id, carry, ev){
     if(owed) h += `<p class="resultsmode-note">RyAI still owes ${owed} open pick${owed>1?"s":""} on the current card. Ask Claude to run RyAI to fill ${owed>1?"them":"it"} in.</p>`;
     const line = (k, a)=> `<div class="reason"><div class="q">${esc(keyLabel(k))}</div><div class="a">${esc(blank(a)?"—":a)}</div>${notes[k]?`<div class="why">“${esc(notes[k])}”</div>`:""}</div>`;
     LGS.forEach(L=>{ h += `<div class="reason"><div class="q">${esc(L.name)} final</div><div class="a">${esc(finalists(p, L.id).join(" v ")||"—")} → ${esc(p["lf_"+L.id]||"—")}</div>${notes["lf_"+L.id]?`<div class="why">“${esc(notes["lf_"+L.id])}”</div>`:""}</div>`; });
-    h += line("champ", p.champ) + line("draws", p.draws);
+    h += line("champ", p.champ);
     ccMatches(ev).forEach(m=>{ h += line(m.id, p[m.id]); });
     return h + `</div>`;
   }
@@ -3467,10 +3476,6 @@ async function showClassic(id, carry, ev){
     }
     if(b.dataset.lf){ const k = "lf_"+b.dataset.lf; t[k] = norm(t[k])===norm(b.dataset.name) ? null : b.dataset.name; cascade(t); return changed(); }
     if(b.dataset.champ){ t.champ = norm(t.champ)===norm(b.dataset.name) ? null : b.dataset.name; return changed(); }
-    if(b.dataset.draws){
-      const max = ccMatches(ev).length, ok = !blank(t.draws) && isFinite(Number(t.draws));
-      t.draws = ok ? Math.min(max, Math.max(0, Number(t.draws) + Number(b.dataset.draws))) : 2; return changed();
-    }
     if(b.id==="clearMatches"){
       if(!confirm(`Clear your ${lgName(S.lg)} picks that haven't locked yet?`)) return;
       ccAllMatches(ev).filter(m=>m.league===S.lg && !matchLocked(m)).forEach(m=>{ delete t[m.id]; }); return changed();
@@ -3508,23 +3513,24 @@ async function showClassic(id, carry, ev){
   }
 
   // ── finalise + award (one token for the whole tournament) ──
-  async function finalise(){
+  async function finalise(aw){
+    if(!aw) return;
     flushSaves();
-    if(readyToFinal().length) return;
-    const table = ccStandings(ev, players(), S.results), winners = ccTokenWinners(table);
+    if(readyFor(aw).length) return;
+    const table = ccStandings(ev, players(), S.results, aw.lg), winners = ccTokenWinners(table);
     if(!winners.length) return;
     const names = winners.map(k=>nameFor(k)).join(" & ");
     const scores = {}; table.forEach(r=>{ scores[r.key] = r.pts + "/" + r.max; });
-    const ok = await confirmDialog(`Give ${names} the swap token?`,
-      `${esc(names)} ${winners.length>1?"are level":"called the tournament best"} with ${esc(scores[winners[0]])}. This locks the results and adds a swap token to ${winners.length>1?"each of their teams":"their team"} in AEW Fantasy.`, "Award the token");
+    const ok = await confirmDialog(`Give ${names} the ${aw.lg ? aw.label : "overall"} swap token?`,
+      `${esc(names)} ${winners.length>1?"are level":"called "+(aw.lg ? "the "+esc(aw.label) : "the whole tournament")+" best"} with ${esc(scores[winners[0]])}. This locks ${aw.lg?"that league's":"all the"} results and adds a swap token to ${winners.length>1?"each of their teams":"their team"} in AEW Fantasy.`, "Award the token");
     if(!ok) return;
     const final = { at: Date.now(), by: S.me || "someone", winners, scores, results: clean(S.results), granted:false };
     try{
-      const res = await withinMs(db.ref(base+"/final").transaction(cur => cur ? undefined : final), 10000);
-      if(!res.committed){ toast("Someone else just finalised this."); return; }
+      const res = await withinMs(db.ref(base+"/"+aw.path).transaction(cur => cur ? undefined : final), 10000);
+      if(!res.committed){ toast("Someone else just awarded this one."); return; }
     }catch(err){ toast("Couldn't finalise: " + err.message); return; }
-    S.resultsMode = false;
-    await grant(final);
+    if(!aw.lg) S.resultsMode = false;
+    await grant(aw, final);
   }
   function swapsShape(raw){
     let v = raw;
@@ -3535,36 +3541,38 @@ async function showClassic(id, carry, ev){
     if(!Array.isArray(v.awards)) v.awards = v.awards ? Object.values(v.awards) : [];
     return v;
   }
-  async function grant(final){
+  async function grant(aw, final){
     try{
       const league = (await withinMs(db.ref("currentLeague").once("value"), 10000)).val();
       if(!league) throw new Error("the fantasy app has no current season set");
-      const label = ev.name + (ev.subtitle? " " + ev.subtitle : "");
+      const label = ev.name + (ev.subtitle? " " + ev.subtitle : "") + (aw.lg ? " · " + aw.label : "");
       await withinMs(db.ref("leagues/"+league+"/data/aew_swaps").transaction(cur=>{
         const sw = swapsShape(cur);
         final.winners.forEach(team=>{
-          const id = ev.id + ":" + team;
+          const id = aw.award + team;
           if(sw.awards.some(a=>a && a.id===id)) return;
           sw.tokens[team] = (Number(sw.tokens[team])||0) + 1;
           sw.awards.push({ id, team, event: label, eventId: ev.id, score: final.scores[team] || "", date: shortDate(ev.end || ev.start), at: Date.now() });
         });
         return JSON.stringify(sw);
       }), 15000);
-      await withinMs(db.ref(base+"/final").update({ granted:true, league }), 10000);
+      await withinMs(db.ref(base+"/"+aw.path).update({ granted:true, league }), 10000);
       toast("Swap token sent to AEW Fantasy.");
-    }catch(err){ toast("It's final, but the token didn't send: " + err.message); }
+    }catch(err){ toast("It's awarded, but the token didn't send: " + err.message); }
   }
-  async function reopen(){
-    const ok = await confirmDialog("Reopen the results?", "This takes back the swap token (if it hasn't been spent) and unlocks the results for editing.", "Reopen");
+  async function reopen(aw){
+    if(!aw) return;
+    if(aw.lg && S.final){ toast("Reopen the overall token first — it was worked out from these results."); return; }
+    const ok = await confirmDialog(`Reopen the ${aw.lg ? aw.label : "overall"} token?`, `This takes back that swap token (if it hasn't been spent) and unlocks ${aw.lg?"that league's":"the"} results for editing.`, "Reopen");
     if(!ok) return;
-    const f = S.final;
+    const f = S.finals[aw.id];
     try{
       if(f && f.league){
         let spent = [];
         await withinMs(db.ref("leagues/"+f.league+"/data/aew_swaps").transaction(cur=>{
           const sw = swapsShape(cur); spent = [];
           (f.winners||[]).forEach(team=>{
-            const id = ev.id + ":" + team, i = sw.awards.findIndex(a=>a && a.id===id);
+            const id = aw.award + team, i = sw.awards.findIndex(a=>a && a.id===id);
             if(i===-1) return;
             sw.awards.splice(i,1);
             if((Number(sw.tokens[team])||0) > 0) sw.tokens[team] = Number(sw.tokens[team]) - 1; else spent.push(team);
@@ -3573,7 +3581,7 @@ async function showClassic(id, carry, ev){
         }), 15000);
         if(spent.length) toast(spent.map(k=>nameFor(k)).join(" & ") + " already used the token — sort that one out in the fantasy app.");
       }
-      await withinMs(db.ref(base+"/final").remove(), 10000);
+      await withinMs(db.ref(base+"/"+aw.path).remove(), 10000);
       S.resultsMode = true; S.tab = "matches";
       app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab==="matches")));
       renderAll();
@@ -3606,8 +3614,10 @@ async function showClassic(id, carry, ev){
       S.server = JSON.parse(JSON.stringify(incoming));
       Object.keys(incoming).forEach(k=>{ if(k===S.pendingMine) return; S.picks[k] = incoming[k]; if(S.picks[k] && !S.picks[k].picks) S.picks[k].picks = {}; });
       if(!S.pendingResults) S.results = v.results || {};
-      S.final = v.final || null;
-      if(S.final){ S.final.winners = arrayOf(S.final.winners); S.resultsMode = false; }
+      S.finals = {};
+      AWARDS.forEach(aw=>{ const f = v[aw.path]; if(f){ f.winners = arrayOf(f.winners); f.scores = f.scores || {}; S.finals[aw.id] = f; } });
+      S.final = S.finals.overall || null;
+      if(S.final) S.resultsMode = false;
       renderAll();
     }, err=>toast("Can't read picks: " + err.message));
   }catch(e){
