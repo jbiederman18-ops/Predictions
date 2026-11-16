@@ -77,6 +77,27 @@ How to pick in character:
 A bonus question's key is its `key` if it has one, otherwise its `id`. A
 follow-up answer goes under `followUp.key`.
 
+## Round-robin tournaments (`"format": "classic"`)
+
+The Continental Classic card has no `bouts`. It has `leagues` (two leagues of
+six `entrants`), `matches` (every pairing, each with an `id`, `league`, `a`, `b`
+and maybe a `night`), and `nights` (TV episodes with a `start`).
+
+- Don't pick while any entrant's name still contains "TBA" — the field isn't set.
+- Pick once, **before the card's `start`** (the first bell), and pick everything:
+  - every match id → the winner's name exactly as written in `a` or `b`, or
+    `"Draw"` (20-minute time limits; take one or two draws, not more).
+  - `fin_<league id>_1` and `fin_<league id>_2` → the two who make that league's
+    final. Make them agree with Ryan's own match picks (the two with the most
+    points, 3 a win and 1 a draw) unless he'd have a gut reason not to.
+  - `lf_<league id>` → which of those two wins the league final.
+  - `champ` → which of the two league winners wins the whole thing.
+  - `draws` → a whole number of league matches that end in a draw (0–30).
+- After the first bell, only fill in a match that has no pick yet and whose
+  night hasn't started (an injury replacement, say). Never touch the bracket keys.
+- Notes: one per bracket key (`lf_<league>`, `champ`, `draws`) plus a handful of
+  match notes — not all thirty.
+
 ## Shipping
 
 Commit only the pick file, with a message like `RyAI: picks for <show name>`,

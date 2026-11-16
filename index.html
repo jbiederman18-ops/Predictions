@@ -567,6 +567,103 @@
     .tv-reveal, .tv-ctl{ font-size:2.4vw; }
     .rv-groups{ grid-template-columns:1fr; }
   }
+  /* ── Continental Classic: midnight navy, the Gold League and the Blue League ── */
+  body[data-theme="classic"]{
+    --bg:#0b1020; --surface:#121a30; --surface2:#1a2340; --line:#2b3658;
+    --text:#f1eee4; --dim:#9fa9c4; --accent:#e2b552; --accent-ink:#1c1404;
+    --good:#56c59a; --bad:#ec6a5a; --cc-gold:#e2b552; --cc-blue:#5b9cf0;
+    --display:'Big Shoulders Display',sans-serif; --display-weight:900; --display-track:.01em;
+    background:
+      radial-gradient(90% 50% at 0% -10%, rgba(226,181,82,.20), transparent 60%),
+      radial-gradient(90% 50% at 100% -10%, rgba(91,156,240,.22), transparent 60%), no-repeat var(--bg);
+  }
+  .lg-gold{ --lg:var(--cc-gold, #e2b552); }
+  .lg-blue{ --lg:var(--cc-blue, #5b9cf0); }
+  .cc-hero{ position:relative; }
+  .cc-emblem{ display:block; width:92px; height:50px; margin:0 0 10px; }
+  body[data-theme="classic"] .promo{ letter-spacing:.32em; font-weight:700; color:var(--cc-gold); }
+  .cc-word{ text-transform:uppercase; font-size:clamp(40px, 11.6vw, 104px); overflow-wrap:anywhere; line-height:.86; letter-spacing:.005em; }
+  .cc-word span{ display:block; }
+  .cc-word span:first-child{ color:var(--cc-gold, var(--accent)); }
+  .cc-word span:last-child{ color:var(--text); -webkit-text-stroke:0; }
+  body[data-theme="classic"] .show-sub{ display:inline-block; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    font-size:clamp(18px,5vw,26px); padding:2px 12px; border:2px solid var(--cc-blue); color:var(--cc-blue); border-radius:4px; margin-top:12px; }
+  body[data-theme="classic"] .tabs .tab{ flex:1; }
+
+  .cc-seg{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin:4px 0 14px; padding:4px; background:var(--surface); border:1px solid var(--line); border-radius:12px; }
+  .cc-segbtn{ background:none; border:0; border-radius:9px; padding:10px 8px; font-family:var(--display); font-weight:800; font-size:21px; line-height:1; color:var(--dim); }
+  .cc-segbtn small{ display:block; font-family:'Public Sans',sans-serif; font-weight:600; font-size:12px; margin-top:4px; letter-spacing:.02em; }
+  .cc-segbtn[aria-selected="true"]{ background:var(--lg); color:#0b1020; }
+  .cc-kicker{ margin:0 0 6px; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--lg, var(--dim)); }
+  .cc-proj{ background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--lg); border-radius:10px; padding:12px 12px 6px; margin:0 0 6px; }
+
+  .cc-table{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-size:15px; }
+  .cc-table th{ font-size:12px; font-weight:600; color:var(--dim); text-align:center; padding:4px 4px 6px; }
+  .cc-table th.nm{ text-align:left; color:var(--text); font-family:var(--display); font-weight:800; font-size:18px; }
+  .cc-table td{ text-align:center; padding:7px 4px; border-top:1px solid var(--line); }
+  .cc-table td.nm{ text-align:left; font-weight:600; }
+  .cc-table td.rk{ color:var(--dim); width:22px; }
+  .cc-table td.pts{ font-family:var(--display); font-weight:800; font-size:19px; color:var(--text); }
+  .cc-table tr.through td.rk{ color:var(--lg, var(--accent)); font-weight:800; }
+  .cc-table tr.through td.nm{ box-shadow:inset 3px 0 0 var(--lg, var(--accent)); padding-left:9px; }
+  .cc-table.compact td{ padding:5px 4px; font-size:14px; }
+  .cc-tie{ font-size:11px; font-weight:600; color:var(--dim); border:1px solid var(--line); border-radius:999px; padding:0 6px; margin-left:4px; }
+  .cc-belt{ font-size:13px; }
+
+  .cc-night{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; font-family:var(--display); font-weight:800; font-size:22px; margin:22px 0 10px; }
+  .cc-lock{ font-family:'Public Sans',sans-serif; font-size:12px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--dim); }
+  .cc-lock.shut{ color:var(--bad); border-color:currentColor; }
+  .cc-lock.open{ border-style:dashed; }
+  .cc-match{ background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--lg); border-radius:10px; padding:10px; margin:0 0 8px; }
+  .cc-match.correct{ border-left-color:var(--good); }
+  .cc-match.wrong{ border-left-color:var(--bad); }
+  .cc-match.void{ opacity:.55; }
+  .cc-match > .stip{ margin:0 0 6px; }
+  .cc-row{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:6px; align-items:stretch; }
+  .cc-side{ position:relative; background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:10px; min-height:52px; font-weight:700; line-height:1.15; overflow-wrap:anywhere; }
+  .cc-side.a{ text-align:left; } .cc-side.b{ text-align:right; }
+  .cc-side.d{ font-size:13px; font-weight:600; color:var(--dim); padding:10px 9px; }
+  .cc-side .holder{ display:block; font-weight:500; font-size:11px; color:var(--dim); margin-top:3px; }
+  .cc-side.picked{ background:var(--lg); border-color:var(--lg); color:#0b1020; }
+  .cc-side.picked .holder{ color:inherit; opacity:.7; }
+  .cc-side.faded{ opacity:.45; }
+  .cc-side.won{ box-shadow:inset 0 0 0 2px var(--good); }
+  .cc-side:disabled{ cursor:default; }
+  .cc-match .outcome{ margin:8px 2px 0; }
+  .cc-match .whopicked{ margin-top:8px; }
+
+  .cc-road{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; margin:0 0 14px; text-align:center; }
+  .cc-roadlg{ display:flex; flex-direction:column; gap:3px; min-width:0; border-top:3px solid var(--lg); padding-top:8px; }
+  .cc-roadlg b{ font-size:14px; line-height:1.2; overflow-wrap:anywhere; }
+  .cc-roadlg b.w{ font-family:var(--display); font-weight:800; font-size:20px; color:var(--lg); }
+  .cc-road .lab{ font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); }
+  .cc-road .arrow{ color:var(--dim); font-size:13px; }
+  .cc-roadmid{ display:flex; flex-direction:column; gap:4px; align-items:center; max-width:34vw; }
+  .cc-roadmid .champ{ font-family:var(--display); font-weight:900; font-size:24px; line-height:1; color:var(--text); overflow-wrap:anywhere; }
+  .cc-lgbox{ border-left-color:var(--lg); }
+  .cc-lgbox h3{ color:var(--lg); }
+  .cc-lgbox .chip.picked{ background:var(--lg); border-color:var(--lg); color:#0b1020; }
+  .cc-lgbox .chip.won, .cc-champbox .chip.won{ box-shadow:inset 0 0 0 2px var(--good); }
+  .cc-champbox{ border-left-color:var(--accent); }
+  .cc-sublab{ margin:16px 0 0; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); }
+
+  .cc-block .section-head small{ font-family:'Public Sans',sans-serif; font-size:13px; font-weight:600; color:var(--dim); margin-left:6px; }
+  .cc-block .section-head{ color:var(--lg); }
+  .cc-gridwrap{ overflow-x:auto; margin:6px 0 4px; }
+  .cc-grid{ border-collapse:separate; border-spacing:3px; font-size:13px; font-variant-numeric:tabular-nums; }
+  .cc-grid th{ font-size:11px; color:var(--dim); font-weight:700; padding:2px; }
+  .cc-grid th.nm{ text-align:right; color:var(--text); font-size:13px; font-weight:600; padding-right:6px; white-space:nowrap; max-width:44vw; overflow:hidden; text-overflow:ellipsis; }
+  .cc-grid td{ width:34px; height:30px; text-align:center; border-radius:5px; background:var(--surface2); font-weight:800; }
+  .cc-grid td.x{ background:transparent; color:var(--line); }
+  .cc-grid td.w{ background:var(--good); color:#06140d; }
+  .cc-grid td.l{ background:rgba(236,106,90,.25); color:var(--bad); }
+  .cc-grid td.d{ background:rgba(226,181,82,.25); color:var(--accent); }
+  .cc-grid td.tbd{ font-weight:500; font-size:10px; color:var(--dim); }
+
+  .cc-sched{ display:grid; grid-template-columns:1fr; gap:6px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .cc-sched .nm{ font-weight:600; }
+  @media (min-width:560px){ .cc-sched{ grid-template-columns:1fr 210px auto; align-items:center; } }
+  @media (max-width:420px){ .cc-segbtn{ font-size:18px; } .cc-side{ padding:9px 8px; font-size:15px; } }
 </style>
 </head>
 <body data-theme="ringside">
@@ -612,7 +709,7 @@ const PRED_ROOT = "leagues/_predictions/events";
 const CARD_PATH = "leagues/_predictions/cards";      // cards made or edited on the setup page (JSON strings)
 const PUBLIC_CARD_PATH = "predictionCards";          // read-only mirror RyAI can fetch without signing in
 const PLAYER_PATH = "leagues/_predictions/players";  // player photos
-const THEMES = [["dream","WrestleDream (dawn sky, crimson ribbon, gold)"],["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
+const THEMES = [["classic","Continental Classic (navy, gold and blue)"],["dream","WrestleDream (dawn sky, crimson ribbon, gold)"],["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
 // Flowing crimson silk ribbon, used under the WrestleDream hero.
 const DREAM_RIBBON = `<svg class="ribbon" viewBox="0 0 400 54" preserveAspectRatio="none" aria-hidden="true">
   <path d="M0 34 C60 6 110 6 160 26 S260 50 310 22 S380 4 400 14 L400 24 C380 16 350 28 312 36 S220 56 158 38 S60 18 0 46 Z" fill="#d3243a"/>
@@ -648,7 +745,7 @@ const LEAGUE = [
   { key:"ryan",  name:"Ryan", bot:true },
 ];
 const LEAGUE_KEYS = LEAGUE.map(p=>p.key);
-const THEME_SWATCH = { dream:"#d3243a", nola:"#8b5cc4", briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
+const THEME_SWATCH = { classic:"#e2b552", dream:"#d3243a", nola:"#8b5cc4", briefcase:"#d9a93a", matchday:"#c8102e", ringside:"#e9c46a" };
 
 // ── small helpers ──────────────────────────────────────────────────────────
 const $ = (s, r=document)=>r.querySelector(s);
@@ -750,7 +847,7 @@ async function allEvents(){
   Object.keys(fb).forEach(id=>{
     if(fb[id].deleted){ delete byId[id]; return; }
     const d = fb[id];
-    byId[id] = Object.assign({}, byId[id] || {}, { id, name:d.name, subtitle:d.subtitle, promotion:d.promotion, start:d.start, date:(d.start||"").slice(0,10), theme:d.theme, legacy:!!d.legacySheet, edited:true });
+    byId[id] = Object.assign({}, byId[id] || {}, { id, name:d.name, subtitle:d.subtitle, promotion:d.promotion, start:d.start, date:(d.start||"").slice(0,10), theme:d.theme, format:d.format, end:d.end, legacy:!!d.legacySheet, edited:true });
   });
   return Object.values(byId).sort((a,b)=> new Date(b.start) - new Date(a.start));
 }
@@ -901,7 +998,8 @@ async function showHome(){
       const fin = finals[e.id];
       let status;
       if(fin && fin.winners && fin.winners.length) status = `<b>${esc(fin.winners.map(k=>nameFor(k)).join(" & "))}</b>won it`;
-      else if(upcoming) status = `<b>${esc(lockCountdown(start))}</b>until picks lock`;
+      else if(upcoming) status = `<b>${esc(lockCountdown(start))}</b>${e.format==="classic"?"until the bracket locks":"until picks lock"}`;
+      else if(e.format==="classic" && !(e.end && new Date(e.end).getTime() < now)) status = `<b>Under way</b>picks lock night by night`;
       else if(e.legacy) status = `<b>Archived</b>sheet-era show`;
       else status = `<b>Picks locked</b>results pending`;
       return `<a class="ev ${upcoming?"upcoming":""}" href="#/${esc(e.id)}">
@@ -955,6 +1053,7 @@ async function showEvent(id, carry){
   let ev = CARD_CACHE[id] || await loadCard(id);
   if(!ev){ app.innerHTML = `<div class="empty" style="margin-top:24px">There's no show called “${esc(id)}”. <a href="#/">See all shows</a>.</div>`; return; }
   if(!ev.id) ev.id = id;
+  if(ev.format==="classic") return showClassic(id, carry, ev);
   const evStr = JSON.stringify(ev);
 
   const S = {
@@ -1889,7 +1988,8 @@ async function setupHome(app){
       <p class="note" style="margin-bottom:0">Photos show up on the “who's picking” buttons, the league table and the TV. Square-ish photos work best. Guests play every show and appear in the tables, but only Josh, Maria, Erik and Ryan can win a swap token.</p></div>
     <h2>Shows</h2>
     <div id="setupShows"><div class="empty">Loading the shows…</div></div>
-    <p><a class="btn primary" href="#/setup/new" style="text-decoration:none;display:inline-block">Add a show</a></p>
+    <p><a class="btn primary" href="#/setup/new" style="text-decoration:none;display:inline-block">Add a show</a>
+      <a class="btn" href="#/setup/new-classic" style="text-decoration:none;display:inline-block">Add a round-robin tournament</a></p>
   </div>`;
   const paintPlayers = ()=>{
     const el = $("#playersEdit"); if(!el) return;
@@ -1949,7 +2049,7 @@ function blankShow(){
 }
 
 async function setupEditor(app, id){
-  const isNew = id==="new";
+  const isNew = id==="new" || id==="new-classic";
   app.innerHTML = `<div class="setup"><div class="empty" style="margin-top:24px">Loading…</div></div>`;
   let original = null, inRepo = false, inFb = false;
   if(!isNew){
@@ -1961,8 +2061,9 @@ async function setupEditor(app, id){
     original = (inFb ? fb : null) || await getJSON("events/"+id+".json").catch(()=>null);
     if(!original){ app.innerHTML = `<div class="empty" style="margin-top:24px">There's no show called “${esc(id)}”. <a href="#/setup">Back to setup</a>.</div>`; return; }
   }
-  const D = JSON.parse(JSON.stringify(original || blankShow()));
+  const D = JSON.parse(JSON.stringify(original || (id==="new-classic" ? blankClassic() : blankShow())));
   if(!D.id) D.id = isNew ? "" : id;
+  if(D.format==="classic") return setupClassic(app, D, { isNew, inRepo, inFb, id });
   D.bouts = D.bouts || []; D.bonus = D.bonus || [];
   D.bouts.forEach(b=>b.options.forEach(o=>{ o._k = o.n; }));     // remember names, to carry picks over a rename
   let dirty = false;
@@ -2263,6 +2364,7 @@ async function showTV(id){
   if(!ev){ host.innerHTML = `<div class="tv-msg">There's no show called “${esc(id)}”.</div>`; return; }
   if(!ev.id) ev.id = id;
   if(ev.legacySheet){ host.innerHTML = `<div class="tv-msg">This show is from the old sheet, so there's no party mode for it.</div>`; return; }
+  if(ev.format==="classic"){ location.replace("#/"+ev.id); return; }
   const evStr = JSON.stringify(ev);
   const start = new Date(ev.start).getTime();
   const locked = ()=> Date.now() >= start;
@@ -2785,6 +2887,911 @@ function confirmDialog(title, body, okLabel){
     });
   });
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// Continental Classic — a round-robin tournament card (`"format":"classic"`).
+//
+// Two leagues of six. Every league match is generated from the entrants, so the
+// card only lists the leagues, the nights (episodes) and which night each match
+// airs on. Picks, by key:
+//   <match id>        winner's name, or "Draw" (20-minute time limit). Each one
+//                     locks at the bell of the night it airs on; a match with no
+//                     night yet stays open until its result goes in (or the final).
+//   fin_<league>_1/_2 the two who make that league's final   ┐
+//   lf_<league>       who wins the league final               │ lock at the
+//   champ             who wins the whole thing                │ Night 1 bell
+//   draws             how many league matches end in a draw   ┘ (tiebreaker)
+// Results use the same keys. One swap token for the whole tournament, awarded
+// once the champion is in: most points, then most bracket points, then the
+// closest draws guess.
+// ════════════════════════════════════════════════════════════════════════════
+const CC_DRAW = "Draw";
+const CC_PTS = { match:1, finalist:2, leagueFinal:3, champ:5 };
+const CC_TBA = /\bTBA\b/i;
+function ccLeagues(ev){ return arrayOf(ev.leagues); }
+function ccEntrants(L){ return arrayOf(L && L.entrants).map(n=>String(n==null?"":n)); }
+function ccAllMatches(ev){ return arrayOf(ev.matches); }
+function ccMatches(ev, lg){ return ccAllMatches(ev).filter(m=>!m.void && (!lg || m.league===lg)); }
+function ccNights(ev){ return arrayOf(ev.nights).slice().sort((a,b)=>new Date(a.start)-new Date(b.start)); }
+function ccNight(ev, id){ return arrayOf(ev.nights).find(n=>n.id===id) || null; }
+function ccLockAt(ev, m){
+  const n = ccNight(ev, m.night), t = n && n.start ? new Date(n.start).getTime() : NaN;
+  return isFinite(t) ? t : (ev.end ? new Date(ev.end).getTime() : Infinity);
+}
+function ccTBA(ev){ return ccLeagues(ev).some(L=>ccEntrants(L).some(n=>!n.trim() || CC_TBA.test(n))); }
+function ccBracketKeys(ev){ return ccLeagues(ev).flatMap(L=>["fin_"+L.id+"_1","fin_"+L.id+"_2","lf_"+L.id]).concat(["champ","draws"]); }
+// Every pairing in each league. Ids are by slot (gold-1v2), so renaming an entrant keeps the match.
+function ccGenMatches(ev){
+  const old = {}; ccAllMatches(ev).forEach(m=>{ old[m.id] = m; });
+  const out = [];
+  ccLeagues(ev).forEach(L=>{
+    const E = ccEntrants(L);
+    for(let i=0;i<E.length;i++) for(let j=i+1;j<E.length;j++){
+      const id = L.id+"-"+(i+1)+"v"+(j+1), o = old[id] || {};
+      const m = { id, league:L.id, a:E[i], b:E[j] };
+      if(o.night) m.night = o.night;
+      if(o.void) m.void = true;
+      out.push(m);
+    }
+  });
+  return out;
+}
+// "a" | "b" | "d" | "" for a pick or result on a match
+function ccOutcome(m, v){
+  if(blank(v)) return "";
+  const x = norm(v);
+  if(x===norm(CC_DRAW)) return "d";
+  if(x===norm(m.a)) return "a";
+  if(x===norm(m.b)) return "b";
+  return "";
+}
+function ccValue(m, o){ return o==="a" ? m.a : o==="b" ? m.b : o==="d" ? CC_DRAW : null; }
+// League table from any map of match id → winner/Draw (a card's picks or the results).
+// Win 3, draw 1. Level on points: head-to-head, then wins, then entrant order.
+function ccTable(ev, lg, map){
+  const L = ccLeagues(ev).find(x=>x.id===lg); if(!L) return [];
+  const rows = {};
+  ccEntrants(L).forEach((n,i)=>{ rows[norm(n)] = { n, i, w:0, d:0, l:0, pts:0, p:0, tied:false }; });
+  const ms = ccMatches(ev, lg);
+  ms.forEach(m=>{
+    const o = ccOutcome(m, map[m.id]); if(!o) return;
+    const A = rows[norm(m.a)], B = rows[norm(m.b)]; if(!A || !B) return;
+    A.p++; B.p++;
+    if(o==="d"){ A.d++; B.d++; A.pts++; B.pts++; }
+    else { const W = o==="a"?A:B, Lo = o==="a"?B:A; W.w++; W.pts += 3; Lo.l++; }
+  });
+  const h2h = (x,y)=>{
+    const m = ms.find(m=>(norm(m.a)===norm(x.n) && norm(m.b)===norm(y.n)) || (norm(m.a)===norm(y.n) && norm(m.b)===norm(x.n)));
+    const o = m ? ccOutcome(m, map[m.id]) : "";
+    if(o!=="a" && o!=="b") return 0;
+    return norm(ccValue(m,o))===norm(x.n) ? -1 : 1;
+  };
+  const out = Object.values(rows).sort((x,y)=> y.pts-x.pts || h2h(x,y) || y.w-x.w || x.i-y.i);
+  // A tie nothing above can split (same points, no head-to-head winner, same wins)
+  for(let k=1;k<out.length;k++){ const a = out[k-1], b = out[k]; if(a.pts===b.pts && !h2h(a,b) && a.w===b.w){ a.tied = b.tied = true; } }
+  return out;
+}
+function ccDraws(ev, map){ return ccMatches(ev).filter(m=>ccOutcome(m, map[m.id])==="d").length; }
+function ccBlocksDone(ev, R){ return ccMatches(ev).every(m=>!!ccOutcome(m, R[m.id])); }
+function ccScore(ev, p, R){
+  let pts = 0, max = 0, bracket = 0, hit = 0, graded = 0;
+  ccMatches(ev).forEach(m=>{
+    const r = ccOutcome(m, R[m.id]); if(!r) return;
+    graded++; max += CC_PTS.match;
+    if(ccOutcome(m, p[m.id])===r){ hit++; pts += CC_PTS.match; }
+  });
+  ccLeagues(ev).forEach(L=>{
+    const real = [R["fin_"+L.id+"_1"], R["fin_"+L.id+"_2"]].filter(x=>!blank(x)).map(norm);
+    max += real.length * CC_PTS.finalist;
+    Array.from(new Set([p["fin_"+L.id+"_1"], p["fin_"+L.id+"_2"]].filter(x=>!blank(x)).map(norm)))
+      .forEach(x=>{ if(real.indexOf(x)!==-1){ pts += CC_PTS.finalist; bracket += CC_PTS.finalist; } });
+    const lf = R["lf_"+L.id];
+    if(!blank(lf)){ max += CC_PTS.leagueFinal; if(norm(p["lf_"+L.id])===norm(lf)){ pts += CC_PTS.leagueFinal; bracket += CC_PTS.leagueFinal; } }
+  });
+  if(!blank(R.champ)){ max += CC_PTS.champ; if(norm(p.champ)===norm(R.champ)){ pts += CC_PTS.champ; bracket += CC_PTS.champ; } }
+  const drawsOff = ccBlocksDone(ev, R) && !blank(p.draws) && isFinite(Number(p.draws)) ? Math.abs(Number(p.draws) - ccDraws(ev, R)) : null;
+  return { pts, max, bracket, hit, graded, drawsOff };
+}
+function ccAnswered(ev, p){ return ccMatches(ev).filter(m=>ccOutcome(m, p[m.id])).length + ccBracketKeys(ev).filter(k=>!blank(p[k])).length; }
+function ccTotal(ev){ return ccMatches(ev).length + ccBracketKeys(ev).length; }
+const ccOff = r => r.drawsOff==null ? 999 : r.drawsOff;
+function ccStandings(ev, players, R){
+  return players.map(p=>Object.assign({}, p, ccScore(ev, p.picks||{}, R), { answered: ccAnswered(ev, p.picks||{}) }))
+    .sort((a,b)=> b.pts-a.pts || b.bracket-a.bracket || ccOff(a)-ccOff(b) || a.name.localeCompare(b.name));
+}
+function ccTokenWinners(table){
+  const league = table.filter(r=>LEAGUE_KEYS.indexOf(r.key)!==-1 && r.answered>0);
+  if(!league.length) return [];
+  const t = league[0];
+  return league.filter(r=>r.pts===t.pts && r.bracket===t.bracket && ccOff(r)===ccOff(t)).map(r=>r.key);
+}
+// Two overlapping rings, gold and blue — the two leagues meeting in one final.
+const CC_EMBLEM = `<svg class="cc-emblem" viewBox="0 0 120 64" aria-hidden="true">
+  <circle cx="42" cy="32" r="24" fill="none" stroke="var(--cc-gold)" stroke-width="7"/>
+  <circle cx="78" cy="32" r="24" fill="none" stroke="var(--cc-blue)" stroke-width="7"/>
+  <path d="M60 14.5 A24 24 0 0 1 60 49.5" fill="none" stroke="var(--cc-gold)" stroke-width="7"/></svg>`;
+
+async function showClassic(id, carry, ev){
+  $("#homeLink").classList.remove("hidden");
+  const app = $("#app");
+  const evStr = JSON.stringify(ev);
+  const LGS = ccLeagues(ev);
+  const S = {
+    me: lsGet("pred_me") || "", picks:{}, server:{}, results:{}, final:null, ryan:null, ryanErr:"",
+    resultsMode: !!(carry && carry.resultsMode), tab: (carry && carry.tab) || "matches",
+    lg: (carry && carry.lg) || lsGet("cc_lg") || (LGS[0] && LGS[0].id),
+    saveTimer:null, resultsTimer:null, pendingMine:null, pendingResults:null, ref:null, cardRef:null, tick:null, dead:false,
+  };
+  if(!LGS.some(L=>L.id===S.lg)) S.lg = LGS[0] && LGS[0].id;
+  if(["matches","bracket","blocks","table"].indexOf(S.tab)===-1) S.tab = "matches";
+  const base = PRED_ROOT + "/" + ev.id;
+  const start = new Date(ev.start).getTime();
+  view = { teardown(){ S.dead = true; if(S.ref) S.ref.off(); if(S.cardRef) S.cardRef.off(); clearInterval(S.tick); flushSaves(); }, repaint: ()=>renderAll() };
+
+  document.body.dataset.theme = ev.theme || "classic";
+  document.title = ev.name + (ev.subtitle? " "+ev.subtitle:"") + " — Prediction Sheet";
+  $("#rosterList").innerHTML = "";
+
+  // ── derived ──
+  const tba = ()=> ccTBA(ev);
+  const lgName = lg => (LGS.find(L=>L.id===lg) || {}).name || lg;
+  const matchById = k => ccAllMatches(ev).find(m=>m.id===k);
+  const bracketLocked = ()=> Date.now() >= start;
+  const matchLocked = m => Date.now() >= ccLockAt(ev, m) || !blank(S.results[m.id]);
+  const keyLocked = k => { const m = matchById(k); return m ? matchLocked(m) : bracketLocked(); };
+  const allLocked = ()=> bracketLocked() && ccMatches(ev).every(matchLocked);
+  const myPicks = ()=>{
+    if(!S.me) return {};
+    if(!S.picks[S.me]) S.picks[S.me] = { name: nameFor(S.me), picks:{} };
+    if(!S.picks[S.me].picks) S.picks[S.me].picks = {};
+    return S.picks[S.me].picks;
+  };
+  const botPicks = ()=> (S.ryan && S.ryan.picks) || {};
+  const ryanOwn = ()=> (S.picks.ryan && S.picks.ryan.picks) || {};
+  const ryanChanged = ()=>{ const b = botPicks(), o = ryanOwn(); return Object.keys(o).filter(k=>!blank(o[k]) && norm(o[k])!==norm(b[k])); };
+  const target = ()=>{
+    if(S.resultsMode) return S.results;
+    const t = myPicks();
+    if(S.me==="ryan"){ const b = botPicks(); Object.keys(b).forEach(k=>{ if(blank(t[k])) t[k] = b[k]; }); }
+    return t;
+  };
+  const canEdit = k => S.resultsMode ? !S.final : (!!S.me && !tba() && !keyLocked(k));
+  function players(){
+    const list = [];
+    Object.keys(S.picks).forEach(k=>{
+      if(k==="ryan") return;
+      const e = S.picks[k]; if(!e || !e.picks || !Object.keys(e.picks).length) return;
+      list.push({ key:k, name:nameFor(k,e), picks:e.picks });
+    });
+    const merged = Object.assign({}, botPicks());
+    const own = ryanOwn(); Object.keys(own).forEach(k=>{ if(!blank(own[k])) merged[k] = own[k]; });
+    if(Object.keys(merged).length) list.push({ key:"ryan", name:"Ryan", picks:merged, bot: ryanChanged().length===0, mixed: ryanChanged().length>0 && !!S.ryan });
+    return list;
+  }
+  const champBadge = n => !blank(ev.champion) && norm(n)===norm(ev.champion) ? `<span class="holder">Champion</span>` : "";
+  const nightLabel = n => `${esc(n.name || "TV")} · ${esc(fmtDate(n.start,{weekday:"short",month:"short",day:"numeric"}))}`;
+  function keyLabel(k){
+    const m = matchById(k); if(m) return `${m.a} v ${m.b}`;
+    let x;
+    if((x = k.match(/^fin_(.+)_\d$/))) return lgName(x[1]) + " finalist";
+    if((x = k.match(/^lf_(.+)$/))) return lgName(x[1]) + " final";
+    if(k==="champ") return (ev.name||"Tournament") + " winner";
+    if(k==="draws") return "Draws in league play";
+    return k;
+  }
+  function botTag(k){
+    if(S.me!=="ryan" || S.resultsMode || !S.ryan) return "";
+    const b = botPicks()[k], t = myPicks()[k];
+    if(blank(b)) return "";
+    return norm(b)===norm(t) ? `<p class="stip">🤖 RyAI picked this</p>` : `<p class="stip">You changed this from RyAI's pick (${esc(b)})</p>`;
+  }
+  function who(list, key, label){
+    const groups = {};
+    list.forEach(p=>{ const v = p.picks[key]; if(blank(v)) return; const g = label ? label(v) : v; if(blank(g)) return;
+      const k = norm(g); (groups[k] = groups[k] || { label:g, who:[] }).who.push(p.name + (p.bot?" 🤖":"")); });
+    const keys = Object.keys(groups); if(!keys.length) return "";
+    return `<div class="whopicked">` + keys.map(k=>`<span><b>${esc(groups[k].label)}</b> ${esc(groups[k].who.join(", "))}</span>`).join("") + `</div>`;
+  }
+
+  // ── shell ──
+  const nights = ccNights(ev);
+  app.innerHTML = `
+    <header class="hero cc-hero">
+      ${CC_EMBLEM}
+      <p class="promo">${esc(ev.promotion||"AEW")}</p>
+      <h1 class="show-name cc-word">${esc(ev.name).split(/\s+/).map(w=>`<span>${w}</span>`).join(" ")}</h1>
+      ${ev.subtitle? `<p class="show-sub">${esc(ev.subtitle)}</p>`:""}
+      <p class="show-meta">${esc(fmtDate(ev.start,{month:"short",day:"numeric"}))} → ${esc(ev.finalName || "the final")}${ev.end? " · "+esc(fmtDate(ev.end,{weekday:"short",month:"short",day:"numeric"})):""}${ev.venue? " · "+esc(ev.venue):""}</p>
+      <div class="lockline" id="lockline"></div>
+    </header>
+    <div class="whobar photos" id="whobar"></div>
+    <div class="tabs" role="tablist">
+      ${[["matches","Matches"],["bracket","Bracket"],["blocks","Leagues"],["table","Table"]].map(([k,l])=>
+        `<button class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}</button>`).join("")}
+    </div>
+    <section id="cc-panel"></section>
+    <a class="setup-link" href="#/setup/${esc(ev.id)}">Edit entrants, nights and the schedule</a>`;
+  app.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
+    flushSaves();
+    S.tab = t.dataset.tab;
+    app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x===t)));
+    renderAll();
+  }));
+
+  // ── lock line ──
+  function renderLock(){
+    const el = $("#lockline"); if(!el) return;
+    if(S.final && S.final.winners && S.final.winners.length){
+      el.innerHTML = `<span class="count">Final</span><span class="why">${esc(S.final.winners.map(k=>nameFor(k)).join(" & "))} took the swap token</span>`; return;
+    }
+    if(tba()){ el.innerHTML = `<span class="count">Field TBA</span><span class="why">Picks open as soon as all twelve names are in.</span>`; return; }
+    if(!bracketLocked()){
+      el.innerHTML = `<span class="count">${esc(lockCountdown(start))}</span><span class="why">until the bracket locks at the first bell, ${esc(fmtDate(ev.start,{weekday:"short",hour:"numeric",minute:"2-digit"}))}. Match picks lock night by night.</span>`; return;
+    }
+    const open = ccMatches(ev).filter(m=>!matchLocked(m));
+    if(!open.length){ el.innerHTML = `<span class="count">All locked</span><span class="why">Every pick is in. Results go in as they happen.</span>`; return; }
+    const next = open.map(m=>ccLockAt(ev,m)).filter(isFinite).sort((a,b)=>a-b)[0];
+    el.innerHTML = `<span class="count">${open.length} open</span><span class="why">match pick${open.length>1?"s":""} still changeable${next? ` · next lock in ${esc(lockCountdown(next))}`:""}. The bracket is locked.</span>`;
+  }
+
+  // ── who's picking ──
+  function renderWho(){
+    const el = $("#whobar"); if(!el) return;
+    const guests = Object.keys(S.picks).filter(k=>LEAGUE_KEYS.indexOf(k)===-1);
+    Object.keys(GUESTS).sort((a,b)=>GUESTS[a].localeCompare(GUESTS[b])).forEach(k=>{ if(guests.indexOf(k)===-1) guests.push(k); });
+    const people = LEAGUE.map(p=>({ key:p.key, name:p.name })).concat(guests.map(k=>({ key:k, name:nameFor(k,S.picks[k]) })));
+    const p = target(), done = ccAnswered(ev, p), tot = ccTotal(ev);
+    el.innerHTML = `<div class="head"><span>${S.me ? "Picking as" : "Who's picking? Tap your face."}</span></div>
+      <div class="pickers" role="radiogroup" aria-label="Who's picking">` +
+      people.map(x=>`<button class="picker" role="radio" aria-checked="${S.me===x.key}" data-me="${esc(x.key)}">${avatar(x.key, x.name)}<span>${esc(x.name)}</span></button>`).join("") +
+      `<button class="picker" data-me="__new" aria-label="Add a guest"><span class="av add">+</span><span>Guest</span></button></div>
+      <span class="progress"><span class="track"><span class="fill" style="width:${tot?done/tot*100:0}%"></span></span>
+      <span>${done} of ${tot} ${S.resultsMode?"results in":"called"}</span></span>`;
+    el.querySelectorAll("[data-me]").forEach(b=>b.addEventListener("click", ()=>{
+      let v = b.dataset.me;
+      if(v==="__new"){
+        const n = (prompt("Guest's name? They'll be saved for every show, but can't win a swap token.")||"").trim();
+        if(!n) return;
+        const k = slug(n);
+        if(LEAGUE_KEYS.indexOf(k)!==-1){ v = k; }
+        else { v = "g_"+k; if(!S.picks[v]) S.picks[v] = { name:n, picks:{} }; saveGuest(n).catch(()=>{}); }
+      }
+      flushSaves();
+      S.me = v; lsSet("pred_me", v); renderAll();
+    }));
+  }
+
+  function officialBar(){
+    if(S.final) return "";
+    let h = `<div class="official"><span>Watching live? Put the results in as they happen.</span>
+      <button class="toggle" id="resToggle" aria-pressed="${S.resultsMode}">${S.resultsMode?"Done entering results":"Enter results"}</button></div>`;
+    if(S.resultsMode) h += `<div class="resultsmode-note">You're entering the official results — everyone sees these. Tap a result again to clear it.</div>`;
+    else if(!S.me) h += `<div class="resultsmode-note">Choose who's picking above, then call the tournament.</div>`;
+    return h;
+  }
+  function leagueTabs(){
+    const t = target();
+    return `<div class="cc-seg" role="tablist" aria-label="League">` + LGS.map(L=>{
+      const ms = ccMatches(ev, L.id), done = ms.filter(m=>ccOutcome(m, t[m.id])).length;
+      return `<button class="cc-segbtn lg-${esc(L.id)}" role="tab" data-lg="${esc(L.id)}" aria-selected="${S.lg===L.id}">${esc(L.name)}<small>${done} of ${ms.length}</small></button>`;
+    }).join("") + `</div>`;
+  }
+  function tableHTML(rows, opts){
+    opts = opts || {};
+    if(!rows.length) return "";
+    return `<table class="cc-table ${opts.compact?"compact":""}"><thead><tr><th></th><th class="nm">${esc(opts.title||"")}</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>` +
+      rows.map((r,i)=>`<tr class="${i<2?"through":""}"><td class="rk">${i+1}</td><td class="nm">${esc(r.n)}${!blank(ev.champion)&&norm(r.n)===norm(ev.champion)?' <span class="cc-belt" title="Champion">🏆</span>':""}${r.tied?' <span class="cc-tie">tied</span>':""}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td class="pts">${r.pts}</td></tr>`).join("") +
+      `</tbody></table>`;
+  }
+
+  // ── Matches tab ──
+  function matchHTML(m, t, mine, others){
+    const o = ccOutcome(m, t[m.id]), r = ccOutcome(m, S.results[m.id]), my = ccOutcome(m, mine[m.id]);
+    const edit = canEdit(m.id) && !m.void, showRes = !S.resultsMode;
+    let cls = "cc-match lg-" + esc(m.league);
+    if(showRes && r && my) cls += r===my ? " correct" : " wrong";
+    if(m.void) cls += " void";
+    const side = (w, label, extra)=>`<button class="cc-side ${w} ${o===w?"picked":""} ${o&&o!==w?"faded":""} ${showRes&&r===w?"won":""}"
+      data-m="${esc(m.id)}" data-v="${w}" ${edit?"":"disabled"} aria-pressed="${o===w}" aria-label="${esc(label)}${w==="d"?" (time-limit draw)":""}">${esc(label)}${extra||""}</button>`;
+    let h = `<article class="${cls}">${botTag(m.id)}<div class="cc-row">${side("a", m.a, champBadge(m.a))}${side("d", "Draw")}${side("b", m.b, champBadge(m.b))}</div>`;
+    if(m.void) h += `<p class="outcome">Didn't happen — doesn't count.</p>`;
+    else if(showRes && r){
+      h += `<p class="outcome">${r==="d" ? "<strong>Time-limit draw</strong>" : `Winner: <strong>${esc(ccValue(m,r))}</strong>`}${my?` — <span class="${my===r?"hit":"miss"}">${my===r?"you called it":"missed"}</span>`:""}</p>`;
+    }
+    if(others.length && !m.void) h += who(others, m.id, v=>{ const x = ccOutcome(m, v); return x==="d" ? "Draw" : ccValue(m, x); });
+    return h + `</article>`;
+  }
+  function renderMatches(el){
+    const t = target(), mine = myPicks();
+    let h = officialBar();
+    if(tba() && !S.resultsMode) h += `<div class="resultsmode-note">The field hasn't been filled in yet. As soon as all twelve names are in on the setup page, every match appears here to pick.</div>`;
+    h += leagueTabs();
+    const L = LGS.find(x=>x.id===S.lg); if(!L){ el.innerHTML = h; return; }
+    const map = S.resultsMode ? S.results : t;
+    if(!S.resultsMode && S.me) h += `<div class="cc-proj lg-${esc(L.id)}"><p class="cc-kicker">If your picks are right</p>${tableHTML(ccTable(ev, L.id, map), { title:L.name, compact:true })}</div>`;
+    if(!S.resultsMode && S.me && !bracketLocked()) h += `<p class="note">Wins are 3 points and time-limit draws 1. Top two in each league go to the league final — set that on the <button class="linkbtn" data-goto="bracket">Bracket</button> tab.</p>`;
+    const ms = ccAllMatches(ev).filter(m=>m.league===L.id);
+    const groups = nights.map(n=>({ n, ms: ms.filter(m=>m.night===n.id) })).filter(g=>g.ms.length);
+    const unsched = ms.filter(m=>!ccNight(ev, m.night));
+    if(unsched.length) groups.push({ n:null, ms:unsched });
+    groups.forEach(g=>{
+      const lockT = g.n ? new Date(g.n.start).getTime() : null;
+      const chip = !g.n ? `<span class="cc-lock open">Open until it's scheduled</span>`
+        : Date.now() >= lockT ? `<span class="cc-lock shut">Locked</span>`
+        : `<span class="cc-lock">Locks in ${esc(lockCountdown(lockT))}</span>`;
+      h += `<h3 class="cc-night">${g.n ? nightLabel(g.n) : "Not on a show yet"} ${chip}</h3>`;
+      g.ms.forEach(m=>{ h += matchHTML(m, t, mine, matchLocked(m) ? players() : []); });
+    });
+    if(!S.resultsMode && S.me && !tba() && !allLocked()) h += `<div class="clear-row"><button class="linkbtn" id="clearMatches">Clear my open ${esc(L.name)} picks</button></div>`;
+    el.innerHTML = h;
+  }
+
+  // ── Bracket tab ──
+  function finalists(map, lg){ return [map["fin_"+lg+"_1"], map["fin_"+lg+"_2"]].filter(x=>!blank(x)); }
+  // When a finalist goes, whatever was built on them goes too.
+  function cascade(t){
+    LGS.forEach(L=>{ const f = finalists(t, L.id).map(norm); if(!blank(t["lf_"+L.id]) && f.indexOf(norm(t["lf_"+L.id]))===-1) t["lf_"+L.id] = null; });
+    const w = LGS.map(L=>t["lf_"+L.id]).filter(x=>!blank(x)).map(norm);
+    if(!blank(t.champ) && w.indexOf(norm(t.champ))===-1) t.champ = null;
+  }
+  function chipBtn(attr, name, on, edit, won){
+    return `<button class="chip ${on?"picked":""} ${won?"won":""}" ${attr} data-name="${esc(name)}" ${edit?"":"disabled"} aria-pressed="${on}">${esc(name)}${!blank(ev.champion)&&norm(name)===norm(ev.champion)?" 🏆":""}</button>`;
+  }
+  function outLine(mine, actual, label){
+    if(S.resultsMode || blank(actual)) return "";
+    const hit = !blank(mine) && norm(mine)===norm(actual);
+    return `<p class="outcome">${label}: <strong>${esc(actual)}</strong>${blank(mine)?"":` — <span class="${hit?"hit":"miss"}">${hit?"you called it":"missed"}</span>`}</p>`;
+  }
+  function renderBracket(el){
+    const t = target(), mine = myPicks(), R = S.results;
+    const others = bracketLocked() ? players() : [];
+    let h = officialBar();
+    if(!S.resultsMode) h += `<p class="note" style="margin-top:0">${bracketLocked() ? "The bracket locked at the first bell." : `Locks at the first bell, ${esc(fmtDate(ev.start,{weekday:"long",hour:"numeric",minute:"2-digit"}))}.`}
+      Each finalist you get right is worth ${CC_PTS.finalist}, each league final ${CC_PTS.leagueFinal} and the winner ${CC_PTS.champ}. Every league match is worth ${CC_PTS.match}.</p>`;
+    // road map
+    h += `<div class="cc-road">` + LGS.map(L=>{
+      const f = finalists(t, L.id);
+      return `<div class="cc-roadlg lg-${esc(L.id)}"><span class="lab">${esc(L.name)}</span>
+        <b>${f.length? esc(f.join(" v ")) : "—"}</b><span class="arrow">↓</span><b class="w">${esc(t["lf_"+L.id]||"—")}</b></div>`;
+    }).join(`<div class="cc-roadmid"><span class="lab">${esc(ev.finalName||"Final")}</span><b class="champ">🏆 ${esc(t.champ||"—")}</b></div>`) + `</div>`;
+
+    LGS.forEach(L=>{
+      const k1 = "fin_"+L.id+"_1", k2 = "fin_"+L.id+"_2", kl = "lf_"+L.id;
+      const f = finalists(t, L.id), realF = finalists(R, L.id).map(norm);
+      const edit = canEdit(k1);
+      h += `<article class="bout cc-lgbox lg-${esc(L.id)}"><h3>${esc(L.name)} final</h3>${botTag(k1)}
+        <p class="stip">${S.resultsMode ? "Who made the league final?" : "Pick the two who make it"}</p>
+        <div class="chips">${ccEntrants(L).map(n=>chipBtn(`data-fin="${esc(L.id)}"`, n, f.some(x=>norm(x)===norm(n)), edit && !CC_TBA.test(n), !S.resultsMode && realF.indexOf(norm(n))!==-1)).join("")}</div>`;
+      if(edit) h += `<div style="margin-top:10px"><button class="linkbtn" data-auto="${esc(L.id)}">${S.resultsMode ? "Fill in from the league table" : "Use the top two from my match picks"}</button></div>`;
+      if(!S.resultsMode && realF.length){
+        const n = finalists(mine, L.id).filter(x=>realF.indexOf(norm(x))!==-1).length;
+        h += `<p class="outcome">Finalists: <strong>${esc(finalists(R, L.id).join(" & "))}</strong>${finalists(mine,L.id).length?` — <span class="${n?"hit":"miss"}">${n} of 2</span>`:""}</p>`;
+      }
+      if(others.length) h += who(others.map(p=>({ name:p.name, bot:p.bot, picks:{ f: finalists(p.picks, L.id).slice().sort().join(" & ") } })), "f", null);
+      h += `<p class="cc-sublab">${S.resultsMode ? "Who won it?" : "Who wins it?"}</p>`;
+      h += f.length===2 ? `<div class="chips">${f.map(n=>chipBtn(`data-lf="${esc(L.id)}"`, n, norm(t[kl])===norm(n), canEdit(kl), false)).join("")}</div>`
+        : `<p class="note">${S.resultsMode ? "Fill in both finalists first." : "Pick both finalists first."}</p>`;
+      h += outLine(mine[kl], R[kl], "Won it");
+      if(others.length) h += who(others, kl, null);
+      h += `</article>`;
+    });
+
+    const ws = LGS.map(L=>t["lf_"+L.id]).filter(x=>!blank(x));
+    h += `<article class="bout cc-champbox"><h3>${esc(ev.name)} winner</h3>${botTag("champ")}<p class="stip">${esc(ev.finalName||"The final")}${ev.champion?` · ${esc(ev.champion)} is the defending champion`:""}</p>`;
+    h += ws.length===LGS.length ? `<div class="chips">${ws.map(n=>chipBtn(`data-champ="1"`, n, norm(t.champ)===norm(n), canEdit("champ"), false)).join("")}</div>`
+      : `<p class="note">${S.resultsMode ? "Fill in both league final winners first." : "Pick both league winners first."}</p>`;
+    h += outLine(mine.champ, R.champ, "Winner");
+    if(others.length) h += who(others, "champ", null);
+    h += `</article>`;
+
+    // tiebreaker
+    const total = ccMatches(ev).length, drawsNow = ccDraws(ev, R);
+    h += `<article class="bout"><h3>Tiebreaker: how many league matches end in a draw?</h3>
+      <p class="stip">${total} league matches, 20-minute time limits. Only used if you're level on points and bracket points — closest guess wins.</p>`;
+    if(S.resultsMode) h += `<p class="outcome">Worked out from the match results: <strong>${drawsNow}</strong> so far.</p>`;
+    else {
+      const has = !blank(t.draws), ed = canEdit("draws");
+      h += `<div class="stepper">
+        <button class="stepbtn" data-draws="-1" ${ed?"":"disabled"} aria-label="Fewer">−</button>
+        <span class="stepval ${has?"":"unset"}">${has? esc(t.draws) : 2}</span>
+        <button class="stepbtn" data-draws="1" ${ed?"":"disabled"} aria-label="More">+</button>
+        <span class="note" style="margin:0">${has? "draws" : (ed?"tap − or + to lock in a number":"no guess")}</span></div>`;
+      if(ccBlocksDone(ev, R)) h += `<p class="outcome">Actual: <strong>${drawsNow}</strong>${blank(mine.draws)?"":` — you were ${Math.abs(Number(mine.draws)-drawsNow)===0?"spot on":Math.abs(Number(mine.draws)-drawsNow)+" out"}`}</p>`;
+      if(others.length) h += who(others, "draws", null);
+    }
+    h += `</article>`;
+    el.innerHTML = h;
+  }
+
+  // ── Leagues tab: the real tables and who-beat-who ──
+  function gridHTML(L){
+    const E = ccEntrants(L), ms = ccMatches(ev, L.id);
+    const cell = (x,y)=>{
+      if(x===y) return `<td class="x"></td>`;
+      const m = ms.find(m=>(norm(m.a)===norm(E[x])&&norm(m.b)===norm(E[y]))||(norm(m.a)===norm(E[y])&&norm(m.b)===norm(E[x])));
+      if(!m) return `<td class="x" title="Didn't happen">—</td>`;
+      const o = ccOutcome(m, S.results[m.id]);
+      if(!o){ const n = ccNight(ev, m.night); return `<td class="tbd" title="${esc(n? n.name+" "+fmtDate(n.start,{month:"short",day:"numeric"}) : "Not scheduled")}">${n? esc(fmtDate(n.start,{month:"numeric",day:"numeric"})) : "·"}</td>`; }
+      if(o==="d") return `<td class="d">D</td>`;
+      return norm(ccValue(m,o))===norm(E[x]) ? `<td class="w">W</td>` : `<td class="l">L</td>`;
+    };
+    const ini = n => n.split(/\s+/).map(w=>w[0]).join("").slice(0,3);
+    return `<div class="cc-gridwrap"><table class="cc-grid"><thead><tr><th></th>${E.map(n=>`<th title="${esc(n)}">${esc(ini(n))}</th>`).join("")}</tr></thead><tbody>` +
+      E.map((n,x)=>`<tr><th class="nm">${esc(n)}</th>${E.map((_,y)=>cell(x,y)).join("")}</tr>`).join("") + `</tbody></table></div>`;
+  }
+  function renderBlocks(el){
+    let h = "";
+    LGS.forEach(L=>{
+      const ms = ccMatches(ev, L.id), done = ms.filter(m=>ccOutcome(m, S.results[m.id])).length;
+      h += `<section class="cc-block lg-${esc(L.id)}"><h2 class="section-head">${esc(L.name)} <small>${done} of ${ms.length} played</small></h2>
+        ${tableHTML(ccTable(ev, L.id, S.results), { title:"Official" })}
+        <p class="note">Top two go to the ${esc(L.name)} final. Level on points? Head-to-head decides it.</p>
+        ${gridHTML(L)}</section>`;
+    });
+    const d = ccDraws(ev, S.results);
+    h += `<p class="note">Read the grid across: each row is how that wrestler did against the one up top. Unplayed matches show the date they're on. ${d} time-limit draw${d===1?"":"s"} so far.</p>`;
+    el.innerHTML = h;
+  }
+
+  // ── Table tab ──
+  function readyToFinal(){
+    const R = S.results;
+    const miss = [];
+    const left = ccMatches(ev).filter(m=>!ccOutcome(m, R[m.id])).length;
+    if(left) miss.push(`${left} league match${left>1?"es":""}`);
+    LGS.forEach(L=>{ if(finalists(R, L.id).length<2) miss.push(L.name+" finalists"); if(blank(R["lf_"+L.id])) miss.push(L.name+" final"); });
+    if(blank(R.champ)) miss.push("the winner");
+    return miss;
+  }
+  function renderTable(el){
+    const list = players();
+    if(!list.length){ el.innerHTML = `<div class="empty">Nobody has picked yet. Choose your name above and get calling.</div>`; return; }
+    const anyResults = Object.keys(S.results).some(k=>!blank(S.results[k]));
+    const table = ccStandings(ev, list, S.results);
+    if(!anyResults) table.sort((a,b)=>a.name.localeCompare(b.name));
+    let h = "";
+    if(S.final && S.final.winners && S.final.winners.length){
+      const w = S.final.winners.map(k=>nameFor(k)).join(" & ");
+      h += `<div class="winner"><h3>${esc(w)} ${S.final.winners.length>1?"share":"takes"} the swap token</h3>
+        <p>${S.final.granted ? `Added to ${S.final.winners.length>1?"their teams":"the team"} in AEW Fantasy (${esc(S.final.league||"")}).` : "Couldn't reach the fantasy season — tap retry below."}</p>
+        ${S.final.granted? `<button class="linkbtn" id="undoFinal">Results were wrong? Reopen and take the token back</button>` : `<button class="linkbtn" id="retryGrant">Retry sending the token</button>`}</div>`;
+    }
+    h += `<h2 class="section-head" style="margin-top:0">${anyResults? "League table" : "Who's picked"}</h2>`;
+    table.forEach((r,i)=>{
+      const isLeague = LEAGUE_KEYS.indexOf(r.key)!==-1;
+      h += `<div class="row ${anyResults&&i===0&&r.pts>0?"top":""}"><span class="rank">${anyResults? i+1 : "·"}</span>
+        <span class="who">${avatar(r.key, r.name)}<span class="nm">${esc(r.name)}${r.bot?'<span class="bot">🤖 RyAI</span>':(r.mixed?'<span class="bot">🤖 + Ryan</span>':"")}${r.key===S.me?"<small>you</small>":""}${!isLeague?"<small>guest</small>":""}
+          ${anyResults?`<small style="display:block;margin:0">${r.hit} of ${r.graded} matches · ${r.bracket} bracket${r.drawsOff!=null?` · draws ${r.drawsOff===0?"spot on":r.drawsOff+" out"}`:""}</small>`:""}</span></span>
+        ${anyResults? `<span class="sc">${r.pts}<span class="note" style="font-size:14px"> / ${r.max}</span></span>` : `<span class="meta">${r.answered} of ${ccTotal(ev)}</span>`}</div>`;
+    });
+    if(anyResults) h += `<p class="note">League matches are worth ${CC_PTS.match}, each finalist ${CC_PTS.finalist}, each league final ${CC_PTS.leagueFinal} and the winner ${CC_PTS.champ}. Level on points? More bracket points wins, then the closest draws guess. Still level, and each gets a token. Guests play for pride.</p>`;
+
+    if(!S.final && anyResults){
+      const miss = readyToFinal();
+      const winners = ccTokenWinners(ccStandings(ev, list, S.results));
+      h += `<div class="resultsmode-note" style="margin-top:16px">${miss.length
+        ? `Still to come before the tournament can be finalised: ${esc(miss.join(", "))}.`
+        : `Everything's in. Finalising locks the results and gives ${esc(winners.map(k=>nameFor(k)).join(" & ")||"nobody")} a swap token in AEW Fantasy.`}
+        <div style="margin-top:10px"><button class="btn primary" id="finalBtn" ${miss.length||!winners.length?"disabled":""}>Finalise and award the token</button></div></div>`;
+    }
+
+    // compare
+    const others = table.filter(r=>r.key!==S.me);
+    if(S.me && others.length){
+      const sel = S.compareWith && others.some(o=>o.key===S.compareWith) ? S.compareWith : others[0].key;
+      h += `<div class="compare"><div class="compare-head"><h2 class="section-head" style="margin:0">Where you differ</h2>
+        <select id="cmpSel" aria-label="Compare with">${others.map(o=>`<option value="${esc(o.key)}" ${o.key===sel?"selected":""}>${esc(o.name)}</option>`).join("")}</select></div>`;
+      const o = others.find(x=>x.key===sel), mp = myPicks(), rows = [];
+      const visible = k => o.key==="ryan" || keyLocked(k);
+      LGS.forEach(L=>{
+        const k = "fin_"+L.id+"_1"; if(!visible(k)) return;
+        const a = finalists(mp, L.id).map(norm).sort().join("|"), c = finalists(o.picks, L.id).map(norm).sort().join("|");
+        if(a && c && a!==c) rows.push([finalists(mp,L.id).join(" & "), L.name+" finalists", finalists(o.picks,L.id).join(" & ")]);
+      });
+      LGS.map(L=>"lf_"+L.id).concat(["champ","draws"]).concat(ccMatches(ev).map(m=>m.id)).forEach(k=>{
+        if(!visible(k)) return;
+        const a = mp[k], c = o.picks[k];
+        if(!blank(a) && !blank(c) && norm(a)!==norm(c)) rows.push([a, keyLabel(k), c]);
+      });
+      const hidden = ccMatches(ev).filter(m=>!visible(m.id)).length + (visible("champ")?0:ccBracketKeys(ev).length);
+      h += rows.length ? rows.map(r=>`<div class="diff"><span class="mine">${esc(r[0])}</span><span class="lbl">${esc(r[1])}</span><span class="theirs">${esc(r[2])}</span></div>`).join("")
+        : `<p class="note">You agree on everything you can both see.</p>`;
+      if(hidden) h += `<p class="note">${hidden} pick${hidden>1?"s":""} stay hidden until they lock.</p>`;
+      h += `</div>`;
+    }
+    h += ryanSection();
+    el.innerHTML = h;
+    const cmp = $("#cmpSel", el); if(cmp) cmp.addEventListener("change", ()=>{ S.compareWith = cmp.value; renderAll(); });
+    const fb = $("#finalBtn", el); if(fb) fb.addEventListener("click", finalise);
+    const ub = $("#undoFinal", el); if(ub) ub.addEventListener("click", reopen);
+    const rb = $("#retryGrant", el); if(rb) rb.addEventListener("click", ()=>grant(S.final));
+  }
+  function ryanSection(){
+    if(!S.ryan){
+      return `<div class="reasons"><h2 class="section-head">Ryan's picks</h2><p class="note">${S.ryanErr==="not found"
+        ? "RyAI hasn't filled in Ryan's tournament yet. Ask Claude to run RyAI once the field is set."
+        : "Couldn't load Ryan's card right now."}</p></div>`;
+    }
+    const r = S.ryan, notes = r.notes || {}, p = r.picks || {};
+    const owed = ccMatches(ev).filter(m=>!matchLocked(m) && !ccOutcome(m, p[m.id])).length + (bracketLocked() ? 0 : ccBracketKeys(ev).filter(k=>blank(p[k])).length);
+    let h = `<div class="reasons"><h2 class="section-head">Ryan's picks <span class="bot">🤖 RyAI</span></h2>
+      <p class="note">${esc(r.persona || "Picked by RyAI as a casual fan who skims the headlines.")} Sealed ${esc(fmtDate(r.generatedAt,{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))}.</p>`;
+    if(owed) h += `<p class="resultsmode-note">RyAI still owes ${owed} open pick${owed>1?"s":""} on the current card. Ask Claude to run RyAI to fill ${owed>1?"them":"it"} in.</p>`;
+    const line = (k, a)=> `<div class="reason"><div class="q">${esc(keyLabel(k))}</div><div class="a">${esc(blank(a)?"—":a)}</div>${notes[k]?`<div class="why">“${esc(notes[k])}”</div>`:""}</div>`;
+    LGS.forEach(L=>{ h += `<div class="reason"><div class="q">${esc(L.name)} final</div><div class="a">${esc(finalists(p, L.id).join(" v ")||"—")} → ${esc(p["lf_"+L.id]||"—")}</div>${notes["lf_"+L.id]?`<div class="why">“${esc(notes["lf_"+L.id])}”</div>`:""}</div>`; });
+    h += line("champ", p.champ) + line("draws", p.draws);
+    ccMatches(ev).forEach(m=>{ h += line(m.id, p[m.id]); });
+    return h + `</div>`;
+  }
+
+  function renderAll(){
+    if(S.dead) return;
+    renderLock(); renderWho();
+    const el = $("#cc-panel"); if(!el) return;
+    if(S.tab!=="table" && el.contains(document.activeElement) && document.activeElement.tagName==="SELECT") return;
+    if(S.tab==="matches") renderMatches(el);
+    else if(S.tab==="bracket") renderBracket(el);
+    else if(S.tab==="blocks") renderBlocks(el);
+    else renderTable(el);
+  }
+
+  // ── input ──
+  const panel = $("#cc-panel");
+  panel.addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b || b.disabled || !panel.contains(b)) return;
+    const t = target();
+    if(b.id==="resToggle"){ flushSaves(); S.resultsMode = !S.resultsMode; renderAll(); return; }
+    if(b.dataset.goto){ S.tab = b.dataset.goto; app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab===S.tab))); renderAll(); window.scrollTo(0, $(".tabs").offsetTop - 8); return; }
+    if(b.dataset.lg){ S.lg = b.dataset.lg; lsSet("cc_lg", S.lg); renderAll(); return; }
+    if(b.dataset.m){
+      const m = matchById(b.dataset.m); if(!m) return;
+      const v = ccValue(m, b.dataset.v);
+      t[m.id] = norm(t[m.id])===norm(v) ? null : v; return changed();
+    }
+    if(b.dataset.fin){
+      const lg = b.dataset.fin, n = b.dataset.name, k1 = "fin_"+lg+"_1", k2 = "fin_"+lg+"_2";
+      if(norm(t[k1])===norm(n)) t[k1] = null;
+      else if(norm(t[k2])===norm(n)) t[k2] = null;
+      else if(blank(t[k1])) t[k1] = n;
+      else if(blank(t[k2])) t[k2] = n;
+      else { toast("That's two already — tap one of them to drop it."); return; }
+      cascade(t); return changed();
+    }
+    if(b.dataset.auto){
+      const lg = b.dataset.auto, rows = ccTable(ev, lg, S.resultsMode ? S.results : t);
+      const played = rows.reduce((a,r)=>a+r.p, 0);
+      if(!played){ toast(S.resultsMode ? "No results in that league yet." : "Pick some of that league's matches first."); return; }
+      t["fin_"+lg+"_1"] = rows[0].n; t["fin_"+lg+"_2"] = rows[1].n;
+      if(rows[1].tied) toast(`${rows[1].n} is level with ${rows[2].n} for second — swap them if you see it the other way.`);
+      cascade(t); return changed();
+    }
+    if(b.dataset.lf){ const k = "lf_"+b.dataset.lf; t[k] = norm(t[k])===norm(b.dataset.name) ? null : b.dataset.name; cascade(t); return changed(); }
+    if(b.dataset.champ){ t.champ = norm(t.champ)===norm(b.dataset.name) ? null : b.dataset.name; return changed(); }
+    if(b.dataset.draws){
+      const max = ccMatches(ev).length, ok = !blank(t.draws) && isFinite(Number(t.draws));
+      t.draws = ok ? Math.min(max, Math.max(0, Number(t.draws) + Number(b.dataset.draws))) : 2; return changed();
+    }
+    if(b.id==="clearMatches"){
+      if(!confirm(`Clear your ${lgName(S.lg)} picks that haven't locked yet?`)) return;
+      ccAllMatches(ev).filter(m=>m.league===S.lg && !matchLocked(m)).forEach(m=>{ delete t[m.id]; }); return changed();
+    }
+  });
+
+  // ── saving ──
+  function changed(){
+    if(S.resultsMode){ S.pendingResults = true; clearTimeout(S.resultsTimer); S.resultsTimer = setTimeout(saveResults, 500); }
+    else { S.pendingMine = S.me; clearTimeout(S.saveTimer); S.saveTimer = setTimeout(saveMine, 600); }
+    renderAll();
+  }
+  function clean(o){ const r = {}; Object.keys(o||{}).forEach(k=>{ if(!blank(o[k])) r[k] = o[k]; }); return r; }
+  async function saveMine(){
+    const who = S.pendingMine; S.pendingMine = null;
+    if(!who || !db) return;
+    const e = S.picks[who]; if(!e) return;
+    const out = clean(e.picks);
+    // Anything that has locked keeps what the database already holds, whatever this device thinks.
+    const srv = (S.server[who] && S.server[who].picks) || {};
+    Object.keys(Object.assign({}, out, srv)).forEach(k=>{ if(keyLocked(k)){ if(blank(srv[k])) delete out[k]; else out[k] = srv[k]; } });
+    if(who==="ryan"){ const b = botPicks(); Object.keys(out).forEach(k=>{ if(norm(out[k])===norm(b[k])) delete out[k]; }); }
+    try{ await withinMs(db.ref(base+"/picks/"+who).set({ name:e.name || nameFor(who), picks:out, updatedAt:firebase.database.ServerValue.TIMESTAMP }), 10000); }
+    catch(err){ toast("Your picks didn't save: " + err.message); }
+  }
+  async function saveResults(){
+    S.pendingResults = null;
+    if(!db) return;
+    try{ await withinMs(db.ref(base+"/results").set(clean(S.results)), 10000); }
+    catch(err){ toast("Results didn't save: " + err.message); }
+  }
+  function flushSaves(){
+    if(S.pendingMine){ clearTimeout(S.saveTimer); saveMine(); }
+    if(S.pendingResults){ clearTimeout(S.resultsTimer); saveResults(); }
+  }
+
+  // ── finalise + award (one token for the whole tournament) ──
+  async function finalise(){
+    flushSaves();
+    if(readyToFinal().length) return;
+    const table = ccStandings(ev, players(), S.results), winners = ccTokenWinners(table);
+    if(!winners.length) return;
+    const names = winners.map(k=>nameFor(k)).join(" & ");
+    const scores = {}; table.forEach(r=>{ scores[r.key] = r.pts + "/" + r.max; });
+    const ok = await confirmDialog(`Give ${names} the swap token?`,
+      `${esc(names)} ${winners.length>1?"are level":"called the tournament best"} with ${esc(scores[winners[0]])}. This locks the results and adds a swap token to ${winners.length>1?"each of their teams":"their team"} in AEW Fantasy.`, "Award the token");
+    if(!ok) return;
+    const final = { at: Date.now(), by: S.me || "someone", winners, scores, results: clean(S.results), granted:false };
+    try{
+      const res = await withinMs(db.ref(base+"/final").transaction(cur => cur ? undefined : final), 10000);
+      if(!res.committed){ toast("Someone else just finalised this."); return; }
+    }catch(err){ toast("Couldn't finalise: " + err.message); return; }
+    S.resultsMode = false;
+    await grant(final);
+  }
+  function swapsShape(raw){
+    let v = raw;
+    try{ if(typeof v==="string") v = JSON.parse(v); if(typeof v==="string") v = JSON.parse(v); }catch(e){ v = null; }
+    if(!v || typeof v!=="object") v = {};
+    if(!v.tokens || typeof v.tokens!=="object") v.tokens = { maria:0, ryan:0, josh:0, erik:0 };
+    if(!Array.isArray(v.history)) v.history = v.history ? Object.values(v.history) : [];
+    if(!Array.isArray(v.awards)) v.awards = v.awards ? Object.values(v.awards) : [];
+    return v;
+  }
+  async function grant(final){
+    try{
+      const league = (await withinMs(db.ref("currentLeague").once("value"), 10000)).val();
+      if(!league) throw new Error("the fantasy app has no current season set");
+      const label = ev.name + (ev.subtitle? " " + ev.subtitle : "");
+      await withinMs(db.ref("leagues/"+league+"/data/aew_swaps").transaction(cur=>{
+        const sw = swapsShape(cur);
+        final.winners.forEach(team=>{
+          const id = ev.id + ":" + team;
+          if(sw.awards.some(a=>a && a.id===id)) return;
+          sw.tokens[team] = (Number(sw.tokens[team])||0) + 1;
+          sw.awards.push({ id, team, event: label, eventId: ev.id, score: final.scores[team] || "", date: shortDate(ev.end || ev.start), at: Date.now() });
+        });
+        return JSON.stringify(sw);
+      }), 15000);
+      await withinMs(db.ref(base+"/final").update({ granted:true, league }), 10000);
+      toast("Swap token sent to AEW Fantasy.");
+    }catch(err){ toast("It's final, but the token didn't send: " + err.message); }
+  }
+  async function reopen(){
+    const ok = await confirmDialog("Reopen the results?", "This takes back the swap token (if it hasn't been spent) and unlocks the results for editing.", "Reopen");
+    if(!ok) return;
+    const f = S.final;
+    try{
+      if(f && f.league){
+        let spent = [];
+        await withinMs(db.ref("leagues/"+f.league+"/data/aew_swaps").transaction(cur=>{
+          const sw = swapsShape(cur); spent = [];
+          (f.winners||[]).forEach(team=>{
+            const id = ev.id + ":" + team, i = sw.awards.findIndex(a=>a && a.id===id);
+            if(i===-1) return;
+            sw.awards.splice(i,1);
+            if((Number(sw.tokens[team])||0) > 0) sw.tokens[team] = Number(sw.tokens[team]) - 1; else spent.push(team);
+          });
+          return JSON.stringify(sw);
+        }), 15000);
+        if(spent.length) toast(spent.map(k=>nameFor(k)).join(" & ") + " already used the token — sort that one out in the fantasy app.");
+      }
+      await withinMs(db.ref(base+"/final").remove(), 10000);
+      S.resultsMode = true; S.tab = "matches";
+      app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab==="matches")));
+      renderAll();
+    }catch(err){ toast("Couldn't reopen: " + err.message); }
+  }
+
+  // ── data ──
+  renderAll();
+  S.tick = setInterval(()=>{ if(!document.activeElement || document.activeElement.tagName!=="SELECT") renderAll(); }, 30000);
+  getJSON("picks/"+ev.id+"/ryan.json").then(r=>{ S.ryan = r; renderAll(); }).catch(e=>{ S.ryanErr = e.message; renderAll(); });
+  try{
+    await initDb();
+    if(S.dead) return;
+    S.cardRef = db.ref(CARD_PATH+"/"+ev.id);
+    S.cardRef.on("value", snap=>{
+      const d = parseDef(snap.val());
+      if(!d || d.deleted) return;
+      if(!d.id) d.id = ev.id;
+      if(JSON.stringify(d)===evStr) return;
+      CARD_CACHE[ev.id] = d;
+      const carryOn = { tab:S.tab, resultsMode:S.resultsMode, lg:S.lg };
+      if(view && view.teardown) view.teardown();
+      view = null;
+      showEvent(ev.id, carryOn);
+    });
+    S.ref = db.ref(base);
+    S.ref.on("value", snap=>{
+      const v = snap.val() || {};
+      const incoming = v.picks || {};
+      S.server = JSON.parse(JSON.stringify(incoming));
+      Object.keys(incoming).forEach(k=>{ if(k===S.pendingMine) return; S.picks[k] = incoming[k]; if(S.picks[k] && !S.picks[k].picks) S.picks[k].picks = {}; });
+      if(!S.pendingResults) S.results = v.results || {};
+      S.final = v.final || null;
+      if(S.final){ S.final.winners = arrayOf(S.final.winners); S.resultsMode = false; }
+      renderAll();
+    }, err=>toast("Can't read picks: " + err.message));
+  }catch(e){
+    toast("Can't reach the database — picks won't save until it's back. " + e.message);
+  }
+}
+
+// ── Setup for a Continental Classic: name the field, add nights, slot matches onto them ──
+function blankClassic(){
+  const y = new Date().getFullYear();
+  return { id:"", format:"classic", name:"Continental Classic", subtitle:String(y), promotion:"AEW", start:"", end:"", finalName:"Worlds End", venue:"", theme:"classic", champion:"",
+    leagues:[{ id:"gold", name:"Gold League", entrants:["","","","","",""] }, { id:"blue", name:"Blue League", entrants:["","","","","",""] }], nights:[], matches:[] };
+}
+function setupClassic(app, D, ctx){
+  const { isNew, inRepo, inFb, id } = ctx;
+  D.leagues = arrayOf(D.leagues).map(L=>({ id:L.id, name:L.name, entrants:ccEntrants(L) }));
+  D.nights = arrayOf(D.nights);
+  D.matches = ccGenMatches(D);
+  const orig = D.leagues.map(L=>L.entrants.slice());   // to carry picks over a rename
+  let dirty = false;
+  app.innerHTML = `<div class="setup"><h1 id="edTitle"></h1><p class="lede">Changes go live for everyone as soon as you save. Name the field, add each TV night as AEW announces it, then put each match on its night — that night's bell is when those picks lock.</p><div id="ed"></div>
+    <div class="savebar"><span class="msg" id="saveMsg"></span>
+      <a class="btn" href="${isNew ? "#/setup" : "#/"+esc(id)}" style="text-decoration:none">${isNew?"Cancel":"View it"}</a>
+      <button class="btn primary" id="saveBtn">Save</button></div></div>`;
+  const ed = $("#ed");
+  const mark = ()=>{ dirty = true; $("#saveMsg").textContent = "Unsaved changes"; };
+  const txt = (path, label, ph)=>`<div class="fld"><label class="lab" for="f_${path}">${label}</label>
+    <input class="field" id="f_${path}" data-path="${path}" type="text" value="${esc(getPath(D,path) ?? "")}" placeholder="${esc(ph||"")}"></div>`;
+  const when = (path, label)=>`<div class="fld"><label class="lab" for="w_${path}">${label}</label><input class="field" id="w_${path}" type="datetime-local" data-when="${path}" value="${esc(toLocalInput(getPath(D,path)))}"></div>`;
+
+  function paint(){
+    $("#edTitle").textContent = isNew ? "New Continental Classic" : (D.name || "Untitled tournament");
+    let h = `<h2>The tournament</h2><div class="panel">
+      <div class="grid2">${txt("name","Name","Continental Classic")}${txt("subtitle","Second line","2026")}</div>
+      <div class="grid2">${when("start","First bell (the bracket locks)")}${when("end","Final's bell")}</div>
+      <div class="grid2">${txt("finalName","Where the final is","Worlds End")}${txt("venue","Final venue (optional)","Target Center, Minneapolis")}</div>
+      <div class="grid2">${txt("champion","Defending champion (gets a 🏆)","Jon Moxley")}${txt("promotion","Promotion","AEW")}</div>
+      <div class="fld"><label class="lab" for="f_theme">Look</label><select class="field" id="f_theme" data-path="theme">${THEMES.map(([v,l])=>`<option value="${v}" ${D.theme===v?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
+    </div>`;
+    h += `<h2>The field</h2><p class="note">Every league match is made from these six names. Fix a spelling or swap in an injury replacement any time — picks carry over to the new name.</p>`;
+    D.leagues.forEach((L,i)=>{
+      h += `<div class="panel cc-lgbox lg-${esc(L.id)}">${txt(`leagues.${i}.name`,"League name","")}<span class="lab">Entrants</span>` +
+        L.entrants.map((n,j)=>`<div class="fld"><input class="field" data-path="leagues.${i}.entrants.${j}" data-entrant="1" value="${esc(n)}" placeholder="Wrestler ${j+1}" aria-label="${esc(L.name)} entrant ${j+1}"></div>`).join("") + `</div>`;
+    });
+    h += `<h2>TV nights</h2><p class="note">Add a night when AEW announces its Continental Classic matches. Picks for a match lock at its night's bell; a match not on a night stays open until its result goes in.</p>`;
+    ccNights(D).forEach(n=>{
+      const i = D.nights.indexOf(n), used = D.matches.filter(m=>m.night===n.id).length;
+      h += `<div class="panel"><div class="mhead"><span class="ttl">${esc(n.name||"Night")} <small class="note">${used} match${used===1?"":"es"}</small></span><button class="iconbtn" data-delnight="${i}">Remove</button></div>
+        <div class="grid2">${txt(`nights.${i}.name`,"Show","Dynamite")}${when(`nights.${i}.start`,"Bell")}</div></div>`;
+    });
+    h += `<p><button class="btn" id="addNight">Add a night</button></p>`;
+    h += `<h2>Schedule</h2><div id="ccSched"></div>`;
+    if(!isNew){
+      h += `<h2>Remove</h2><div class="panel">`;
+      if(inFb && inRepo) h += `<p class="note" style="margin-top:0">This was edited here. You can go back to the version it started with.</p><button class="btn" id="restoreBtn">Go back to the original</button> `;
+      h += `<button class="btn" id="deleteBtn">Delete this tournament</button></div>`;
+    }
+    ed.innerHTML = h;
+    paintSched();
+  }
+  function paintSched(){
+    const box = $("#ccSched"); if(!box) return;
+    let h = "";
+    D.leagues.forEach(L=>{
+      h += `<div class="panel cc-lgbox lg-${esc(L.id)}"><span class="ttl" style="font-weight:700">${esc(L.name)}</span>`;
+      D.matches.filter(m=>m.league===L.id).forEach(m=>{
+        h += `<div class="cc-sched"><span class="nm">${esc(m.a||"?")} <span class="note">v</span> ${esc(m.b||"?")}</span>
+          <select class="field" data-night="${esc(m.id)}" aria-label="Night for ${esc(m.a)} v ${esc(m.b)}"><option value="">Not on a show yet</option>${ccNights(D).map(n=>`<option value="${esc(n.id)}" ${m.night===n.id?"selected":""}>${esc(n.name||"Night")} · ${esc(fmtDate(n.start,{month:"short",day:"numeric"}))}</option>`).join("")}</select>
+          <label class="check" style="margin:0"><input type="checkbox" data-void="${esc(m.id)}" ${m.void?"checked":""}>Didn't happen</label></div>`;
+      });
+      h += `</div>`;
+    });
+    box.innerHTML = h;
+  }
+
+  ed.addEventListener("input", e=>{
+    const t = e.target; mark();
+    if(t.dataset.when){ setPath(D, t.dataset.when, fromLocalInput(t.value)); return; }
+    if(t.dataset.path && t.tagName==="INPUT") setPath(D, t.dataset.path, t.value);
+    if(t.dataset.path==="name") $("#edTitle").textContent = t.value || "Untitled tournament";
+  });
+  ed.addEventListener("change", e=>{
+    const t = e.target; mark();
+    if(t.dataset.path && t.tagName==="SELECT"){ setPath(D, t.dataset.path, t.value); return; }
+    if(t.dataset.entrant || (t.dataset.path||"").match(/^(nights|leagues)\.\d+\.name$/) || (t.dataset.when||"").indexOf("nights.")===0){
+      D.matches = ccGenMatches(D); paintSched(); return;
+    }
+    if(t.dataset.night!==undefined){ const m = D.matches.find(x=>x.id===t.dataset.night); if(m){ if(t.value) m.night = t.value; else delete m.night; } return; }
+    if(t.dataset.void!==undefined){ const m = D.matches.find(x=>x.id===t.dataset.void); if(m){ if(t.checked) m.void = true; else delete m.void; } return; }
+  });
+  ed.addEventListener("click", async e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    if(b.id==="addNight"){
+      mark();
+      const last = ccNights(D).slice(-1)[0];
+      const d = last ? new Date(new Date(last.start).getTime() + 3*86400000) : new Date(D.start || Date.now());
+      const ids = D.nights.map(n=>n.id);
+      D.nights.push({ id: uniqueId("n"+(D.nights.length+1), ids), name: last && last.name==="Dynamite" ? "Collision" : "Dynamite", start: fromLocalInput(toLocalInput(d.toISOString())) });
+      return paint();
+    }
+    if(b.dataset.delnight!==undefined){
+      const n = D.nights[+b.dataset.delnight]; if(!n) return;
+      if(!confirm(`Remove ${n.name||"this night"}? Its matches go back to “not on a show yet”.`)) return;
+      mark(); D.nights.splice(+b.dataset.delnight, 1); D.matches.forEach(m=>{ if(m.night===n.id) delete m.night; }); return paint();
+    }
+    if(b.id==="deleteBtn"){
+      const ok = await confirmDialog("Delete this tournament?", "It disappears from the site for everyone. Picks stay in the database, so restoring it brings them back.", "Delete");
+      if(!ok) return;
+      try{
+        await initDb();
+        if(inRepo) await withinMs(db.ref(CARD_PATH+"/"+D.id).set(JSON.stringify({ id:D.id, deleted:true })), 10000);
+        else await withinMs(db.ref(CARD_PATH+"/"+D.id).remove(), 10000);
+        try{ await withinMs(db.ref(PUBLIC_CARD_PATH+"/"+D.id).remove(), 8000); }catch(_){}
+        delete CARD_CACHE[D.id]; dirty = false; location.hash = "#/setup";
+      }catch(err){ toast("Couldn't delete: " + err.message); }
+    }
+    if(b.id==="restoreBtn"){
+      const ok = await confirmDialog("Go back to the original?", "Your edits here are thrown away.", "Go back");
+      if(!ok) return;
+      try{
+        await withinMs(db.ref(CARD_PATH+"/"+D.id).remove(), 10000);
+        try{ await withinMs(db.ref(PUBLIC_CARD_PATH+"/"+D.id).remove(), 8000); }catch(_){}
+        delete CARD_CACHE[D.id]; dirty = false; route();
+      }catch(err){ toast("Couldn't restore: " + err.message); }
+    }
+  });
+
+  function validate(){
+    const errs = [];
+    if(!String(D.name||"").trim()) errs.push("Give it a name.");
+    if(!D.start) errs.push("Set the first bell.");
+    if(!D.end) errs.push("Set the final's bell.");
+    const seen = {};
+    D.leagues.forEach(L=>{
+      if(!String(L.name||"").trim()) errs.push("Every league needs a name.");
+      L.entrants.forEach(n=>{ n = String(n||"").trim(); if(!n) return; if(seen[norm(n)]) errs.push(`${n} is in the field twice.`); seen[norm(n)] = true; });
+    });
+    D.nights.forEach(n=>{ if(!String(n.name||"").trim() || !n.start) errs.push("Every night needs a show name and a bell time."); });
+    return errs;
+  }
+  async function save(){
+    D.leagues.forEach(L=>{ L.entrants = L.entrants.map(n=>String(n||"").trim()); });
+    const errs = validate();
+    if(errs.length){ $("#saveMsg").innerHTML = `<span class="err">${esc(errs[0])}${errs.length>1?` (and ${errs.length-1} more)`:""}</span>`; return; }
+    const btn = $("#saveBtn"); btn.disabled = true; $("#saveMsg").textContent = "Saving…";
+    try{
+      await initDb();
+      if(!D.id){
+        const existing = (await allEvents().catch(()=>[])).map(e=>e.id);
+        D.id = uniqueId(slug(D.name + " " + new Date(D.start).getFullYear()), existing);
+      }
+      D.matches = ccGenMatches(D);
+      const out = JSON.parse(JSON.stringify(D));
+      out.format = "classic";
+      out.roster = out.leagues.flatMap(L=>L.entrants).filter(Boolean);
+      out.updatedAt = new Date().toISOString();
+      const renames = [];
+      D.leagues.forEach((L,i)=>L.entrants.forEach((n,j)=>{ const was = (orig[i]||[])[j]; if(was && n && norm(was)!==norm(n)) renames.push([was, n]); }));
+      const str = JSON.stringify(out);
+      await withinMs(db.ref(CARD_PATH+"/"+out.id).set(str), 12000);
+      let mirrored = true;
+      try{ await withinMs(db.ref(PUBLIC_CARD_PATH+"/"+out.id).set(str), 8000); }catch(e){ mirrored = false; }
+      if(renames.length){
+        const snap = (await withinMs(db.ref(PRED_ROOT+"/"+out.id).once("value"), 10000)).val() || {};
+        const upd = {}, swap = v => { const r = renames.find(([a])=>norm(a)===norm(v)); return r ? r[1] : null; };
+        Object.keys(snap.picks||{}).forEach(k=>{ const p = (snap.picks[k]||{}).picks||{}; Object.keys(p).forEach(q=>{ const to = swap(p[q]); if(to) upd[`picks/${k}/picks/${q}`] = to; }); });
+        Object.keys(snap.results||{}).forEach(q=>{ const to = swap(snap.results[q]); if(to) upd[`results/${q}`] = to; });
+        if(Object.keys(upd).length) await withinMs(db.ref(PRED_ROOT+"/"+out.id).update(upd), 10000);
+      }
+      D.leagues.forEach((L,i)=>{ orig[i] = L.entrants.slice(); });
+      CARD_CACHE[out.id] = out;
+      dirty = false;
+      $("#saveMsg").innerHTML = `Saved. <a href="#/${esc(out.id)}">Open it</a>${mirrored ? "" : " · RyAI can't see this change until the database rules are updated."}`;
+      if(isNew) history.replaceState(null, "", "#/setup/"+out.id);
+    }catch(e){
+      $("#saveMsg").innerHTML = `<span class="err">Didn't save: ${esc(e.message)}</span>`;
+    }finally{ btn.disabled = false; }
+  }
+  $("#saveBtn").addEventListener("click", save);
+  window.onbeforeunload = ()=> dirty ? "You have unsaved changes." : undefined;
+  view = { teardown(){ window.onbeforeunload = null; } };
+  paint();
+}
+
 
 route();
 </script>

@@ -2,6 +2,17 @@
   "_comment": "Every show the site knows about. Add a show by dropping events/<id>.json next to this file and listing it here. Newest first.",
   "events": [
     {
+      "id": "continental-classic-2026",
+      "name": "Continental Classic",
+      "subtitle": "2026",
+      "promotion": "AEW",
+      "format": "classic",
+      "date": "2026-11-18",
+      "start": "2026-11-18T17:00:00-08:00",
+      "end": "2026-12-19T17:00:00-08:00",
+      "theme": "classic"
+    },
+    {
       "id": "wrestledream-2026",
       "name": "WrestleDream",
       "subtitle": "Orlando",

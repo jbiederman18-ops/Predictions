@@ -1,0 +1,242 @@
+{
+ "id": "continental-classic-2026",
+ "format": "classic",
+ "name": "Continental Classic",
+ "subtitle": "2026",
+ "promotion": "AEW",
+ "start": "2026-11-18T17:00:00-08:00",
+ "end": "2026-12-19T17:00:00-08:00",
+ "finalName": "Worlds End",
+ "venue": "Target Center, Minneapolis",
+ "theme": "classic",
+ "champion": "Jon Moxley",
+ "leagues": [
+  {
+   "id": "gold",
+   "name": "Gold League",
+   "entrants": [
+    "Gold TBA 1",
+    "Gold TBA 2",
+    "Gold TBA 3",
+    "Gold TBA 4",
+    "Gold TBA 5",
+    "Gold TBA 6"
+   ]
+  },
+  {
+   "id": "blue",
+   "name": "Blue League",
+   "entrants": [
+    "Blue TBA 1",
+    "Blue TBA 2",
+    "Blue TBA 3",
+    "Blue TBA 4",
+    "Blue TBA 5",
+    "Blue TBA 6"
+   ]
+  }
+ ],
+ "nights": [
+  {
+   "id": "n1",
+   "name": "Dynamite",
+   "start": "2026-11-18T17:00:00-08:00"
+  }
+ ],
+ "matches": [
+  {
+   "id": "gold-1v2",
+   "league": "gold",
+   "a": "Gold TBA 1",
+   "b": "Gold TBA 2"
+  },
+  {
+   "id": "gold-1v3",
+   "league": "gold",
+   "a": "Gold TBA 1",
+   "b": "Gold TBA 3"
+  },
+  {
+   "id": "gold-1v4",
+   "league": "gold",
+   "a": "Gold TBA 1",
+   "b": "Gold TBA 4"
+  },
+  {
+   "id": "gold-1v5",
+   "league": "gold",
+   "a": "Gold TBA 1",
+   "b": "Gold TBA 5"
+  },
+  {
+   "id": "gold-1v6",
+   "league": "gold",
+   "a": "Gold TBA 1",
+   "b": "Gold TBA 6"
+  },
+  {
+   "id": "gold-2v3",
+   "league": "gold",
+   "a": "Gold TBA 2",
+   "b": "Gold TBA 3"
+  },
+  {
+   "id": "gold-2v4",
+   "league": "gold",
+   "a": "Gold TBA 2",
+   "b": "Gold TBA 4"
+  },
+  {
+   "id": "gold-2v5",
+   "league": "gold",
+   "a": "Gold TBA 2",
+   "b": "Gold TBA 5"
+  },
+  {
+   "id": "gold-2v6",
+   "league": "gold",
+   "a": "Gold TBA 2",
+   "b": "Gold TBA 6"
+  },
+  {
+   "id": "gold-3v4",
+   "league": "gold",
+   "a": "Gold TBA 3",
+   "b": "Gold TBA 4"
+  },
+  {
+   "id": "gold-3v5",
+   "league": "gold",
+   "a": "Gold TBA 3",
+   "b": "Gold TBA 5"
+  },
+  {
+   "id": "gold-3v6",
+   "league": "gold",
+   "a": "Gold TBA 3",
+   "b": "Gold TBA 6"
+  },
+  {
+   "id": "gold-4v5",
+   "league": "gold",
+   "a": "Gold TBA 4",
+   "b": "Gold TBA 5"
+  },
+  {
+   "id": "gold-4v6",
+   "league": "gold",
+   "a": "Gold TBA 4",
+   "b": "Gold TBA 6"
+  },
+  {
+   "id": "gold-5v6",
+   "league": "gold",
+   "a": "Gold TBA 5",
+   "b": "Gold TBA 6"
+  },
+  {
+   "id": "blue-1v2",
+   "league": "blue",
+   "a": "Blue TBA 1",
+   "b": "Blue TBA 2"
+  },
+  {
+   "id": "blue-1v3",
+   "league": "blue",
+   "a": "Blue TBA 1",
+   "b": "Blue TBA 3"
+  },
+  {
+   "id": "blue-1v4",
+   "league": "blue",
+   "a": "Blue TBA 1",
+   "b": "Blue TBA 4"
+  },
+  {
+   "id": "blue-1v5",
+   "league": "blue",
+   "a": "Blue TBA 1",
+   "b": "Blue TBA 5"
+  },
+  {
+   "id": "blue-1v6",
+   "league": "blue",
+   "a": "Blue TBA 1",
+   "b": "Blue TBA 6"
+  },
+  {
+   "id": "blue-2v3",
+   "league": "blue",
+   "a": "Blue TBA 2",
+   "b": "Blue TBA 3"
+  },
+  {
+   "id": "blue-2v4",
+   "league": "blue",
+   "a": "Blue TBA 2",
+   "b": "Blue TBA 4"
+  },
+  {
+   "id": "blue-2v5",
+   "league": "blue",
+   "a": "Blue TBA 2",
+   "b": "Blue TBA 5"
+  },
+  {
+   "id": "blue-2v6",
+   "league": "blue",
+   "a": "Blue TBA 2",
+   "b": "Blue TBA 6"
+  },
+  {
+   "id": "blue-3v4",
+   "league": "blue",
+   "a": "Blue TBA 3",
+   "b": "Blue TBA 4"
+  },
+  {
+   "id": "blue-3v5",
+   "league": "blue",
+   "a": "Blue TBA 3",
+   "b": "Blue TBA 5"
+  },
+  {
+   "id": "blue-3v6",
+   "league": "blue",
+   "a": "Blue TBA 3",
+   "b": "Blue TBA 6"
+  },
+  {
+   "id": "blue-4v5",
+   "league": "blue",
+   "a": "Blue TBA 4",
+   "b": "Blue TBA 5"
+  },
+  {
+   "id": "blue-4v6",
+   "league": "blue",
+   "a": "Blue TBA 4",
+   "b": "Blue TBA 6"
+  },
+  {
+   "id": "blue-5v6",
+   "league": "blue",
+   "a": "Blue TBA 5",
+   "b": "Blue TBA 6"
+  }
+ ],
+ "roster": [
+  "Gold TBA 1",
+  "Gold TBA 2",
+  "Gold TBA 3",
+  "Gold TBA 4",
+  "Gold TBA 5",
+  "Gold TBA 6",
+  "Blue TBA 1",
+  "Blue TBA 2",
+  "Blue TBA 3",
+  "Blue TBA 4",
+  "Blue TBA 5",
+  "Blue TBA 6"
+ ]
+}
