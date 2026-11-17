@@ -694,6 +694,38 @@
     border-radius:var(--r-tag); padding:0 4px; margin-left:4px; vertical-align:1px; }
   .cc-belt{ font-size:13px; }
 
+  /* ── matches grouped by wrestler: one card each, slim rows, a single three-way control ── */
+  .cc-viewsw{ display:flex; align-items:center; gap:6px; margin:18px 0 12px; font-size:13px; font-weight:700; color:var(--dim); }
+  .cc-viewsw span{ margin-right:4px; }
+  .cc-viewsw button{ background:var(--surface); color:var(--dim); border:var(--bd-soft); border-radius:var(--r); padding:5px 11px; font-weight:800; font-size:13px; }
+  .cc-viewsw button[aria-pressed="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .cc-wgroup{ background:var(--surface); border:var(--bd); border-top:6px solid var(--lg); border-radius:var(--r-card); box-shadow:var(--sh); padding:4px 12px 2px; margin:0 0 16px; }
+  .cc-whead{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:8px 0 6px; }
+  .cc-whead h3{ margin:0; font-weight:800; font-size:21px; letter-spacing:-0.03em; line-height:1.1; }
+  .cc-rec{ flex:none; font-size:13px; font-weight:600; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .cc-rec b{ color:var(--lgi); font-weight:800; font-size:15px; }
+  .cc-wnote{ margin:-2px 0 4px; font-size:12px; color:var(--dim); }
+  .cc-mrow{ padding:9px 0; border-top:var(--bd-soft); }
+  .cc-mrow.void{ opacity:.5; }
+  .cc-mrow.correct{ box-shadow:inset 4px 0 0 var(--good-fill, #12A88C); padding-left:10px; margin-left:-12px; padding-right:0; }
+  .cc-mrow.wrong{ box-shadow:inset 4px 0 0 var(--accent); padding-left:10px; margin-left:-12px; }
+  .cc-mrow > .stip{ margin:0 0 4px; }
+  .cc-mline{ display:flex; align-items:center; gap:10px; }
+  .cc-opp{ flex:1; min-width:0; font-weight:700; font-size:15px; line-height:1.2; }
+  .cc-opp .vs{ color:var(--dim); font-weight:600; margin-right:2px; }
+  .cc-opp small{ display:block; font-size:11px; font-weight:600; color:var(--dim); margin-top:2px; }
+  .cc-seg3{ flex:none; width:200px; display:grid; grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr); border:var(--bd); border-radius:var(--r); overflow:hidden; box-shadow:var(--sh-sm); background:var(--surface); }
+  .cc-seg3 button{ background:none; border:0; border-left:var(--bd); padding:8px 4px; min-height:40px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:800; font-size:13px; color:var(--ink); line-height:1; }
+  .cc-seg3 button:first-child{ border-left:0; }
+  .cc-seg3 button.d{ font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--dim); }
+  .cc-seg3 button.picked{ background:var(--lg); color:var(--ink); }
+  .cc-seg3 button.d.picked{ background:var(--ink); color:var(--bg); }
+  .cc-seg3 button.won{ box-shadow:inset 0 0 0 3px var(--good-fill, #12A88C); }
+  .cc-seg3 button:disabled{ cursor:default; }
+  .cc-seg3 button:disabled:not(.picked){ color:var(--dim); }
+  .cc-mrow .outcome{ margin:6px 0 0; }
+  .cc-mrow .whopicked{ margin-top:6px; }
+  @media (max-width:380px){ .cc-seg3{ width:180px; grid-template-columns:minmax(0,1fr) 46px minmax(0,1fr); } .cc-seg3 button{ font-size:12px; } }
   /* ── nights + match cards ── */
   .cc-night{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; font-weight:800; font-size:21px; letter-spacing:-0.02em; margin:24px 0 10px; }
   .cc-lock{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:3px 7px; border-radius:var(--r-tag);
@@ -3138,6 +3170,7 @@ async function showClassic(id, carry, ev){
     me: lsGet("pred_me") || "", picks:{}, server:{}, results:{}, final:null, finals:{}, ryan:null, ryanErr:"",
     resultsMode: !!(carry && carry.resultsMode), tab: (carry && carry.tab) || "matches",
     lg: (carry && carry.lg) || lsGet("cc_lg") || (LGS[0] && LGS[0].id),
+    view: lsGet("cc_view")==="night" ? "night" : "wrestler",
     saveTimer:null, resultsTimer:null, pendingMine:null, pendingResults:null, ref:null, cardRef:null, tick:null, dead:false,
   };
   if(!LGS.some(L=>L.id===S.lg)) S.lg = LGS[0] && LGS[0].id;
@@ -3322,6 +3355,47 @@ async function showClassic(id, carry, ev){
     if(others.length && !m.void) h += who(others, m.id, v=>{ const x = ccOutcome(m, v); return x==="d" ? "Draw" : ccValue(m, x); });
     return h + `</article>`;
   }
+  // Surnames for the compact control (whole name if two in a league share one).
+  function shortNames(L){
+    const E = ccEntrants(L), last = n => n.trim().split(/\s+/).slice(-1)[0];
+    const out = {}; E.forEach(n=>{ out[norm(n)] = E.filter(x=>norm(last(x))===norm(last(n))).length>1 ? n : last(n); });
+    return out;
+  }
+  // One card per wrestler, holding the matches not already listed under someone above them:
+  // the first card has five, the next four, and so on, so every match appears exactly once.
+  function wrestlerGroups(L, ms, t, mine, map){
+    const E = ccEntrants(L), sn = shortNames(L), table = ccTable(ev, L.id, map), rec = {};
+    table.forEach(r=>{ rec[norm(r.n)] = r; });
+    let h = "";
+    E.forEach((name, i)=>{
+      const rows = ms.filter(m=>norm(m.a)===norm(name));
+      if(!rows.length) return;
+      const r = rec[norm(name)] || { w:0,d:0,l:0,pts:0 }, rest = E.slice(0, i);
+      h += `<section class="cc-wgroup lg-${esc(L.id)}"><header class="cc-whead"><h3>${esc(name)}${champBadge(name) ? ' <span class="cc-belt" title="Champion">🏆</span>' : ""}</h3>
+        <span class="cc-rec" title="${S.resultsMode ? "Official record" : "Record if your picks are right"}">${r.w}-${r.d}-${r.l} · <b>${r.pts}</b> pts</span></header>
+        ${rest.length ? `<p class="cc-wnote">Also v ${esc(rest.map(x=>sn[norm(x)]||x).join(", "))} — listed above</p>` : ""}`;
+      rows.forEach(m=>{ h += mrowHTML(m, t, mine, sn, matchLocked(m) ? players() : []); });
+      h += `</section>`;
+    });
+    return h;
+  }
+  function mrowHTML(m, t, mine, sn, others){
+    const o = ccOutcome(m, t[m.id]), r = ccOutcome(m, S.results[m.id]), my = ccOutcome(m, mine[m.id]);
+    const edit = canEdit(m.id) && !m.void, showRes = !S.resultsMode;
+    let cls = "cc-mrow";
+    if(showRes && r && my) cls += r===my ? " correct" : " wrong";
+    if(m.void) cls += " void";
+    const n = ccNight(ev, m.night), lockT = n ? new Date(n.start).getTime() : null;
+    const when = m.void ? "Didn't happen" : !n ? "" : (Date.now() >= lockT || !blank(S.results[m.id])) ? `${esc(n.name)} · locked`
+      : `${esc(n.name)} ${esc(fmtDate(n.start,{weekday:"short"}))} · locks in ${esc(lockCountdown(lockT))}`;
+    const seg = (w, label)=>`<button class="${w} ${o===w?"picked":""} ${showRes&&r===w?"won":""}" data-m="${esc(m.id)}" data-v="${w}" ${edit?"":"disabled"}
+      aria-pressed="${o===w}" aria-label="${esc(w==="d" ? "Time-limit draw" : ccValue(m,w)+" wins")}">${esc(label)}</button>`;
+    let h = `<div class="${cls}">${botTag(m.id)}<div class="cc-mline"><div class="cc-opp"><span class="vs">v</span> ${esc(m.b)}${when?`<small>${when}</small>`:""}</div>
+      <div class="cc-seg3">${seg("a", sn[norm(m.a)]||m.a)}${seg("d","Draw")}${seg("b", sn[norm(m.b)]||m.b)}</div></div>`;
+    if(showRes && r && !m.void) h += `<p class="outcome">${r==="d" ? "<strong>Time-limit draw</strong>" : `<strong>${esc(ccValue(m,r))}</strong> won`}${my?` — <span class="${my===r?"hit":"miss"}">${my===r?"you called it":"missed"}</span>`:""}</p>`;
+    if(others.length && !m.void) h += who(others, m.id, v=>{ const x = ccOutcome(m, v); return x==="d" ? "Draw" : (sn[norm(ccValue(m, x))] || ccValue(m, x)); });
+    return h + `</div>`;
+  }
   function renderMatches(el){
     const t = target(), mine = myPicks();
     let h = officialBar();
@@ -3332,6 +3406,13 @@ async function showClassic(id, carry, ev){
     if(!S.resultsMode && S.me) h += `<div class="cc-proj lg-${esc(L.id)}"><p class="cc-kicker">If your picks are right</p>${tableHTML(ccTable(ev, L.id, map), { title:L.name, compact:true })}</div>`;
     if(!S.resultsMode && S.me && !bracketLocked()) h += `<p class="note">Wins are 3 points and time-limit draws 1. Top two in each league go to the league final — set that on the <button class="linkbtn" data-goto="bracket">Bracket</button> tab.</p>`;
     const ms = ccAllMatches(ev).filter(m=>m.league===L.id);
+    h += `<div class="cc-viewsw" role="group" aria-label="Group matches"><span>Group by</span>
+      <button data-view="wrestler" aria-pressed="${S.view==="wrestler"}">Wrestler</button><button data-view="night" aria-pressed="${S.view==="night"}">Night</button></div>`;
+    if(S.view==="wrestler"){
+      h += wrestlerGroups(L, ms, t, mine, map);
+      if(!S.resultsMode && S.me && !tba() && !allLocked()) h += `<div class="clear-row"><button class="linkbtn" id="clearMatches">Clear my open ${esc(L.name)} picks</button></div>`;
+      el.innerHTML = h; return;
+    }
     const groups = nights.map(n=>({ n, ms: ms.filter(m=>m.night===n.id) })).filter(g=>g.ms.length);
     const unsched = ms.filter(m=>!ccNight(ev, m.night));
     if(unsched.length) groups.push({ n:null, ms:unsched });
@@ -3553,6 +3634,7 @@ async function showClassic(id, carry, ev){
     if(b.id==="resToggle"){ flushSaves(); S.resultsMode = !S.resultsMode; renderAll(); return; }
     if(b.dataset.goto){ S.tab = b.dataset.goto; app.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab===S.tab))); renderAll(); window.scrollTo(0, $(".tabs").offsetTop - 8); return; }
     if(b.dataset.lg){ S.lg = b.dataset.lg; lsSet("cc_lg", S.lg); renderAll(); return; }
+    if(b.dataset.view){ S.view = b.dataset.view; lsSet("cc_view", S.view); renderAll(); return; }
     if(b.dataset.m){
       const m = matchById(b.dataset.m); if(!m) return;
       const v = ccValue(m, b.dataset.v);
