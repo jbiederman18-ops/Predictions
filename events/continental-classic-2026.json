@@ -15,24 +15,24 @@
    "id": "gold",
    "name": "Gold League",
    "entrants": [
-    "Gold TBA 1",
-    "Gold TBA 2",
-    "Gold TBA 3",
-    "Gold TBA 4",
-    "Gold TBA 5",
-    "Gold TBA 6"
+    "Jon Moxley",
+    "Kevin Knight",
+    "Orange Cassidy",
+    "Nick Wayne",
+    "Mike Bailey",
+    "Tommaso Ciampa"
    ]
   },
   {
    "id": "blue",
    "name": "Blue League",
    "entrants": [
-    "Blue TBA 1",
-    "Blue TBA 2",
-    "Blue TBA 3",
-    "Blue TBA 4",
-    "Blue TBA 5",
-    "Blue TBA 6"
+    "Jay White",
+    "Hangman Page",
+    "Brody King",
+    "Daniel Garcia",
+    "Ricochet",
+    "Bandido"
    ]
   }
  ],
@@ -47,196 +47,196 @@
   {
    "id": "gold-1v2",
    "league": "gold",
-   "a": "Gold TBA 1",
-   "b": "Gold TBA 2"
+   "a": "Jon Moxley",
+   "b": "Kevin Knight"
   },
   {
    "id": "gold-1v3",
    "league": "gold",
-   "a": "Gold TBA 1",
-   "b": "Gold TBA 3"
+   "a": "Jon Moxley",
+   "b": "Orange Cassidy"
   },
   {
    "id": "gold-1v4",
    "league": "gold",
-   "a": "Gold TBA 1",
-   "b": "Gold TBA 4"
+   "a": "Jon Moxley",
+   "b": "Nick Wayne"
   },
   {
    "id": "gold-1v5",
    "league": "gold",
-   "a": "Gold TBA 1",
-   "b": "Gold TBA 5"
+   "a": "Jon Moxley",
+   "b": "Mike Bailey"
   },
   {
    "id": "gold-1v6",
    "league": "gold",
-   "a": "Gold TBA 1",
-   "b": "Gold TBA 6"
+   "a": "Jon Moxley",
+   "b": "Tommaso Ciampa"
   },
   {
    "id": "gold-2v3",
    "league": "gold",
-   "a": "Gold TBA 2",
-   "b": "Gold TBA 3"
+   "a": "Kevin Knight",
+   "b": "Orange Cassidy"
   },
   {
    "id": "gold-2v4",
    "league": "gold",
-   "a": "Gold TBA 2",
-   "b": "Gold TBA 4"
+   "a": "Kevin Knight",
+   "b": "Nick Wayne"
   },
   {
    "id": "gold-2v5",
    "league": "gold",
-   "a": "Gold TBA 2",
-   "b": "Gold TBA 5"
+   "a": "Kevin Knight",
+   "b": "Mike Bailey"
   },
   {
    "id": "gold-2v6",
    "league": "gold",
-   "a": "Gold TBA 2",
-   "b": "Gold TBA 6"
+   "a": "Kevin Knight",
+   "b": "Tommaso Ciampa"
   },
   {
    "id": "gold-3v4",
    "league": "gold",
-   "a": "Gold TBA 3",
-   "b": "Gold TBA 4"
+   "a": "Orange Cassidy",
+   "b": "Nick Wayne"
   },
   {
    "id": "gold-3v5",
    "league": "gold",
-   "a": "Gold TBA 3",
-   "b": "Gold TBA 5"
+   "a": "Orange Cassidy",
+   "b": "Mike Bailey"
   },
   {
    "id": "gold-3v6",
    "league": "gold",
-   "a": "Gold TBA 3",
-   "b": "Gold TBA 6"
+   "a": "Orange Cassidy",
+   "b": "Tommaso Ciampa"
   },
   {
    "id": "gold-4v5",
    "league": "gold",
-   "a": "Gold TBA 4",
-   "b": "Gold TBA 5"
+   "a": "Nick Wayne",
+   "b": "Mike Bailey"
   },
   {
    "id": "gold-4v6",
    "league": "gold",
-   "a": "Gold TBA 4",
-   "b": "Gold TBA 6"
+   "a": "Nick Wayne",
+   "b": "Tommaso Ciampa"
   },
   {
    "id": "gold-5v6",
    "league": "gold",
-   "a": "Gold TBA 5",
-   "b": "Gold TBA 6"
+   "a": "Mike Bailey",
+   "b": "Tommaso Ciampa"
   },
   {
    "id": "blue-1v2",
    "league": "blue",
-   "a": "Blue TBA 1",
-   "b": "Blue TBA 2"
+   "a": "Jay White",
+   "b": "Hangman Page"
   },
   {
    "id": "blue-1v3",
    "league": "blue",
-   "a": "Blue TBA 1",
-   "b": "Blue TBA 3"
+   "a": "Jay White",
+   "b": "Brody King"
   },
   {
    "id": "blue-1v4",
    "league": "blue",
-   "a": "Blue TBA 1",
-   "b": "Blue TBA 4"
+   "a": "Jay White",
+   "b": "Daniel Garcia"
   },
   {
    "id": "blue-1v5",
    "league": "blue",
-   "a": "Blue TBA 1",
-   "b": "Blue TBA 5"
+   "a": "Jay White",
+   "b": "Ricochet"
   },
   {
    "id": "blue-1v6",
    "league": "blue",
-   "a": "Blue TBA 1",
-   "b": "Blue TBA 6"
+   "a": "Jay White",
+   "b": "Bandido"
   },
   {
    "id": "blue-2v3",
    "league": "blue",
-   "a": "Blue TBA 2",
-   "b": "Blue TBA 3"
+   "a": "Hangman Page",
+   "b": "Brody King"
   },
   {
    "id": "blue-2v4",
    "league": "blue",
-   "a": "Blue TBA 2",
-   "b": "Blue TBA 4"
+   "a": "Hangman Page",
+   "b": "Daniel Garcia"
   },
   {
    "id": "blue-2v5",
    "league": "blue",
-   "a": "Blue TBA 2",
-   "b": "Blue TBA 5"
+   "a": "Hangman Page",
+   "b": "Ricochet"
   },
   {
    "id": "blue-2v6",
    "league": "blue",
-   "a": "Blue TBA 2",
-   "b": "Blue TBA 6"
+   "a": "Hangman Page",
+   "b": "Bandido"
   },
   {
    "id": "blue-3v4",
    "league": "blue",
-   "a": "Blue TBA 3",
-   "b": "Blue TBA 4"
+   "a": "Brody King",
+   "b": "Daniel Garcia"
   },
   {
    "id": "blue-3v5",
    "league": "blue",
-   "a": "Blue TBA 3",
-   "b": "Blue TBA 5"
+   "a": "Brody King",
+   "b": "Ricochet"
   },
   {
    "id": "blue-3v6",
    "league": "blue",
-   "a": "Blue TBA 3",
-   "b": "Blue TBA 6"
+   "a": "Brody King",
+   "b": "Bandido"
   },
   {
    "id": "blue-4v5",
    "league": "blue",
-   "a": "Blue TBA 4",
-   "b": "Blue TBA 5"
+   "a": "Daniel Garcia",
+   "b": "Ricochet"
   },
   {
    "id": "blue-4v6",
    "league": "blue",
-   "a": "Blue TBA 4",
-   "b": "Blue TBA 6"
+   "a": "Daniel Garcia",
+   "b": "Bandido"
   },
   {
    "id": "blue-5v6",
    "league": "blue",
-   "a": "Blue TBA 5",
-   "b": "Blue TBA 6"
+   "a": "Ricochet",
+   "b": "Bandido"
   }
  ],
  "roster": [
-  "Gold TBA 1",
-  "Gold TBA 2",
-  "Gold TBA 3",
-  "Gold TBA 4",
-  "Gold TBA 5",
-  "Gold TBA 6",
-  "Blue TBA 1",
-  "Blue TBA 2",
-  "Blue TBA 3",
-  "Blue TBA 4",
-  "Blue TBA 5",
-  "Blue TBA 6"
+  "Jon Moxley",
+  "Kevin Knight",
+  "Orange Cassidy",
+  "Nick Wayne",
+  "Mike Bailey",
+  "Tommaso Ciampa",
+  "Jay White",
+  "Hangman Page",
+  "Brody King",
+  "Daniel Garcia",
+  "Ricochet",
+  "Bandido"
  ]
 }
