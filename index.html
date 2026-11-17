@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#16181d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Cinzel:wght@700;900&family=Lilita+One&family=Orbitron:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Cinzel:wght@700;900&family=Lilita+One&family=Orbitron:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ── Themes ─────────────────────────────────────────────────────────────
      Each show names a theme in its event file. The home page uses "ringside". */
@@ -567,116 +567,214 @@
     .tv-reveal, .tv-ctl{ font-size:2.4vw; }
     .rv-groups{ grid-template-columns:1fr; }
   }
-  /* ── Continental Classic: midnight navy, the Gold League and the Blue League ── */
+  /* ══════════════════════════════════════════════════════════════════
+     CONTINENTAL CLASSIC · STICKER NIGHT
+     The fantasy app's look (cream ground, near-black ink, Ryback red,
+     belt gold, thick ink borders, hard offset shadows, small corners,
+     no pills) with the tournament's own flair: the Gold League and
+     Blue League colours, the interlocking rings and a two-tone wordmark.
+     Each league brings three tones: --lg (fill), --lgi (text on cream),
+     --lgt (tint).
+     ══════════════════════════════════════════════════════════════════ */
   body[data-theme="classic"]{
-    --bg:#0b1020; --surface:#121a30; --surface2:#1a2340; --line:#2b3658;
-    --text:#f1eee4; --dim:#9fa9c4; --accent:#e2b552; --accent-ink:#1c1404;
-    --good:#56c59a; --bad:#ec6a5a; --cc-gold:#e2b552; --cc-blue:#5b9cf0;
-    --display:'Big Shoulders Display',sans-serif; --display-weight:900; --display-track:.01em;
-    background:
-      radial-gradient(90% 50% at 0% -10%, rgba(226,181,82,.20), transparent 60%),
-      radial-gradient(90% 50% at 100% -10%, rgba(91,156,240,.22), transparent 60%), no-repeat var(--bg);
+    --bg:#FFF4E4; --surface:#FFFFFF; --surface2:#FFFAF1; --line:#E9DDC8; --line2:#D9CBB2;
+    --text:#1A1414; --ink:#1A1414; --dim:#5E4F4F; --accent:#D7222A; --accent-ink:#FFFFFF;
+    --good:#0A7A66; --good-fill:#12A88C; --bad:#D7222A; --belt:#F2B705;
+    --cc-gold:#F2B705; --cc-gold-ink:#8A5E00; --cc-gold-tint:#FDEDC9;
+    --cc-blue:#3A7BEA; --cc-blue-ink:#1F5CC4; --cc-blue-tint:#DDE8FC;
+    --display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif; --display-weight:800; --display-track:-0.03em;
+    --bd:2px solid var(--ink); --bd-soft:2px solid var(--line);
+    --r-tag:3px; --r:6px; --r-card:10px;
+    --sh:4px 4px 0 var(--ink); --sh-sm:2px 2px 0 var(--ink);
+    font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+    background:var(--bg);
   }
-  .lg-gold{ --lg:var(--cc-gold, #e2b552); }
-  .lg-blue{ --lg:var(--cc-blue, #5b9cf0); }
-  .cc-hero{ position:relative; }
-  .cc-emblem{ display:block; width:92px; height:50px; margin:0 0 10px; }
-  body[data-theme="classic"] .promo{ letter-spacing:.32em; font-weight:700; color:var(--cc-gold); }
-  .cc-word{ text-transform:uppercase; font-size:clamp(40px, 11.6vw, 104px); overflow-wrap:anywhere; line-height:.86; letter-spacing:.005em; }
+  .lg-gold{ --lg:var(--cc-gold, #F2B705); --lgi:var(--cc-gold-ink, #8A5E00); --lgt:var(--cc-gold-tint, #FDEDC9); }
+  .lg-blue{ --lg:var(--cc-blue, #3A7BEA); --lgi:var(--cc-blue-ink, #1F5CC4); --lgt:var(--cc-blue-tint, #DDE8FC); }
+  body[data-theme="classic"] :focus-visible{ outline:3px solid var(--accent); outline-offset:2px; border-radius:2px; }
+  body[data-theme="classic"] a{ color:var(--ink); }
+  body[data-theme="classic"] .topbar a{ color:var(--ink); font-weight:700; }
+
+  /* ── hero: the rings, a two-tone sticker wordmark, the year on a belt-gold tag ── */
+  .cc-hero{ position:relative; padding-top:22px; }
+  .cc-emblem{ display:block; width:96px; height:52px; margin:0 0 12px; }
+  body[data-theme="classic"] .promo{ display:inline-block; margin:0 0 10px; padding:2px 8px; background:var(--ink); color:var(--bg);
+    border-radius:var(--r-tag); font-size:12px; font-weight:800; letter-spacing:.14em; }
+  .cc-word{ text-transform:uppercase; font-weight:800; letter-spacing:-0.045em; font-size:clamp(42px, 12.4vw, 100px); line-height:.9; overflow-wrap:anywhere; }
   .cc-word span{ display:block; }
-  .cc-word span:first-child{ color:var(--cc-gold, var(--accent)); }
-  .cc-word span:last-child{ color:var(--text); -webkit-text-stroke:0; }
-  body[data-theme="classic"] .show-sub{ display:inline-block; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
-    font-size:clamp(18px,5vw,26px); padding:2px 12px; border:2px solid var(--cc-blue); color:var(--cc-blue); border-radius:4px; margin-top:12px; }
-  body[data-theme="classic"] .tabs .tab{ flex:1; }
+  .cc-word span:first-child{ color:var(--cc-gold); text-shadow:3px 3px 0 var(--ink); -webkit-text-stroke:1.5px var(--ink); paint-order:stroke fill; }
+  .cc-word span:last-child{ color:var(--cc-blue); text-shadow:3px 3px 0 var(--ink); -webkit-text-stroke:1.5px var(--ink); paint-order:stroke fill; }
+  body[data-theme="classic"] .show-sub{ display:inline-block; transform:rotate(-2deg); margin-top:14px; padding:2px 12px;
+    font-family:var(--display); font-size:clamp(18px,5vw,24px); font-weight:800; letter-spacing:0; color:var(--ink);
+    background:var(--belt); border:var(--bd); border-radius:var(--r-tag); box-shadow:var(--sh-sm); }
+  body[data-theme="classic"] .show-meta{ color:var(--dim); font-weight:600; }
+  body[data-theme="classic"] .lockline .count{ font-weight:800; letter-spacing:-0.03em; color:var(--accent); }
+  body[data-theme="classic"] .lockline .why{ color:var(--ink); font-weight:500; }
+  @media (prefers-reduced-motion: no-preference){ body[data-theme="classic"] .show-name{ animation:none; } }
 
-  .cc-seg{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin:4px 0 14px; padding:4px; background:var(--surface); border:1px solid var(--line); border-radius:12px; }
-  .cc-segbtn{ background:none; border:0; border-radius:9px; padding:10px 8px; font-family:var(--display); font-weight:800; font-size:21px; line-height:1; color:var(--dim); }
-  .cc-segbtn small{ display:block; font-family:'Public Sans',sans-serif; font-weight:600; font-size:12px; margin-top:4px; letter-spacing:.02em; }
-  .cc-segbtn[aria-selected="true"]{ background:var(--lg); color:#0b1020; }
-  .cc-kicker{ margin:0 0 6px; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--lg, var(--dim)); }
-  .cc-proj{ background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--lg); border-radius:10px; padding:12px 12px 6px; margin:0 0 6px; }
+  /* ── shared surfaces: ink borders, the main ones get the offset shadow ── */
+  body[data-theme="classic"] .whobar, body[data-theme="classic"] .bout, body[data-theme="classic"] .row,
+  body[data-theme="classic"] .panel, body[data-theme="classic"] .dialog, body[data-theme="classic"] .empty{
+    background:var(--surface); border:var(--bd); border-radius:var(--r-card); }
+  body[data-theme="classic"] .bout{ border-left:var(--bd); box-shadow:var(--sh); }
+  body[data-theme="classic"] .empty{ border-style:dashed; }
+  body[data-theme="classic"] .row{ border-color:var(--line); }
+  body[data-theme="classic"] .row.top{ border:var(--bd); box-shadow:var(--sh-sm); background:var(--surface2); }
+  body[data-theme="classic"] .row .rank{ color:var(--ink); }
+  body[data-theme="classic"] .row .sc{ color:var(--ink); }
+  body[data-theme="classic"] .section-head{ font-weight:800; letter-spacing:-0.03em; font-size:28px; }
+  body[data-theme="classic"] .note{ color:var(--dim); }
+  body[data-theme="classic"] .linkbtn{ color:var(--ink); font-weight:700; text-decoration-thickness:2px; text-underline-offset:3px; }
+  body[data-theme="classic"] .outcome strong{ color:var(--ink); }
+  body[data-theme="classic"] .resultsmode-note{ background:var(--cc-gold-tint); border:var(--bd); border-radius:var(--r); color:var(--ink); }
 
+  /* buttons + toggles: ink border, small corners, press-in */
+  body[data-theme="classic"] .btn, body[data-theme="classic"] .toggle, body[data-theme="classic"] .iconbtn{
+    background:var(--surface); color:var(--ink); border:var(--bd); border-radius:var(--r); font-weight:800; }
+  body[data-theme="classic"] .btn.primary, body[data-theme="classic"] .toggle[aria-pressed="true"]{
+    background:var(--accent); color:#fff; border-color:var(--ink); box-shadow:var(--sh-sm); }
+  body[data-theme="classic"] .btn:active:not(:disabled), body[data-theme="classic"] .toggle:active{ transform:translate(2px,2px); box-shadow:none; }
+  body[data-theme="classic"] .btn:disabled{ opacity:.45; }
+  body[data-theme="classic"] .toggle{ padding:8px 14px; }
+
+  /* chips + tags: squared, never pills */
+  body[data-theme="classic"] .chip{ background:var(--surface); color:var(--ink); border:var(--bd); border-radius:var(--r); font-weight:700; padding:9px 14px; }
+  body[data-theme="classic"] .chip.picked{ background:var(--accent); color:#fff; box-shadow:var(--sh-sm); }
+  body[data-theme="classic"] .chip:disabled:not(.picked){ border-color:var(--line2); color:var(--dim); }
+  body[data-theme="classic"] .whopicked span{ background:var(--surface2); border:var(--bd-soft); border-radius:var(--r-tag); color:var(--dim); }
+  body[data-theme="classic"] .whopicked span b{ color:var(--ink); font-weight:800; }
+  body[data-theme="classic"] .bot{ border:1.5px solid var(--ink); border-radius:var(--r-tag); color:var(--ink); font-weight:800; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+
+  /* who's picking */
+  body[data-theme="classic"] .whobar.photos .head{ color:var(--ink); font-weight:700; }
+  body[data-theme="classic"] .av{ background:var(--surface2); border:var(--bd); color:var(--ink); font-weight:800; }
+  body[data-theme="classic"] .picker{ color:var(--dim); font-weight:600; }
+  body[data-theme="classic"] .picker[aria-checked="true"]{ color:var(--ink); font-weight:800; }
+  body[data-theme="classic"] .picker[aria-checked="true"] .av{ border-color:var(--ink); box-shadow:3px 3px 0 var(--accent); }
+  body[data-theme="classic"] .picker .av.add{ border-style:dashed; color:var(--dim); }
+  body[data-theme="classic"] .progress{ color:var(--ink); font-weight:600; }
+  body[data-theme="classic"] .progress .track{ height:10px; background:var(--surface2); border:var(--bd); border-radius:var(--r-tag); }
+  body[data-theme="classic"] .progress .fill{ background:var(--accent); }
+
+  /* tabs: ink label, a red bar under the active one */
+  body[data-theme="classic"] .tabs{ border-bottom:var(--bd); gap:0; }
+  body[data-theme="classic"] .tabs .tab{ flex:1; color:var(--dim); font-weight:700; border-bottom:4px solid transparent; margin-bottom:-2px; }
+  body[data-theme="classic"] .tabs .tab[aria-selected="true"]{ color:var(--ink); font-weight:800; border-bottom-color:var(--accent); }
+
+  /* toast + dialog */
+  body[data-theme="classic"] .toast{ background:var(--ink); color:var(--bg); border-radius:var(--r); box-shadow:3px 3px 0 var(--accent); }
+  body[data-theme="classic"] .scrim{ background:rgba(26,20,20,.45); }
+  body[data-theme="classic"] .dialog{ box-shadow:6px 6px 0 var(--ink); }
+  body[data-theme="classic"] .dialog p{ color:var(--dim); }
+
+  /* ── league switch: the selected league gets its colour, sticker-style ── */
+  .cc-seg{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:4px 0 14px; }
+  .cc-segbtn{ background:var(--surface); border:var(--bd-soft); border-radius:var(--r); padding:10px 8px; font-weight:800; font-size:19px;
+    letter-spacing:-0.02em; line-height:1; color:var(--dim); }
+  .cc-segbtn small{ display:block; font-weight:600; font-size:12px; margin-top:4px; letter-spacing:0; }
+  .cc-segbtn[aria-selected="true"]{ background:var(--lg); color:var(--ink); border:var(--bd); box-shadow:var(--sh-sm); }
+  .cc-kicker{ margin:0 0 6px; font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--lgi, var(--dim)); }
+  .cc-proj{ background:var(--lgt); border:var(--bd); border-radius:var(--r-card); padding:12px 12px 6px; margin:0 0 6px; }
+
+  /* ── league tables ── */
   .cc-table{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-size:15px; }
-  .cc-table th{ font-size:12px; font-weight:600; color:var(--dim); text-align:center; padding:4px 4px 6px; }
-  .cc-table th.nm{ text-align:left; color:var(--text); font-family:var(--display); font-weight:800; font-size:18px; }
-  .cc-table td{ text-align:center; padding:7px 4px; border-top:1px solid var(--line); }
+  .cc-table th{ font-size:12px; font-weight:700; color:var(--dim); text-align:center; padding:4px 4px 6px; }
+  .cc-table th.nm{ text-align:left; color:var(--ink); font-weight:800; font-size:17px; letter-spacing:-0.02em; }
+  .cc-table td{ text-align:center; padding:7px 4px; border-top:var(--bd-soft); }
   .cc-table td.nm{ text-align:left; font-weight:600; }
-  .cc-table td.rk{ color:var(--dim); width:22px; }
-  .cc-table td.pts{ font-family:var(--display); font-weight:800; font-size:19px; color:var(--text); }
-  .cc-table tr.through td.rk{ color:var(--lg, var(--accent)); font-weight:800; }
-  .cc-table tr.through td.nm{ box-shadow:inset 3px 0 0 var(--lg, var(--accent)); padding-left:9px; }
+  .cc-table td.rk{ width:30px; padding-left:0; padding-right:0; }
+  .cc-table td.rk{ color:var(--dim); font-weight:700; }
+  .cc-table td.pts{ font-weight:800; font-size:18px; color:var(--ink); }
+  .cc-table tr.through td{ background:var(--lgt); }
+  .cc-proj .cc-table tr.through td{ background:var(--surface); }
+  .cc-table tr.through td.rk{ color:var(--ink); }
+  .cc-table tr.through td.rk{ box-shadow:inset 5px 0 0 var(--lg), inset 7px 0 0 var(--ink); padding-left:6px; }
   .cc-table.compact td{ padding:5px 4px; font-size:14px; }
-  .cc-tie{ font-size:11px; font-weight:600; color:var(--dim); border:1px solid var(--line); border-radius:999px; padding:0 6px; margin-left:4px; }
+  .cc-tie{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--ink); border:1.5px solid var(--ink);
+    border-radius:var(--r-tag); padding:0 4px; margin-left:4px; vertical-align:1px; }
   .cc-belt{ font-size:13px; }
 
-  .cc-night{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; font-family:var(--display); font-weight:800; font-size:22px; margin:22px 0 10px; }
-  .cc-lock{ font-family:'Public Sans',sans-serif; font-size:12px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--dim); }
-  .cc-lock.shut{ color:var(--bad); border-color:currentColor; }
-  .cc-lock.open{ border-style:dashed; }
-  .cc-match{ background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--lg); border-radius:10px; padding:10px; margin:0 0 8px; }
-  .cc-match.correct{ border-left-color:var(--good); }
-  .cc-match.wrong{ border-left-color:var(--bad); }
-  .cc-match.void{ opacity:.55; }
+  /* ── nights + match cards ── */
+  .cc-night{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; font-weight:800; font-size:21px; letter-spacing:-0.02em; margin:24px 0 10px; }
+  .cc-lock{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:3px 7px; border-radius:var(--r-tag);
+    border:1.5px solid var(--ink); background:var(--surface); color:var(--ink); }
+  .cc-lock.shut{ background:var(--accent); color:#fff; }
+  .cc-lock.open{ border-style:dashed; color:var(--dim); border-color:var(--dim); }
+  .cc-match{ background:var(--surface); border:var(--bd); border-left:6px solid var(--lg); border-radius:var(--r-card); padding:10px; margin:0 0 10px; }
+  .cc-match.correct{ border-left-color:var(--good-fill, #12A88C); }
+  .cc-match.wrong{ border-left-color:var(--accent); }
+  .cc-match.void{ opacity:.5; }
   .cc-match > .stip{ margin:0 0 6px; }
   .cc-row{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:6px; align-items:stretch; }
-  .cc-side{ position:relative; background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:10px; min-height:52px; font-weight:700; line-height:1.15; overflow-wrap:anywhere; }
+  .cc-side{ position:relative; background:var(--surface); color:var(--ink); border:var(--bd); border-radius:var(--r); padding:9px 10px; min-height:52px;
+    font-weight:700; font-size:15px; line-height:1.15; overflow-wrap:anywhere; box-shadow:var(--sh-sm); transition:transform .08s, box-shadow .08s; }
   .cc-side.a{ text-align:left; } .cc-side.b{ text-align:right; }
-  .cc-side.d{ font-size:13px; font-weight:600; color:var(--dim); padding:10px 9px; }
-  .cc-side .holder{ display:block; font-weight:500; font-size:11px; color:var(--dim); margin-top:3px; }
-  .cc-side.picked{ background:var(--lg); border-color:var(--lg); color:#0b1020; }
-  .cc-side.picked .holder{ color:inherit; opacity:.7; }
-  .cc-side.faded{ opacity:.45; }
-  .cc-side.won{ box-shadow:inset 0 0 0 2px var(--good); }
-  .cc-side:disabled{ cursor:default; }
+  .cc-side.d{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--dim); padding:9px 8px; border-color:var(--line2); box-shadow:none; }
+  .cc-side .holder{ display:block; font-weight:600; font-size:11px; color:var(--lgi); margin-top:3px; }
+  .cc-side:active:not(:disabled){ transform:translate(2px,2px); box-shadow:none; }
+  .cc-side.picked{ background:var(--lg); border-color:var(--ink); color:var(--ink); }
+  .cc-side.d.picked{ background:var(--ink); color:var(--bg); }
+  .cc-side.picked .holder{ color:inherit; opacity:.75; }
+  .cc-side.faded{ opacity:.45; box-shadow:none; }
+  .cc-side:disabled:not(.picked){ box-shadow:none; }
+  .cc-side.won{ outline:3px solid var(--good-fill, #12A88C); outline-offset:-1px; }
   .cc-match .outcome{ margin:8px 2px 0; }
   .cc-match .whopicked{ margin-top:8px; }
 
-  .cc-road{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; margin:0 0 14px; text-align:center; }
-  .cc-roadlg{ display:flex; flex-direction:column; gap:3px; min-width:0; border-top:3px solid var(--lg); padding-top:8px; }
-  .cc-roadlg b{ font-size:14px; line-height:1.2; overflow-wrap:anywhere; }
-  .cc-roadlg b.w{ font-family:var(--display); font-weight:800; font-size:20px; color:var(--lg); }
-  .cc-road .lab{ font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); }
+  /* ── bracket ── */
+  .cc-road{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:10px; align-items:center; background:var(--surface); border:var(--bd);
+    border-radius:var(--r-card); box-shadow:6px 6px 0 var(--accent); padding:14px; margin:0 0 18px; text-align:center; }
+  .cc-roadlg{ display:flex; flex-direction:column; gap:4px; min-width:0; background:var(--lgt); border:var(--bd-soft); border-top:5px solid var(--lg); border-radius:var(--r); padding:8px 6px; }
+  .cc-roadlg b{ font-size:13px; line-height:1.2; overflow-wrap:break-word; }
+  .cc-roadlg b.w{ font-weight:800; font-size:16px; letter-spacing:-0.02em; color:var(--lgi); overflow-wrap:break-word; hyphens:auto; }
+  .cc-road .lab{ font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); }
   .cc-road .arrow{ color:var(--dim); font-size:13px; }
-  .cc-roadmid{ display:flex; flex-direction:column; gap:4px; align-items:center; max-width:34vw; }
-  .cc-roadmid .champ{ font-family:var(--display); font-weight:900; font-size:24px; line-height:1; color:var(--text); overflow-wrap:anywhere; }
-  .cc-lgbox{ border-left-color:var(--lg); }
-  .cc-lgbox h3{ color:var(--lg); }
-  .cc-lgbox .chip.picked{ background:var(--lg); border-color:var(--lg); color:#0b1020; }
-  .cc-lgbox .chip.won, .cc-champbox .chip.won{ box-shadow:inset 0 0 0 2px var(--good); }
-  .cc-champbox{ border-left-color:var(--accent); }
-  .cc-sublab{ margin:16px 0 0; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); }
+  .cc-roadmid{ display:flex; flex-direction:column; gap:6px; align-items:center; max-width:34vw; }
+  .cc-roadmid .champ{ display:block; font-weight:800; font-size:20px; letter-spacing:-0.03em; line-height:1.05; color:var(--ink); overflow-wrap:anywhere;
+    background:var(--belt); border:var(--bd); border-radius:var(--r-tag); box-shadow:var(--sh-sm); padding:5px 8px; transform:rotate(-2deg); }
+  body[data-theme="classic"] .bout.cc-lgbox{ border-left:8px solid var(--lg); }
+  .cc-lgbox h3{ color:var(--lgi); }
+  body[data-theme="classic"] .cc-lgbox .chip.picked{ background:var(--lg); color:var(--ink); }
+  body[data-theme="classic"] .cc-lgbox .chip.won, body[data-theme="classic"] .cc-champbox .chip.won{ outline:3px solid var(--good-fill, #12A88C); outline-offset:-1px; }
+  body[data-theme="classic"] .bout.cc-champbox{ border-left:8px solid var(--belt); box-shadow:var(--sh); }
+  body[data-theme="classic"] .cc-champbox .chip.picked{ background:var(--belt); color:var(--ink); }
+  body[data-theme="classic"] .bout h3{ font-weight:800; letter-spacing:-0.03em; font-size:24px; }
+  .cc-sublab{ margin:16px 0 0; font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); }
 
-  .cc-block .section-head small{ font-family:'Public Sans',sans-serif; font-size:13px; font-weight:600; color:var(--dim); margin-left:6px; }
-  .cc-block .section-head{ color:var(--lg); }
+  /* ── leagues tab ── */
+  .cc-block .section-head{ color:var(--lgi); }
+  .cc-block .section-head small{ font-size:13px; font-weight:600; color:var(--dim); margin-left:6px; letter-spacing:0; }
+  .cc-block > .cc-table{ background:var(--surface); border:var(--bd); border-radius:var(--r-card); border-collapse:separate; border-spacing:0; overflow:hidden; box-shadow:var(--sh); }
+  .cc-block > .cc-table th{ padding-top:8px; }
   .cc-gridwrap{ overflow-x:auto; margin:6px 0 4px; }
   .cc-grid{ border-collapse:separate; border-spacing:3px; font-size:13px; font-variant-numeric:tabular-nums; }
-  .cc-grid th{ font-size:11px; color:var(--dim); font-weight:700; padding:2px; }
-  .cc-grid th.nm{ text-align:right; color:var(--text); font-size:13px; font-weight:600; padding-right:6px; white-space:nowrap; max-width:44vw; overflow:hidden; text-overflow:ellipsis; }
-  .cc-grid td{ width:34px; height:30px; text-align:center; border-radius:5px; background:var(--surface2); font-weight:800; }
-  .cc-grid td.x{ background:transparent; color:var(--line); }
-  .cc-grid td.w{ background:var(--good); color:#06140d; }
-  .cc-grid td.l{ background:rgba(236,106,90,.25); color:var(--bad); }
-  .cc-grid td.d{ background:rgba(226,181,82,.25); color:var(--accent); }
-  .cc-grid td.tbd{ font-weight:500; font-size:10px; color:var(--dim); }
+  .cc-grid th{ font-size:11px; color:var(--dim); font-weight:800; padding:2px; }
+  .cc-grid th.nm{ text-align:right; color:var(--ink); font-size:13px; font-weight:700; padding-right:6px; white-space:nowrap; max-width:44vw; overflow:hidden; text-overflow:ellipsis; }
+  .cc-grid td{ width:34px; height:30px; text-align:center; border-radius:4px; background:var(--surface); border:1.5px solid var(--line); font-weight:800; }
+  .cc-grid td.x{ background:var(--line); border-color:var(--line); color:transparent; }
+  .cc-grid td.w{ background:var(--good-fill, #12A88C); border-color:var(--ink); color:var(--ink); }
+  .cc-grid td.l{ background:#FBE0DE; border-color:#F2B7B3; color:var(--accent); }
+  .cc-grid td.d{ background:var(--cc-gold-tint); border-color:var(--cc-gold); color:var(--cc-gold-ink); }
+  .cc-grid td.tbd{ font-weight:600; font-size:10px; color:var(--dim); }
 
-  /* Squared-off pills on the tournament page */
-  body[data-theme="classic"] .chip, body[data-theme="classic"] .toggle, body[data-theme="classic"] .whopicked span,
-  body[data-theme="classic"] .bot, body[data-theme="classic"] .cc-lock, body[data-theme="classic"] .cc-tie{ border-radius:5px; }
-  .cc-awards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:10px; margin:0 0 22px; }
-  .cc-award{ background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--lg, var(--accent)); border-radius:10px; padding:12px 14px; }
-  .cc-award.overall{ --lg:var(--accent); }
-  .cc-award h3{ font-family:var(--display); font-weight:900; font-size:26px; line-height:1.05; margin:0; color:var(--lg); }
+  /* ── swap tokens ── */
+  .cc-awards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:12px; margin:0 0 24px; }
+  .cc-award{ background:var(--surface); border:var(--bd); border-top:8px solid var(--lg, var(--belt)); border-radius:var(--r-card); box-shadow:var(--sh); padding:12px 14px; }
+  .cc-award.overall{ --lg:var(--belt); --lgi:var(--cc-gold-ink); background:var(--surface2); box-shadow:6px 6px 0 var(--accent); }
+  .cc-award h3{ font-weight:800; font-size:24px; letter-spacing:-0.03em; line-height:1.05; margin:0; color:var(--ink); }
   .cc-award .btn{ margin-top:10px; width:100%; }
   .cc-award .linkbtn{ padding:0; margin-top:6px; }
   .cc-lead{ list-style:none; margin:0; padding:0; }
-  .cc-lead li{ display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px solid var(--line); font-size:15px; }
+  .cc-lead li{ display:flex; justify-content:space-between; gap:8px; padding:5px 0; border-bottom:var(--bd-soft); font-size:15px; font-weight:600; }
+  .cc-lead li:first-child{ font-weight:800; }
   .cc-lead li:last-child{ border-bottom:0; }
-  .cc-lead b{ font-family:var(--display); font-weight:800; font-size:18px; }
+  .cc-lead b{ font-weight:800; font-size:18px; }
+
+  /* ── setup schedule rows ── */
   .cc-sched{ display:grid; grid-template-columns:1fr; gap:6px; padding:10px 0; border-bottom:1px solid var(--line); }
   .cc-sched .nm{ font-weight:600; }
   @media (min-width:560px){ .cc-sched{ grid-template-columns:1fr 210px auto; align-items:center; } }
-  @media (max-width:420px){ .cc-segbtn{ font-size:18px; } .cc-side{ padding:9px 8px; font-size:15px; } }
+  @media (max-width:420px){ .cc-segbtn{ font-size:17px; } .cc-side{ padding:8px; font-size:14px; } }
 </style>
 </head>
 <body data-theme="ringside">
@@ -722,7 +820,7 @@ const PRED_ROOT = "leagues/_predictions/events";
 const CARD_PATH = "leagues/_predictions/cards";      // cards made or edited on the setup page (JSON strings)
 const PUBLIC_CARD_PATH = "predictionCards";          // read-only mirror RyAI can fetch without signing in
 const PLAYER_PATH = "leagues/_predictions/players";  // player photos
-const THEMES = [["classic","Continental Classic (navy, gold and blue)"],["dream","WrestleDream (dawn sky, crimson ribbon, gold)"],["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
+const THEMES = [["classic","Continental Classic (Sticker Night: cream, ink, gold and blue)"],["dream","WrestleDream (dawn sky, crimson ribbon, gold)"],["nola","New Orleans (purple, green, gold)"],["briefcase","Briefcase green"],["matchday","Matchday programme (navy, cream, red)"],["ringside","Ringside (neutral)"]];
 // Flowing crimson silk ribbon, used under the WrestleDream hero.
 const DREAM_RIBBON = `<svg class="ribbon" viewBox="0 0 400 54" preserveAspectRatio="none" aria-hidden="true">
   <path d="M0 34 C60 6 110 6 160 26 S260 50 310 22 S380 4 400 14 L400 24 C380 16 350 28 312 36 S220 56 158 38 S60 18 0 46 Z" fill="#d3243a"/>
@@ -3023,9 +3121,12 @@ function ccAwards(ev){
     .concat([{ id:"overall", lg:null, label:"Overall", path:"final", award:ev.id+":" }]);
 }
 // Two overlapping rings, gold and blue — the two leagues meeting in one final.
-const CC_EMBLEM = `<svg class="cc-emblem" viewBox="0 0 120 64" aria-hidden="true">
+const CC_EMBLEM = `<svg class="cc-emblem" viewBox="0 0 124 68" aria-hidden="true">
+  <g transform="translate(3 3)" fill="none" stroke="#1A1414" stroke-width="12"><circle cx="42" cy="32" r="24"/><circle cx="78" cy="32" r="24"/></g>
+  <g fill="none" stroke-width="12" stroke="#1A1414"><circle cx="42" cy="32" r="24"/><circle cx="78" cy="32" r="24"/></g>
   <circle cx="42" cy="32" r="24" fill="none" stroke="var(--cc-gold)" stroke-width="7"/>
   <circle cx="78" cy="32" r="24" fill="none" stroke="var(--cc-blue)" stroke-width="7"/>
+  <path d="M60 14.5 A24 24 0 0 1 60 49.5" fill="none" stroke="#1A1414" stroke-width="12"/>
   <path d="M60 14.5 A24 24 0 0 1 60 49.5" fill="none" stroke="var(--cc-gold)" stroke-width="7"/></svg>`;
 
 async function showClassic(id, carry, ev){
